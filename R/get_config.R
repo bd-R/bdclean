@@ -2,14 +2,14 @@
 #'
 #' \code{get_config} asks user a set of questions and the answers are stoted
 #' in configuration variable. This variable will be used to clean the data
-#' depending on the responces
+#' depending on the responses
 #'
 #'@importFrom utils menu
 #'
-#'@param quest data.frame containing set of questions to be asked {not implimented yet}
-#'@param options list of data frames with options for each questions {not implimented yet}
+#'@param quest data.frame containing set of questions to be asked {not implemented  yet}
+#'@param options list of data frames with options for each questions {not implemented yet}
 #'
-#'@return data frame with the responces
+#'@return data frame with the responses
 #'
 #'@examples \dontrun{
 #' myConfig <- get_config()

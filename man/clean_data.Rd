@@ -7,7 +7,7 @@
 clean_data(bddata, config, verbose = T)
 }
 \arguments{
-\item{bddata}{biodiversity data in a dat.frame}
+\item{bddata}{biodiversity data in a data frame}
 
 \item{config}{configuration generated using \code{get_config}}
 

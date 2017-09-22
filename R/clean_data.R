@@ -3,7 +3,7 @@
 #' Use \code{get_config} to generate configuration and pass it to this
 #' function to process the data accordingly.
 #'
-#'@param bddata biodiversity data in a dat.frame
+#'@param bddata biodiversity data in a data frame
 #'@param config configuration generated using \code{get_config}
 #'@param verbose Verbose output if TRUE else brief output if FALSE
 

@@ -22,7 +22,7 @@ similar biodiversity data portals. There are several data cleaning
 \section{Citation}{
 
 \itemize{
-\item Gueta, T., Barve, V., Nagarajah, T., Agrawal, A. & Carmel, Y.
+\item Gueta, T., Barve, V., Nagarajah, T., Agrawal, A. & Carmel, Y. (2017). bdclean: Biodiversity data cleaning workflows (R package V 0.0.1). Retrieved from https://github.com/vijaybarve/bdclean
 }
 }
 

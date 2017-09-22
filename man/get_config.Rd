@@ -7,17 +7,17 @@
 get_config(quest = NULL, options = NULL)
 }
 \arguments{
-\item{quest}{data.frame containing set of questions to be asked {not implimented yet}}
+\item{quest}{data.frame containing set of questions to be asked {not implemented  yet}}
 
-\item{options}{list of data frames with options for each questions {not implimented yet}}
+\item{options}{list of data frames with options for each questions {not implemented yet}}
 }
 \value{
-data frame with the responces
+data frame with the responses
 }
 \description{
 \code{get_config} asks user a set of questions and the answers are stoted
 in configuration variable. This variable will be used to clean the data
-depending on the responces
+depending on the responses
 }
 \examples{
 \dontrun{
