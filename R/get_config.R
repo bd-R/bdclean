@@ -1,6 +1,6 @@
 #' Get user inputs about data cleaning protocol to follow
 #'
-#' \code{get_config} asks user a set of questions and the answers are stoted
+#' \code{get_config} asks user a set of questions and the answers are stored
 #' in configuration variable. This variable will be used to clean the data
 #' depending on the responses
 #'
