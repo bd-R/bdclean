@@ -21,7 +21,7 @@
 #'  myData<-occdat1$data
 #'  myConfig <- get_config()
 #'  cleanData <- clean_data(myData,myConfig)
-#'  cleanData <- clean_data(myData,myConfig, report = T) 
+#'  cleanData <- clean_data(myData,myConfig, report = T)
 #'}
 #'
 #'@export
@@ -53,8 +53,10 @@ clean_data <- function(bddata,
             as.character(config$quest[i]),
             taxoLevel = {
                 bddata <- taxoLevel(bddata, res)
-                selectedOption <- "Taxon Cleaning" # Storing values to be used in building output table
-                actionRequired <- "Removal" # Storing values to be used in building output table
+                selectedOption <-
+                    "Taxon Cleaning" # Storing values to be used in building output table
+                actionRequired <-
+                    "Removal" # Storing values to be used in building output table
             },
             misNames = {
                 bddata <- misNames(bddata, res)
@@ -118,12 +120,24 @@ clean_data <- function(bddata,
     ## ------- Exporting Outputs ------- ##
     print(kable(recordsTable, format = "markdown"))
     if (report) {
+        
+        message("Generating Reports...")
+        
         dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
         save(recordsTable, file = "CleaningReports/cleaningReport.RData")
-        download.file("https://raw.githubusercontent.com/thiloshon/bdclean/master/R/generateReport.R" , 
-                      destfile = "CleaningReports/generateReport.R")
+        download.file(
+            "https://raw.githubusercontent.com/thiloshon/bdclean/master/R/generateReport.R" ,
+            destfile = "CleaningReports/generateReport.R",
+            quiet = T
+        )
         
-        rmarkdown::render("CleaningReports/generateReport.R", c("md_document", "html_document", "pdf_document"))
+        x <- suppressWarnings(suppressMessages(rmarkdown::render(
+            "CleaningReports/generateReport.R",
+            c("md_document", "html_document", "pdf_document"),
+            quiet = T
+        ))) 
+        
+        message("Saving generated reports to 'workingDirectory/CleaningReports'")
         
     }
     ## ------- Exporting Outputs ------- ##
@@ -150,7 +164,7 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     retmat <- NULL
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            resmat <- bddata[which(bddata$taxonRank == ranks[i]),]
+            resmat <- bddata[which(bddata$taxonRank == ranks[i]), ]
             retmat <- rbind(retmat, resmat)
         }
     }
@@ -167,7 +181,7 @@ spatialResolution <- function(bddata, res = 100) {
     res <- as.numeric(res)
     if (res > 0) {
         retmat <-
-            bddata[which(bddata$coordinateUncertaintyInMeters < res),]
+            bddata[which(bddata$coordinateUncertaintyInMeters < res), ]
     }
     return(retmat)
 }
@@ -179,20 +193,20 @@ earliestDate <- function(bddata, res = "1700-01-01") {
         print("That date wasn't correct!")
         return(bddata)
     }
-    retmat <- bddata[which(as.Date(bddata$eventDate) > ed),]
+    retmat <- bddata[which(as.Date(bddata$eventDate) > ed), ]
     return(retmat)
 }
 
 temporalResolution <- function(bddata, res = "Day") {
     bddata <- as.data.frame(bddata)
     if (res == "Day") {
-        retmat <- bddata[which(!is.na(bddata$day)),]
+        retmat <- bddata[which(!is.na(bddata$day)), ]
     }
     if (res == "Month") {
-        retmat <- bddata[which(!is.na(bddata$month)),]
+        retmat <- bddata[which(!is.na(bddata$month)), ]
     }
     if (res == "Year") {
-        retmat <- bddata[which(!is.na(bddata$year)),]
+        retmat <- bddata[which(!is.na(bddata$year)), ]
     }
     return(retmat)
 }
