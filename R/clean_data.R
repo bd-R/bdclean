@@ -117,7 +117,7 @@ clean_data <- function(bddata,
     print(kable(recordsTable, format = "markdown"))
     print(getwd())
     if (report) {
-        save(recordsTable, file = "cleaningReport.RData", sep = "")
+        save(recordsTable, file = "cleaningReport.RData")
         
         rmarkdown::render("R/generateReport.R",
             c("md_document", "html_document", "pdf_document")
