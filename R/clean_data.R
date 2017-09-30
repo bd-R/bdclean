@@ -21,14 +21,14 @@
 #'  myData<-occdat1$data
 #'  myConfig <- get_config()
 #'  cleanData <- clean_data(myData,myConfig)
-#'  cleanData <- clean_data(myData,myConfig, report = c("md_document", "html_document", "pdf_document")) 
+#'  cleanData <- clean_data(myData,myConfig, report = T) 
 #'}
 #'
 #'@export
 clean_data <- function(bddata,
                        config,
                        verbose = T,
-                       report = NULL) {
+                       report = T) {
     if (verbose) {
         cat("\n Initial records ...", dim(bddata)[1], "\n")
     }
@@ -116,14 +116,14 @@ clean_data <- function(bddata,
     ## ------- End of Adding Final results to the records dataframe ------- ##
     
     ## ------- Exporting Outputs ------- ##
-    message(kable(recordsTable, format = "markdown"))
+    print(kable(recordsTable, format = "markdown"))
     dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
-    if (!is.null(report)) {
+    if (report) {
         save(recordsTable, file = "CleaningReports/cleaningReport.RData")
-        download.file("https://raw.githubusercontent.com/thiloshon/bdclean/master/R/generateReport.R" , 
+        download.file("https://raw.githubusercontent.com/vijaybarve/bdclean/master/R/generateReport.R" , 
                       destfile = "CleaningReports/generateReport.R")
         
-        rmarkdown::render("CleaningReports/generateReport.R", report)
+        rmarkdown::render("CleaningReports/generateReport.R", c("md_document", "html_document", "pdf_document"))
         
     }
     ## ------- Exporting Outputs ------- ##
