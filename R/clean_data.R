@@ -124,7 +124,7 @@ clean_data <- function(bddata,
         dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
         save(recordsTable, file = "CleaningReports/cleaningReport.RData")
         download.file(
-            "https://raw.githubusercontent.com/thiloshon/bdclean/master/R/generateReport.R" ,
+            "https://raw.githubusercontent.com/vijaybarve/bdclean/master/R/generateReport.R" ,
             destfile = "CleaningReports/generateReport.R",
             quiet = T
         )
