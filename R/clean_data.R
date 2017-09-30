@@ -118,8 +118,10 @@ clean_data <- function(bddata,
     print(getwd())
     if (report) {
         save(recordsTable, file = "cleaningReport.RData")
+        download.file("https://raw.githubusercontent.com/thiloshon/bdclean/master/R/generateReport.R" , 
+                      destfile = "generateReport.R")
         
-        rmarkdown::render("R/generateReport.R",
+        rmarkdown::render("generateReport.R",
             c("md_document", "html_document", "pdf_document")
         )
     }
