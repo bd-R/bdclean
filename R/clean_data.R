@@ -6,9 +6,11 @@
 #'@param bddata biodiversity data in a data frame
 #'@param config configuration generated using \code{get_config}
 #'@param verbose Verbose output if TRUE else brief output if FALSE
+#'@param report Whether to print report of cleaning done. Options are: Markdown, HTML or / and PDF
 #'
 #'@return data frame with clean data
 #'
+#'@import knitr rmarkdown
 #'@examples \dontrun{
 #'library(rgbif)
 #'occdat1 <- occ_data(
@@ -19,13 +21,14 @@
 #'  myData<-occdat1$data
 #'  myConfig <- get_config()
 #'  cleanData <- clean_data(myData,myConfig)
+#'  cleanData <- clean_data(myData,myConfig, report = c("md_document", "html_document", "pdf_document")) 
 #'}
 #'
 #'@export
 clean_data <- function(bddata,
                        config,
                        verbose = T,
-                       report = T) {
+                       report = NULL) {
     if (verbose) {
         cat("\n Initial records ...", dim(bddata)[1], "\n")
     }
@@ -36,7 +39,6 @@ clean_data <- function(bddata,
         NoOfRecords = NROW(bddata),
         Action = ""
     )
-    
     selectedOption <- ""
     actionRequired <- ""
     ##------- End Of Initializing dataframe and variables that hold output table details -------##
@@ -114,16 +116,14 @@ clean_data <- function(bddata,
     ## ------- End of Adding Final results to the records dataframe ------- ##
     
     ## ------- Exporting Outputs ------- ##
-    print(kable(recordsTable, format = "markdown"))
-    print(getwd())
-    if (report) {
+    message(kable(recordsTable, format = "markdown"))
+    if (!is.null(report)) {
         save(recordsTable, file = "cleaningReport.RData")
         download.file("https://raw.githubusercontent.com/thiloshon/bdclean/master/R/generateReport.R" , 
                       destfile = "generateReport.R")
         
-        rmarkdown::render("generateReport.R",
-            c("md_document", "html_document", "pdf_document")
-        )
+        rmarkdown::render("generateReport.R", report)
+        
     }
     ## ------- Exporting Outputs ------- ##
     

@@ -1,6 +1,5 @@
 #' ---
 #' title: Data Cleaning Report of bdclean Package
-#' date: 29 September 2017
 #' output:
 #'      highlight: zenburn
 #' ---
