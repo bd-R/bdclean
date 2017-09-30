@@ -136,8 +136,9 @@ clean_data <- function(bddata,
             c("md_document", "html_document", "pdf_document"),
             quiet = T
         ))) 
-        
-        message("Saving generated reports to 'workingDirectory/CleaningReports'")
+        file.remove("CleaningReports/generateReport.R", showWarnings = FALSE)
+        file.remove("CleaningReports/cleaningReport.RData", showWarnings = FALSE)
+        message("Saved generated reports to 'workingDirectory/CleaningReports'")
         
     }
     ## ------- Exporting Outputs ------- ##
