@@ -117,12 +117,13 @@ clean_data <- function(bddata,
     
     ## ------- Exporting Outputs ------- ##
     message(kable(recordsTable, format = "markdown"))
+    dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
     if (!is.null(report)) {
-        save(recordsTable, file = "cleaningReport.RData")
+        save(recordsTable, file = "CleaningReports/cleaningReport.RData")
         download.file("https://raw.githubusercontent.com/thiloshon/bdclean/master/R/generateReport.R" , 
-                      destfile = "generateReport.R")
+                      destfile = "CleaningReports/generateReport.R")
         
-        rmarkdown::render("generateReport.R", report)
+        rmarkdown::render("CleaningReports/generateReport.R", report)
         
     }
     ## ------- Exporting Outputs ------- ##
