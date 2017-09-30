@@ -120,9 +120,7 @@ clean_data <- function(bddata,
     ## ------- Exporting Outputs ------- ##
     print(kable(recordsTable, format = "markdown"))
     if (report) {
-        
         message("Generating Reports...")
-        
         dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
         save(recordsTable, file = "CleaningReports/cleaningReport.RData")
         download.file(
@@ -131,13 +129,13 @@ clean_data <- function(bddata,
             quiet = T
         )
         
-        x <- suppressWarnings(suppressMessages(rmarkdown::render(
+       rmarkdown::render(
             "CleaningReports/generateReport.R",
             c("md_document", "html_document", "pdf_document"),
             quiet = T
-        ))) 
-        file.remove("CleaningReports/generateReport.R", showWarnings = FALSE)
-        file.remove("CleaningReports/cleaningReport.RData", showWarnings = FALSE)
+        )
+        suppressWarnings(suppressMessages(file.remove("CleaningReports/generateReport.R", showWarnings = FALSE)))
+        suppressWarnings(suppressMessages(file.remove("CleaningReports/cleaningReport.RData", showWarnings = FALSE)))
         message("Saved generated reports to 'workingDirectory/CleaningReports'")
         
     }
