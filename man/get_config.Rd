@@ -4,20 +4,18 @@
 \alias{get_config}
 \title{Get user inputs about data cleaning protocol to follow}
 \usage{
-get_config(quest = NULL, options = NULL)
+get_config(quest = NULL)
 }
 \arguments{
-\item{quest}{data.frame containing set of questions to be asked {not implemented  yet}}
-
-\item{options}{list of data frames with options for each questions {not implemented yet}}
+\item{quest}{data.frame containing set of questions to be asked}
 }
 \value{
-data frame with the responses
+data frame with the responces
 }
 \description{
-\code{get_config} asks user a set of questions and the answers are stored
+\code{get_config} asks user a set of questions and the answers are stoted
 in configuration variable. This variable will be used to clean the data
-depending on the responses
+depending on the responces
 }
 \examples{
 \dontrun{

@@ -1,15 +1,14 @@
 #' Get user inputs about data cleaning protocol to follow
 #'
-#' \code{get_config} asks user a set of questions and the answers are stored
+#' \code{get_config} asks user a set of questions and the answers are stoted
 #' in configuration variable. This variable will be used to clean the data
-#' depending on the responses
+#' depending on the responces
 #'
 #'@importFrom utils menu
 #'
-#'@param quest data.frame containing set of questions to be asked {not implemented  yet}
-#'@param options list of data frames with options for each questions {not implemented yet}
+#'@param quest data.frame containing set of questions to be asked
 #'
-#'@return data frame with the responses
+#'@return data frame with the responces
 #'
 #'@examples \dontrun{
 #' myConfig <- get_config()
@@ -17,7 +16,7 @@
 #'
 #'@export
 
-get_config <- function(quest=NULL,options=NULL){
+get_config <- function(quest=NULL){
   if (is.null(quest)){
     quest <- data.frame(qvar=c("taxoLevel", "misNames", "spatialResolution", "dateCheck",
                                "earliestDate", "temporalResolution"),
@@ -29,24 +28,35 @@ get_config <- function(quest=NULL,options=NULL){
                                    "What temporal resolution are you interested in? "),
                         rtype=c("I_Numeric","I_Numeric","Numeric","I_Numeric","Date","I_Numeric"),
                         rlimit=c(4,2,0,2,0,3),
+                        qcode=c(1,2,3,4,5,6),
+                        qlink=c(0,0,0,0,4,4),
+                        rescond=c("","","","","Yes","Yes"),
                         mtype=c("m","m","v","m","v","m"),stringsAsFactors = F)
   }
-  if (is.null(options)){  options<-list(taxoLevel=data.frame(choice=c(1,2,3,4),value=c("SUBSPECIES", "SPECIES","GENUS","FAMILY")),
+  q <- c("What is the lowest taxonomic level you require in your data.","Sub-species","Species","Genus","Family")
+  options<-list(taxoLevel=data.frame(choice=c(1,2,3,4),value=c("SUBSPECIES", "SPECIES","GENUS","FAMILY")),
                 misNames=data.frame(choice=c(1,2),value=c("Yes","No")),
                 spatialResolution=NULL,
                 dateCheck=data.frame(choice=c(1,2),value=c("Yes","No")),
                 earliestDate=NULL,
                 temporalResolution=data.frame(choice=c(1,2,3),value=c("Year","Month","Day")))
-  }
+
+  #quest<-as.matrix(quest)
   quest1<-(quest)
   res<-vector(mode="character",length = nrow(quest))
   for (i in 1:nrow(quest)){
+    #rval <- readline(prompt=quest[i,2])
+    if(quest$qlink[i]>0){
+      if(res[quest$qlink[i]]!=quest$rescond[i]){
+        next
+      }
+    }
     if(quest$mtype[i]=="m"){
+      #rval <- menu(options1[[i]]$value)
       rval <- menu(options[[quest[i,1]]]$value,title = quest[i,2] )
     } else {
       rval <- readline(prompt=quest[i,2])
     }
-    # --- Needs to be checked. Directly borrowed form Ashwin ---
     if(quest[i,3]=="Numeric"){
       res[i]=rval
     }
@@ -72,7 +82,6 @@ get_config <- function(quest=NULL,options=NULL){
         stop(paste("The entered choice is wrong."))
       }
     }
-    # --- upto here ---
   }
   response<-data.frame(quest=quest1[,1],response=res)
   return(response)
