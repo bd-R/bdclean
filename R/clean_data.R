@@ -127,7 +127,7 @@ clean_data <- function(bddata,
         save(recordsTable, file = "CleaningReports/cleaningReport.RData")
         
         script <-
-            system.file("data-raw", "generateReport.R", package = "bd-clean")
+            system.file("data", "generateReport.R", package = "bd-clean")
         
         rmarkdown::render(script,
                           format,
