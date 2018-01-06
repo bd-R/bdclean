@@ -16,7 +16,6 @@
 #'}
 #'
 #'@export
-
 get_config <- function(quest=NULL,options=NULL){
   if (is.null(quest)){
     quest <- data.frame(qvar=c("taxoLevel", "misNames", "spatialResolution", "dateCheck",
