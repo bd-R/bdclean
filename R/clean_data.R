@@ -3,10 +3,11 @@
 #' Use \code{get_config} to generate configuration and pass it to this
 #' function to process the data accordingly.
 #'
-#'@param bddata biodiversity data in a data frame
-#'@param config configuration generated using \code{get_config}
+#'@param bddata Biodiversity data in a data frame
+#'@param config Configuration generated using \code{get_config}
 #'@param verbose Verbose output if TRUE else brief output if FALSE
-#'@param report Whether to print report of cleaning done. Options are: Markdown, HTML or / and PDF
+#'@param report Whether to print report of cleaning done.
+#'@param format Formats of the cleaning report required. Options are: Markdown, HTML or / and PDF
 #'
 #'@return data frame with clean data
 #'
@@ -28,7 +29,8 @@
 clean_data <- function(bddata,
                        config,
                        verbose = T,
-                       report = T) {
+                       report = T,
+                       format = c("md_document", "html_document", "pdf_document")) {
     if (verbose) {
         cat("\n Initial records ...", dim(bddata)[1], "\n")
     }
@@ -123,19 +125,21 @@ clean_data <- function(bddata,
         message("Generating Reports...")
         dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
         save(recordsTable, file = "CleaningReports/cleaningReport.RData")
-        download.file(
-            "https://raw.githubusercontent.com/vijaybarve/bdclean/master/R/generateReport.R" ,
-            destfile = "CleaningReports/generateReport.R",
-            quiet = T
-        )
         
-       rmarkdown::render(
-            "CleaningReports/generateReport.R",
-            c("md_document", "html_document", "pdf_document"),
-            quiet = T
-        )
-        suppressWarnings(suppressMessages(file.remove("CleaningReports/generateReport.R", showWarnings = FALSE)))
-        suppressWarnings(suppressMessages(file.remove("CleaningReports/cleaningReport.RData", showWarnings = FALSE)))
+        script <-
+            system.file("data-raw", "generateReport.R", package = "bd-clean")
+        
+        rmarkdown::render(script,
+                          format,
+                          quiet = T,
+                          output_dir = "CleaningReports")
+        
+        suppressWarnings(suppressMessages({
+            file.remove("CleaningReports/generateReport.R",
+                        showWarnings = FALSE)
+            file.remove("CleaningReports/cleaningReport.RData",
+                        showWarnings = FALSE)
+        }))
         message("Saved generated reports to 'workingDirectory/CleaningReports'")
         
     }

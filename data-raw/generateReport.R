@@ -1,7 +1,5 @@
 #' ---
 #' title: Data Cleaning Report of bdclean Package
-#' output:
-#'      highlight: zenburn
 #' ---
 
 #' # Data cleaning summary table
