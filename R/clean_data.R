@@ -125,11 +125,19 @@ clean_data <- function(bddata,
         message("Generating Reports...")
         dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
         save(recordsTable, file = "CleaningReports/cleaningReport.RData")
+        script <- c(
+            "#' ---",
+            "#' title: Data Cleaning Report of bdclean Package",
+            "#' ---",
+            "#' # Data cleaning summary table",
+            "#+ echo=F, eval=T",
+            "#' `r library('knitr')`",
+            "#' `r knitr::kable(recordsTable)`"
+        )
         
-        script <-
-            system.file("data", "generateReport.R", package = "bdclean")
+        write(script, "CleaningReports/generateReport.R")
         
-        rmarkdown::render(script,
+        rmarkdown::render("CleaningReports/generateReport.R",
                           format,
                           quiet = T,
                           output_dir = "CleaningReports")
