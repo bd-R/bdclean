@@ -121,35 +121,9 @@ clean_data <- function(bddata,
     
     ## ------- Exporting Outputs ------- ##
     print(kable(recordsTable, format = "markdown"))
+    
     if (report) {
-        message("Generating Reports...")
-        dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
-        save(recordsTable, file = "CleaningReports/cleaningReport.RData")
-        script <- c(
-            "#' ---",
-            "#' title: Data Cleaning Report of bdclean Package",
-            "#' ---",
-            "#' # Data cleaning summary table",
-            "#+ echo=F, eval=T",
-            "#' `r library('knitr')`",
-            "#' `r knitr::kable(recordsTable)`"
-        )
-        
-        write(script, "CleaningReports/generateReport.R")
-        
-        rmarkdown::render("CleaningReports/generateReport.R",
-                          format,
-                          quiet = T,
-                          output_dir = "CleaningReports")
-        
-        suppressWarnings(suppressMessages({
-            file.remove("CleaningReports/generateReport.R",
-                        showWarnings = FALSE)
-            file.remove("CleaningReports/cleaningReport.RData",
-                        showWarnings = FALSE)
-        }))
-        message("Saved generated reports to 'workingDirectory/CleaningReports'")
-        
+        generateReport(recordsTable, format)
     }
     ## ------- Exporting Outputs ------- ##
     
@@ -157,6 +131,41 @@ clean_data <- function(bddata,
 }
 
 # Support functions that are called within main function
+
+generateReport <- function(recordsTable, format){
+    message("Generating Reports...")
+    
+    dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
+    save(recordsTable, file = "CleaningReports/cleaningReport.RData")
+    
+    script <- c(
+        "#' ---",
+        "#' title: Data Cleaning Report of bdclean Package",
+        "#' ---",
+        "#' # Data cleaning summary table",
+        "#+ echo=F, eval=T",
+        "#' `r library('knitr')`",
+        "#' `r knitr::kable(recordsTable)`"
+    )
+    
+    write(script, "CleaningReports/generateReport.R")
+    
+    try(
+        rmarkdown::render("CleaningReports/generateReport.R",
+                          format,
+                          quiet = T,
+                          output_dir = "CleaningReports")
+    )
+    
+    
+    suppressWarnings(suppressMessages({
+        file.remove("CleaningReports/generateReport.R",
+                    showWarnings = FALSE)
+        file.remove("CleaningReports/cleaningReport.RData",
+                    showWarnings = FALSE)
+    }))
+    message("Saved generated reports to 'workingDirectory/CleaningReports'")
+}
 
 taxoLevel <- function(bddata, res = "SPECIES") {
     ranks <-
