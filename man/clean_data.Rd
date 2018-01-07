@@ -4,12 +4,8 @@
 \alias{clean_data}
 \title{Data cleaning according to configuration supplied}
 \usage{
-<<<<<<< HEAD
 clean_data(bddata, config, verbose = T, report = T,
   format = c("md_document", "html_document", "pdf_document"))
-=======
-clean_data(bddata, config, verbose = T, report = T)
->>>>>>> upstream/master
 }
 \arguments{
 \item{bddata}{Biodiversity data in a data frame}
@@ -18,13 +14,9 @@ clean_data(bddata, config, verbose = T, report = T)
 
 \item{verbose}{Verbose output if TRUE else brief output if FALSE}
 
-<<<<<<< HEAD
 \item{report}{Whether to print report of cleaning done.}
 
 \item{format}{Formats of the cleaning report required. Options are: Markdown, HTML or / and PDF}
-=======
-\item{report}{Whether to print report of cleaning done. Options are: Markdown, HTML or / and PDF}
->>>>>>> upstream/master
 }
 \value{
 data frame with clean data

@@ -13,7 +13,7 @@ get_config(quest = NULL)
 data frame with the responces
 }
 \description{
-\code{get_config} asks user a set of questions and the answers are stored
+\code{get_config} asks user a set of questions and the answers are stoted
 in configuration variable. This variable will be used to clean the data
 depending on the responces
 }
