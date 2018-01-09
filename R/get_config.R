@@ -15,6 +15,7 @@
 #'}
 #'
 #'@export
+
 get_config <- function(quest = NULL) {
     if (is.null(quest)) {
         quest <-
@@ -50,6 +51,7 @@ get_config <- function(quest = NULL) {
                 mtype = c("m", "m", "v", "m", "v", "m"),
                 stringsAsFactors = F
             )
+
 
     }
     q <-
