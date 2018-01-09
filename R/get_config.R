@@ -50,6 +50,7 @@ get_config <- function(quest = NULL) {
                 mtype = c("m", "m", "v", "m", "v", "m"),
                 stringsAsFactors = F
             )
+
     }
     q <-
         c(

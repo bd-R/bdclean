@@ -212,6 +212,7 @@ temporalResolution <- function(bddata, res = "Day") {
 }
 
 generateReport <- function(recordsTable, format) {
+
     message("Generating Reports...")
     
     dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
@@ -229,12 +230,13 @@ generateReport <- function(recordsTable, format) {
     
     write(script, "CleaningReports/generateReport.R")
     
-    try(rmarkdown::render(
-        "CleaningReports/generateReport.R",
-        format,
-        quiet = T,
-        output_dir = "CleaningReports"
-    ))
+    try(
+        rmarkdown::render("CleaningReports/generateReport.R",
+                          format,
+                          quiet = T,
+                          output_dir = "CleaningReports")
+    )
+    
     
     suppressWarnings(suppressMessages({
         file.remove("CleaningReports/generateReport.R",
