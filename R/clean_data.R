@@ -99,19 +99,33 @@ clean_data <- function(bddata,
     ## ------- Adding Final results to the records dataframe ------- ##
     removedRecords <-
         sum(recordsTable[recordsTable$Action == "Removal", 2])
+    repairedRecords <-
+        sum(recordsTable[recordsTable$Action == "Repair", 2])
+    remainingRecords <- (recordsTable[1, 2] - removedRecords)
     
     recordsTable <-
         rbind(
             recordsTable,
             data.frame(
                 DataCleaningProcedure = "Total",
-                NoOfRecords = paste("A dataset of " , sum(recordsTable[2:NROW(recordsTable), 2]), " records"),
+                NoOfRecords = paste(
+                    "Remaining " ,
+                    remainingRecords,
+                    " Records (",
+                    (remainingRecords / recordsTable[1, 2]) * 100,
+                    "%)",
+                    sep = ""
+                ),
                 Action = paste (
                     "Removal of ",
                     removedRecords,
                     " Records (",
                     (removedRecords / recordsTable[1, 2]) * 100,
-                    "%)"
+                    "%) and Repair of ",
+                    repairedRecords,
+                    " Records (",
+                    (repairedRecords / recordsTable[1, 2]) * 100,
+                    "%)", sep=""
                 )
             )
         )
@@ -209,3 +223,40 @@ temporalResolution <- function(bddata, res = "Day") {
     }
     return(retmat)
 }
+
+generateReport <- function(recordsTable, format) {
+
+    message("Generating Reports...")
+    
+    dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
+    save(recordsTable, file = "CleaningReports/cleaningReport.RData")
+    
+    script <- c(
+        "#' ---",
+        "#' title: Data Cleaning Report of bdclean Package",
+        "#' ---",
+        "#' # Data cleaning summary table",
+        "#+ echo=F, eval=T",
+        "#' `r library('knitr')`",
+        "#' `r knitr::kable(recordsTable)`"
+    )
+    
+    write(script, "CleaningReports/generateReport.R")
+    
+    try(
+        rmarkdown::render("CleaningReports/generateReport.R",
+                          format,
+                          quiet = T,
+                          output_dir = "CleaningReports")
+    )
+    
+    
+    suppressWarnings(suppressMessages({
+        file.remove("CleaningReports/generateReport.R",
+                    showWarnings = FALSE)
+        file.remove("CleaningReports/cleaningReport.RData",
+                    showWarnings = FALSE)
+    }))
+    message("Saved generated reports to 'workingDirectory/CleaningReports'")
+}
+
