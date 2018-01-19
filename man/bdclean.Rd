@@ -7,9 +7,12 @@
 \title{bdclean: Biodiversity Data Cleaning Workflows}
 \description{
 Biodiversity Data Cleaning Workflows using R would be helpful
-to clean biodiversity occurrence data typically downloaded form
+to clean biodiversity occurrence data typically downloaded from
 Global Biodiversity Information Facility (http://www.gbif.org/) or
 similar biodiversity data portals. There are several data cleaning
+operations needed to be performed on most of the data downloaded,
+in order to achieve minimum quality to use the data further for any
+analysis or modelling.
 }
 \section{Data cleaning}{
 

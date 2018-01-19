@@ -4,7 +4,7 @@
 \alias{clean_data}
 \title{Data cleaning according to configuration supplied}
 \usage{
-clean_data(bddata, config, verbose = T)
+clean_data(bddata, config, verbose = T, report = T)
 }
 \arguments{
 \item{bddata}{biodiversity data in a data frame}
@@ -12,6 +12,8 @@ clean_data(bddata, config, verbose = T)
 \item{config}{configuration generated using \code{get_config}}
 
 \item{verbose}{Verbose output if TRUE else brief output if FALSE}
+
+\item{report}{Whether to print report of cleaning done. Options are: Markdown, HTML or / and PDF}
 }
 \value{
 data frame with clean data
@@ -31,6 +33,7 @@ occdat1 <- occ_data(
  myData<-occdat1$data
  myConfig <- get_config()
  cleanData <- clean_data(myData,myConfig)
+ cleanData <- clean_data(myData,myConfig, report = T)
 }
 
 }
