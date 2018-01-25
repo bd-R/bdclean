@@ -17,30 +17,12 @@
 #'@export
 
 get_config <- function(quest=NULL){
-  if (is.null(quest)){
-    quest <- data.frame(qvar=c("taxoLevel", "misNames", "spatialResolution", "dateCheck",
-                               "earliestDate", "temporalResolution"),
-                        question=c("What is the lowest taxonomic level you require in your data? ",
-                                   "What you want to do with data with mismatched names? ",
-                                   "What is the spatial resolution required for your data ",
-                                   "Do you care about dates of your observations",
-                                   "What is the earliest date of your observations in this data set (date format-> %Y-%m-%d) ",
-                                   "What temporal resolution are you interested in? "),
-                        rtype=c("I_Numeric","I_Numeric","Numeric","I_Numeric","Date","I_Numeric"),
-                        rlimit=c(4,2,0,2,0,3),
-                        qcode=c(1,2,3,4,5,6),
-                        qlink=c(0,0,0,0,4,4),
-                        rescond=c("","","","","Yes","Yes"),
-                        mtype=c("m","m","v","m","v","m"),stringsAsFactors = F)
-  }
-  q <- c("What is the lowest taxonomic level you require in your data.","Sub-species","Species","Genus","Family")
-  options<-list(taxoLevel=data.frame(choice=c(1,2,3,4),value=c("SUBSPECIES", "SPECIES","GENUS","FAMILY")),
-                misNames=data.frame(choice=c(1,2),value=c("Yes","No")),
-                spatialResolution=NULL,
-                dateCheck=data.frame(choice=c(1,2),value=c("Yes","No")),
-                earliestDate=NULL,
-                temporalResolution=data.frame(choice=c(1,2,3),value=c("Year","Month","Day")))
+ 
+  data(quest, envir=environment())
 
+  data(options, envir=environment())
+  options<-as.list(options)
+  
   #quest<-as.matrix(quest)
   quest1<-(quest)
   res<-vector(mode="character",length = nrow(quest))
