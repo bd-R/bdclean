@@ -86,38 +86,52 @@ clean_data <- function(bddata,
         }
         
         ## ------- Adding record of this iteration to the records dataframe ------- ##
-        recordsTable <-
-            rbind(
-                recordsTable,
-                data.frame(
-                    DataCleaningProcedure = selectedOption,
-                    NoOfRecords = sizeBeforeCleaning - NROW(bddata),
-                    Action = actionRequired
+                recordsTable <-
+                    rbind(
+                        recordsTable,
+                        data.frame(
+                            DataCleaningProcedure = selectedOption,
+                            NoOfRecords = sizeBeforeCleaning - NROW(bddata),
+                            Action = actionRequired
+                        )
+                    )
+                ## ------- End of Adding record of this iteration to the records dataframe ------- ##
+            }
+
+            ## ------- Adding Final results to the records dataframe ------- ##
+            removedRecords <-
+                sum(recordsTable[recordsTable$Action == "Removal", 2])
+            repairedRecords <-
+                sum(recordsTable[recordsTable$Action == "Repair", 2])
+            remainingRecords <- (recordsTable[1, 2] - removedRecords)
+
+            recordsTable <-
+                rbind(
+                    recordsTable,
+                    data.frame(
+                        DataCleaningProcedure = "Total",
+                        NoOfRecords = paste(
+                            "Remaining " ,
+                            remainingRecords,
+                            " Records (",
+                            (remainingRecords / recordsTable[1, 2]) * 100,
+                            "%)",
+                            sep = ""
+                        ),
+                        Action = paste (
+                            "Removal of ",
+                            removedRecords,
+                            " Records (",
+                            (removedRecords / recordsTable[1, 2]) * 100,
+                            "%) and Repair of ",
+                            repairedRecords,
+                            " Records (",
+                            (repairedRecords / recordsTable[1, 2]) * 100,
+                            "%)", sep=""
+                        )
+                    )
                 )
-            )
-        ## ------- End of Adding record of this iteration to the records dataframe ------- ##
-    }
-    
-    ## ------- Adding Final results to the records dataframe ------- ##
-    removedRecords <-
-        sum(recordsTable[recordsTable$Action == "Removal", 2])
-    
-    recordsTable <-
-        rbind(
-            recordsTable,
-            data.frame(
-                DataCleaningProcedure = "Total",
-                NoOfRecords = paste("A dataset of " , sum(recordsTable[2:NROW(recordsTable), 2]), " records"),
-                Action = paste (
-                    "Removal of ",
-                    removedRecords,
-                    " Records (",
-                    (removedRecords / recordsTable[1, 2]) * 100,
-                    "%)"
-                )
-            )
-        )
-    ## ------- End of Adding Final results to the records dataframe ------- ##
+            ## ------- End of Adding Final results to the records dataframe ------- ##
     
     ## ------- Exporting Outputs ------- ##
     print(kable(recordsTable, format = "markdown"))
