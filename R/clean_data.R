@@ -86,52 +86,54 @@ clean_data <- function(bddata,
         }
         
         ## ------- Adding record of this iteration to the records dataframe ------- ##
-                recordsTable <-
-                    rbind(
-                        recordsTable,
-                        data.frame(
-                            DataCleaningProcedure = selectedOption,
-                            NoOfRecords = sizeBeforeCleaning - NROW(bddata),
-                            Action = actionRequired
-                        )
-                    )
-                ## ------- End of Adding record of this iteration to the records dataframe ------- ##
-            }
-
-            ## ------- Adding Final results to the records dataframe ------- ##
-            removedRecords <-
-                sum(recordsTable[recordsTable$Action == "Removal", 2])
-            repairedRecords <-
-                sum(recordsTable[recordsTable$Action == "Repair", 2])
-            remainingRecords <- (recordsTable[1, 2] - removedRecords)
-
-            recordsTable <-
-                rbind(
-                    recordsTable,
-                    data.frame(
-                        DataCleaningProcedure = "Total",
-                        NoOfRecords = paste(
-                            "Remaining " ,
-                            remainingRecords,
-                            " Records (",
-                            (remainingRecords / recordsTable[1, 2]) * 100,
-                            "%)",
-                            sep = ""
-                        ),
-                        Action = paste (
-                            "Removal of ",
-                            removedRecords,
-                            " Records (",
-                            (removedRecords / recordsTable[1, 2]) * 100,
-                            "%) and Repair of ",
-                            repairedRecords,
-                            " Records (",
-                            (repairedRecords / recordsTable[1, 2]) * 100,
-                            "%)", sep=""
-                        )
-                    )
+        recordsTable <-
+            rbind(
+                recordsTable,
+                data.frame(
+                    DataCleaningProcedure = selectedOption,
+                    NoOfRecords = sizeBeforeCleaning - NROW(bddata),
+                    Action = actionRequired
                 )
-            ## ------- End of Adding Final results to the records dataframe ------- ##
+            )
+        ## ------- End of Adding record of this iteration to the records dataframe ------- ##
+    }
+    
+    ## ------- Adding Final results to the records dataframe ------- ##
+    removedRecords <-
+        sum(recordsTable[recordsTable$Action == "Removal", 2])
+    repairedRecords <-
+        sum(recordsTable[recordsTable$Action == "Repair", 2])
+    remainingRecords <-
+        (recordsTable[1, 2] - removedRecords)
+    
+    recordsTable <-
+        rbind(
+            recordsTable,
+            data.frame(
+                DataCleaningProcedure = "Total",
+                NoOfRecords = paste(
+                    "Remaining " ,
+                    remainingRecords,
+                    " Records (",
+                    (remainingRecords / recordsTable[1, 2]) * 100,
+                    "%)",
+                    sep = ""
+                ),
+                Action = paste (
+                    "Removal of ",
+                    removedRecords,
+                    " Records (",
+                    (removedRecords / recordsTable[1, 2]) * 100,
+                    "%) and Repair of ",
+                    repairedRecords,
+                    " Records (",
+                    (repairedRecords / recordsTable[1, 2]) * 100,
+                    "%)",
+                    sep = ""
+                )
+            )
+        )
+    ## ------- End of Adding Final results to the records dataframe ------- ##
     
     ## ------- Exporting Outputs ------- ##
     print(kable(recordsTable, format = "markdown"))
@@ -164,7 +166,7 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     retmat <- NULL
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            resmat <- bddata[which(bddata$taxonRank == ranks[i]), ]
+            resmat <- bddata[which(bddata$taxonRank == ranks[i]),]
             retmat <- rbind(retmat, resmat)
         }
     }
@@ -181,7 +183,7 @@ spatialResolution <- function(bddata, res = 100) {
     res <- as.numeric(res)
     if (res > 0) {
         retmat <-
-            bddata[which(bddata$coordinateUncertaintyInMeters < res), ]
+            bddata[which(bddata$coordinateUncertaintyInMeters < res),]
     }
     return(retmat)
 }
@@ -193,25 +195,25 @@ earliestDate <- function(bddata, res = "1700-01-01") {
         print("That date wasn't correct!")
         return(bddata)
     }
-    retmat <- bddata[which(as.Date(bddata$eventDate) > ed), ]
+    retmat <- bddata[which(as.Date(bddata$eventDate) > ed),]
     return(retmat)
 }
 
 temporalResolution <- function(bddata, res = "Day") {
     bddata <- as.data.frame(bddata)
     if (res == "Day") {
-        retmat <- bddata[which(!is.na(bddata$day)), ]
+        retmat <- bddata[which(!is.na(bddata$day)),]
     }
     if (res == "Month") {
-        retmat <- bddata[which(!is.na(bddata$month)), ]
+        retmat <- bddata[which(!is.na(bddata$month)),]
     }
     if (res == "Year") {
-        retmat <- bddata[which(!is.na(bddata$year)), ]
+        retmat <- bddata[which(!is.na(bddata$year)),]
     }
     return(retmat)
 }
 
-generateReport <- function(recordsTable, format){
+generateReport <- function(recordsTable, format) {
     message("Generating Reports...")
     
     dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
@@ -229,12 +231,12 @@ generateReport <- function(recordsTable, format){
     
     write(script, "CleaningReports/generateReport.R")
     
-    try(
-        rmarkdown::render("CleaningReports/generateReport.R",
-                          format,
-                          quiet = T,
-                          output_dir = "CleaningReports")
-    )
+    try(rmarkdown::render(
+        "CleaningReports/generateReport.R",
+        format,
+        quiet = T,
+        output_dir = "CleaningReports"
+    ))
     
     
     suppressWarnings(suppressMessages({
