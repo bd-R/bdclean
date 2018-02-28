@@ -3,6 +3,9 @@
 #' Use \code{get_config} to generate configuration and pass it to this
 #' function to process the data accordingly.
 #'
+#'@importFrom knitr kable
+#'@importFrom rmarkdown render
+#'
 #'@param bddata Biodiversity data in a data frame
 #'@param config Configuration generated using \code{get_config}
 #'@param verbose Verbose output if TRUE else brief output if FALSE
@@ -11,7 +14,6 @@
 #'
 #'@return data frame with clean data
 #'
-#'@import knitr rmarkdown
 #'@examples \dontrun{
 #'library(rgbif)
 #'occdat1 <- occ_data(

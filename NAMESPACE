@@ -2,6 +2,6 @@
 
 export(clean_data)
 export(get_config)
-import(knitr)
-import(rmarkdown)
+importFrom(knitr,kable)
+importFrom(rmarkdown,render)
 importFrom(utils,menu)

@@ -1,6 +1,6 @@
 #' Get user inputs about data cleaning protocol to follow
 #'
-#' \code{get_config} asks user a set of questions and the answers are stoted
+#' \code{get_config} asks user a set of questions and the answers are stored
 #' in configuration variable. This variable will be used to clean the data
 #' depending on the responces
 #'
@@ -8,7 +8,7 @@
 #'
 #'@param quest data.frame containing set of questions to be asked
 #'
-#'@return data frame with the responces
+#'@return data frame with the responces, which would be passed on to \code{clean_data}
 #'
 #'@examples \dontrun{
 #' myConfig <- get_config()
@@ -16,25 +16,18 @@
 #'
 #'@export
 get_config <- function(quest=NULL){
- 
   data(quest, envir=environment())
-
-  data(options, envir=environment())
-  options<-as.list(options)
-  
-  #quest<-as.matrix(quest)
+  data(responses, envir=environment())
   quest1<-(quest)
   res<-vector(mode="character",length = nrow(quest))
   for (i in 1:nrow(quest)){
-    #rval <- readline(prompt=quest[i,2])
     if(quest$qlink[i]>0){
       if(res[quest$qlink[i]]!=quest$rescond[i]){
         next
       }
     }
     if(quest$mtype[i]=="m"){
-      #rval <- menu(options1[[i]]$value)
-      rval <- menu(options[[quest[i,1]]]$value,title = quest[i,2] )
+      rval <- menu(responses[[quest[i,1]]]$value,title = quest[i,2] )
     } else {
       rval <- readline(prompt=quest[i,2])
     }
@@ -49,12 +42,10 @@ get_config <- function(quest=NULL){
         stop(paste("The input in wrong or the date format is not correct"))
       }
     }
-
     if(quest[i,3]=="I_Numeric"){
-
       if(rval<=quest[i,4] && rval>=1){
         qvar<-quest[i,1]
-        data<-as.data.frame(options[qvar])
+        data<-as.data.frame(responses[qvar])
         colnames(data)<-c("choice","value")
         res[i]<-as.character((data[data$choice==rval,2]))
         quest1[i,3]="Numeric"
