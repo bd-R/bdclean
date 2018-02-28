@@ -1,5 +1,5 @@
 # bdclean
-### Data cleaning for beginneRs
+### User-friendly biodiversity data cleaning pipeline
 
 `bdclean` will provide features to manage complete pipeline for biodiversity data cleaning. 
 A modular approach to plug in data checking and cleaning functions would make this package
