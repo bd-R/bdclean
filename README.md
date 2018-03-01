@@ -58,7 +58,7 @@ Cleaning your data based on your answers
 ```r
 cleanData <- clean_data(myData, myConfig)
 ```
-Cleaning reports should be created in `Your-Working-Directory...\CleaningReports`
+Cleaning reports should be created in `Your-Working-Directory\CleaningReports`
 
 
 ## Package release
