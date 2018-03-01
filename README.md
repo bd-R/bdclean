@@ -64,7 +64,7 @@ Cleaning reports should be created in `Your-Working-Directory...\CleaningReports
 ## Package release
  
 
-`dclean` **is still under development**, first version will be released shortly.
+`bdclean` **is still under development**, first version will be released shortly.
 
 
 
