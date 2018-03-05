@@ -10,10 +10,10 @@ get_config(quest = NULL)
 \item{quest}{data.frame containing set of questions to be asked}
 }
 \value{
-data frame with the responces
+data frame with the responces, which would be passed on to \code{clean_data}
 }
 \description{
-\code{get_config} asks user a set of questions and the answers are stoted
+\code{get_config} asks user a set of questions and the answers are stored
 in configuration variable. This variable will be used to clean the data
 depending on the responces
 }

@@ -3,14 +3,17 @@
 #' Use \code{get_config} to generate configuration and pass it to this
 #' function to process the data accordingly.
 #'
-#'@param bddata biodiversity data in a data frame
-#'@param config configuration generated using \code{get_config}
+#'@importFrom knitr kable
+#'@importFrom rmarkdown render
+#'
+#'@param bddata Biodiversity data in a data frame
+#'@param config Configuration generated using \code{get_config}
 #'@param verbose Verbose output if TRUE else brief output if FALSE
-#'@param report Whether to print report of cleaning done. Options are: Markdown, HTML or / and PDF
+#'@param report Whether to print report of cleaning done.
+#'@param format Formats of the cleaning report required. Options are: Markdown, HTML or / and PDF
 #'
 #'@return data frame with clean data
 #'
-#'@import knitr rmarkdown
 #'@examples \dontrun{
 #'library(rgbif)
 #'occdat1 <- occ_data(
@@ -28,7 +31,8 @@
 clean_data <- function(bddata,
                        config,
                        verbose = T,
-                       report = T) {
+                       report = T,
+                       format = c("md_document", "html_document", "pdf_document")) {
     if (verbose) {
         cat("\n Initial records ...", dim(bddata)[1], "\n")
     }
@@ -99,19 +103,35 @@ clean_data <- function(bddata,
     ## ------- Adding Final results to the records dataframe ------- ##
     removedRecords <-
         sum(recordsTable[recordsTable$Action == "Removal", 2])
+    repairedRecords <-
+        sum(recordsTable[recordsTable$Action == "Repair", 2])
+    remainingRecords <-
+        (recordsTable[1, 2] - removedRecords)
     
     recordsTable <-
         rbind(
             recordsTable,
             data.frame(
                 DataCleaningProcedure = "Total",
-                NoOfRecords = paste("A dataset of " , sum(recordsTable[2:NROW(recordsTable), 2]), " records"),
+                NoOfRecords = paste(
+                    "Remaining " ,
+                    remainingRecords,
+                    " Records (",
+                    (remainingRecords / recordsTable[1, 2]) * 100,
+                    "%)",
+                    sep = ""
+                ),
                 Action = paste (
                     "Removal of ",
                     removedRecords,
                     " Records (",
                     (removedRecords / recordsTable[1, 2]) * 100,
-                    "%)"
+                    "%) and Repair of ",
+                    repairedRecords,
+                    " Records (",
+                    (repairedRecords / recordsTable[1, 2]) * 100,
+                    "%)",
+                    sep = ""
                 )
             )
         )
@@ -119,30 +139,15 @@ clean_data <- function(bddata,
     
     ## ------- Exporting Outputs ------- ##
     print(kable(recordsTable, format = "markdown"))
+    
     if (report) {
-        message("Generating Reports...")
-        dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
-        save(recordsTable, file = "CleaningReports/cleaningReport.RData")
-        download.file(
-            "https://raw.githubusercontent.com/vijaybarve/bdclean/master/R/generateReport.R" ,
-            destfile = "CleaningReports/generateReport.R",
-            quiet = T
-        )
-        
-       rmarkdown::render(
-            "CleaningReports/generateReport.R",
-            c("md_document", "html_document", "pdf_document"),
-            quiet = T
-        )
-        suppressWarnings(suppressMessages(file.remove("CleaningReports/generateReport.R", showWarnings = FALSE)))
-        suppressWarnings(suppressMessages(file.remove("CleaningReports/cleaningReport.RData", showWarnings = FALSE)))
-        message("Saved generated reports to 'workingDirectory/CleaningReports'")
-        
+        generateReport(recordsTable, format)
     }
-    ## ------- Exporting Outputs ------- ##
+    ## ------- End of Exporting Outputs ------- ##
     
     return(bddata)
 }
+
 
 # Support functions that are called within main function
 
@@ -163,7 +168,7 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     retmat <- NULL
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            resmat <- bddata[which(bddata$taxonRank == ranks[i]), ]
+            resmat <- bddata[which(bddata$taxonRank == ranks[i]),]
             retmat <- rbind(retmat, resmat)
         }
     }
@@ -180,7 +185,7 @@ spatialResolution <- function(bddata, res = 100) {
     res <- as.numeric(res)
     if (res > 0) {
         retmat <-
-            bddata[which(bddata$coordinateUncertaintyInMeters < res), ]
+            bddata[which(bddata$coordinateUncertaintyInMeters < res),]
     }
     return(retmat)
 }
@@ -192,20 +197,55 @@ earliestDate <- function(bddata, res = "1700-01-01") {
         print("That date wasn't correct!")
         return(bddata)
     }
-    retmat <- bddata[which(as.Date(bddata$eventDate) > ed), ]
+    retmat <- bddata[which(as.Date(bddata$eventDate) > ed),]
     return(retmat)
 }
 
 temporalResolution <- function(bddata, res = "Day") {
     bddata <- as.data.frame(bddata)
     if (res == "Day") {
-        retmat <- bddata[which(!is.na(bddata$day)), ]
+        retmat <- bddata[which(!is.na(bddata$day)),]
     }
     if (res == "Month") {
-        retmat <- bddata[which(!is.na(bddata$month)), ]
+        retmat <- bddata[which(!is.na(bddata$month)),]
     }
     if (res == "Year") {
-        retmat <- bddata[which(!is.na(bddata$year)), ]
+        retmat <- bddata[which(!is.na(bddata$year)),]
     }
     return(retmat)
+}
+
+generateReport <- function(recordsTable, format) {
+    message("Generating Reports...")
+    
+    dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
+    save(recordsTable, file = "CleaningReports/cleaningReport.RData")
+    
+    script <- c(
+        "#' ---",
+        "#' title: Data Cleaning Report of bdclean Package",
+        "#' ---",
+        "#' # Data cleaning summary table",
+        "#+ echo=F, eval=T",
+        "#' `r library('knitr')`",
+        "#' `r knitr::kable(recordsTable)`"
+    )
+    
+    write(script, "CleaningReports/generateReport.R")
+    
+    try(rmarkdown::render(
+        "CleaningReports/generateReport.R",
+        format,
+        quiet = T,
+        output_dir = "CleaningReports"
+    ))
+    
+    
+    suppressWarnings(suppressMessages({
+        file.remove("CleaningReports/generateReport.R",
+                    showWarnings = FALSE)
+        file.remove("CleaningReports/cleaningReport.RData",
+                    showWarnings = FALSE)
+    }))
+    message("Saved generated reports to 'workingDirectory/CleaningReports'")
 }
