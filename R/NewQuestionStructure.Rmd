@@ -1,0 +1,187 @@
+---
+title: "NewQuestionStructure"
+author: "Thiloshon Nagarajah"
+date: "May 21, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Initial Development Effort
+
+Defining BdQuestion class.
+
+```{r echo=T, eval=T}
+BdQuestion <-
+    setRefClass(
+        "BdQuestion",
+        fields = list(
+            question = "character",
+            possible.responses = "character",
+            users.answer = "character",
+            child.questions = "list",
+            quality.checks = "list",
+            question.type = "character"
+        ),
+        methods = list(
+            initialize = function(question = NA,
+                                  possible.responses = list(),
+                                  child.questions = list(),
+                                  quality.checks = list(),
+                                  question.type = list()) {
+                .self$question <- question
+                .self$possible.responses <- possible.responses
+                .self$child.questions <- child.questions
+                .self$quality.checks <- quality.checks
+                .self$question.type <- question.type
+                .self$message()
+            },
+            
+            printQuestion = function() {
+                cat(.self$question, "\n")
+                for (i in 1:length(.self$possible.responses)) {
+                    cat(" ", i, " ", .self$possible.responses[i], "\n")
+                }
+                .self$getResponse()
+            },
+            
+            getResponse = function() {
+                ans <- readline()
+                .self$users.answer <-
+                    .self$possible.responses[as.numeric(ans)]
+            },
+            
+            addQualityChecks = function(newChecks) {
+                cat("Adding Quality Checks.")
+                .self$quality.checks <-
+                    c(.self$quality.checks, newChecks)
+            },
+            
+            cleanData = function() {
+                cat("Cleaning sequence initiated.")
+            },
+            
+            addToReport = function() {
+                cat("Adding to Report.")
+            },
+            
+            message = function() {
+                cat("New Question object created.")
+            },
+            
+            printSelf = function() {
+                print(.self$question)
+                for (i in 1:length(.self$possible.responses)) {
+                    cat(" ", i, " ", .self$possible.responses[i], "\n")
+                }
+                cat("\n")
+            }
+        )
+    )
+```
+
+Defining BdQuestionContainer class.
+
+```{r echo=T, eval=T}
+BdQuestionContainer <-
+    setRefClass(
+        "BdQuestionContainer",
+        fields = list(BdQuestions = "list"),
+        methods = list(
+            initialize = function(BdQuestions = NA) {
+                "Construct an instance of sampleInfoCollectionClass after validating the type."
+                
+                if (class(BdQuestions[[1]]) != "BdQuestion") {
+                    stop("Incompatible input type. Provide a list of BdQuestion")
+                }
+                .self$BdQuestions <- BdQuestions
+                .self$message()
+            },
+            
+            message = function() {
+                cat(
+                    "New BdQuestionContainer instance created with ",
+                    length(.self$BdQuestions),
+                    " questions."
+                )
+            },
+            
+            printSelf = function() {
+                for (question in .self$BdQuestions) {
+                    question$printSelf()
+                }
+            }
+        )
+    )
+```
+
+
+## Periodical Development Effort
+
+Creating / Expanding questionnaire
+
+```{r echo=T, eval=T}
+question1 <-
+    BdQuestion(
+        question = "What is the lowest taxonomic level you require in your data?",
+        possible.responses = c("Sub Species", "Species", "Genus", "Family", "Kingdom"),
+        question.type = "Atomic"
+    )
+
+question2 <-
+    BdQuestion(
+        question = "What you want to do with data with mismatched names?",
+        possible.responses = c("Keep as it is", "Remove", "Try to fix"),
+        question.type = "Atomic"
+    )
+
+question3 <-
+    BdQuestion(
+        question = "What is the spatial resolution required for your data? (in meteres)",
+        possible.responses = "NA",
+        question.type = "Atomic"
+    )
+
+question4 <-
+    BdQuestion(
+        question = "Do you care about dates of your observations?",
+        possible.responses = c("Yes" , "No"),
+        question.type = "Router"
+    )
+
+question5 <-
+    BdQuestion(
+        question = "What is the earliest date of your observations in this data set (YYYY-mm-dd)",
+        possible.responses = "NA",
+        question.type = "Atomic"
+    )
+
+question6 <-
+    BdQuestion(
+        question = "What temporal resolution are you interested in?",
+        possible.responses = c("Year", "Month", "Day"),
+        question.type = "Atomic"
+    )
+
+allQuestions <-
+    BdQuestionContainer(c(
+    question1,
+    question2,
+    question3,
+    question4,
+    question5,
+    question6
+    ))
+```
+
+
+## Execution in Package
+
+```{r echo=T, eval=T}
+allQuestions$printSelf()
+```
+
+Great! That's all needed for a scalable and neat package. :)
