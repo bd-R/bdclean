@@ -68,7 +68,7 @@ Cleaning reports should be created in `Your-Working-Directory\CleaningReports`
 
 
 
-## We need your feedback
+## We need your feedback :innocent:
 
 Please submit your feedback useing this **[link](https://github.com/bd-R/Feedback-bdclean/issues/new)**
 
