@@ -46,14 +46,14 @@ myData <- occdat$data
 
 ## Using bdclean
 
-Getting your input: generating input questions and saving your answers 
+### Getting your input: generating input questions and saving your answers 
 
 ```r
 myConfig <- get_config()
 ```
 
 
-Cleaning your data based on your answers
+### Cleaning your data based on your answers
 
 ```r
 cleanData <- clean_data(myData, myConfig)
