@@ -1,9 +1,9 @@
 #' Data cleaning according to Questionnaire Responses.
 #'
-#' Use \code{runQuestionnaire} to create Questionnaire Responses and pass it to this
+#' Use \code{run_questionnaire} to create Questionnaire Responses and pass it to this
 #' function to process the data faster.
 #'
-#' Use \code{createDefaultQuestionnaire} to create default Questionnaire object.
+#' Use \code{create_default_questionnaire} to create default Questionnaire object.
 #' You can add your custom questions and then pass it to this
 #' function to process the data.
 #'
@@ -21,23 +21,23 @@
 #'  )
 #'  myData<-occdat1$data
 #'
-#'  cleanedData <- cleanData(myData)
+#'  cleanedData <- clean_data_new(myData)
 #'
-#'  responses <- runQuestionnaire()
-#'  cleanedData <- cleanData(myData, responses)
+#'  responses <- run_questionnaire()
+#'  cleanedData <- clean_data_new(myData, responses)
 #'
-#'  customQuestionnaire <- createDefaultQuestionnaire()
-#'  customResponses <- runQuestionnaire(customQuestionnaire)
-#'  cleanedData <- cleanData(myData, customResponses)
+#'  customQuestionnaire <- create_default_questionnaire()
+#'  customResponses <- run_questionnaire(customQuestionnaire)
+#'  cleanedData <- clean_data_new(myData, customResponses)
 #'  }
 #'
 #'@export
-cleanData <- function(data, customQuestionnaire = NA) {
+clean_data_new <- function(data, customQuestionnaire = NA) {
     responses <- list()
     cleanedData <- data
     
     if (is.na(customQuestionnaire)) {
-        responses <- runQuestionnaire()
+        responses <- run_questionnaire()
     } else {
         responses <- customQuestionnaire
     }
