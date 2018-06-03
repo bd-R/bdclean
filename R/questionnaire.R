@@ -11,10 +11,10 @@
 #'  limit=5000,         # Get only 5000 records
 #'  )
 #'  myData<-occdat1$data
-#'  
+#'
 #'  responses <- run_questionnaire()
 #'  cleanedData <- clean_data_new(myData, responses)
-#'  
+#'
 #'  customQuestionnaire <- create_default_questionnaire()
 #'  customResponses <- run_questionnaire(customQuestionnaire)
 #'  cleanedData <- clean_data_new(myData, customResponses)
@@ -40,14 +40,27 @@ create_default_questionnaire <- function() {
     question2 <-
         BdQuestion(
             question = "What you want to do with data with mismatched names?",
-            possible.responses = c("Keep as it is", "Remove", "Try to fix"),
+            possible.responses = c("Keep as it is", "Remove"),
             question.type = "Atomic"
         )
     
     question3 <-
-        BdQuestion(question = "What is the spatial resolution required for your data? (in meteres)",
-                   question.type = "Atomic",
-                   quality.checks = c(spatialResolution))
+        BdQuestion(
+            question = "What is the spatial resolution required for your data? (in meteres)",
+            question.type = "Atomic",
+            quality.checks = c(spatialResolution),
+            validationFunction = function(answer) {
+                answer <- suppressWarnings(as.numeric(answer))
+                check <-
+                    (!is.na(answer) && answer > 0 && answer < 100000)
+                if (!check) {
+                    message(
+                        "Spatial resolution should be a number between 0 to 100 KM. Please give a correct value."
+                    )
+                }
+                return(check)
+                }
+        )
     
     question4 <-
         BdQuestion(
@@ -58,9 +71,19 @@ create_default_questionnaire <- function() {
         )
     
     question5 <-
-        BdQuestion(question = "What is the earliest date of your observations in this data set? In format (YYYY-mm-dd)",
-                   question.type = "Child",
-                   quality.checks = c(earliestDate))
+        BdQuestion(
+            question = "What is the earliest date of your observations in this data set? In format (YYYY-mm-dd)",
+            question.type = "Child",
+            quality.checks = c(earliestDate),
+            validationFunction = function(answer) {
+                d <- try(as.Date(answer))
+                if( class( d ) == "try-error" || is.na( d ) ) {
+                    message("Invalid Date! Please follow the date format (YYYY-mm-dd)")
+                    return(FALSE)
+                }
+                return(TRUE)
+            }
+        )
     
     question6 <-
         BdQuestion(
@@ -70,7 +93,7 @@ create_default_questionnaire <- function() {
             quality.checks = c(temporalResolution)
         )
     
-    question4$addChildQuestion(c(question5))
+    question4$addChildQuestion(c(question5, question6))
     
     
     allQuestions <-
@@ -84,7 +107,7 @@ create_default_questionnaire <- function() {
         ))
     
     return(allQuestions)
-}
+            }
 
 
 #' Execute the Questionnaire and save user responses.
@@ -102,7 +125,7 @@ create_default_questionnaire <- function() {
 #'  limit=5000,         # Get only 5000 records
 #'  )
 #'  myData<-occdat1$data
-#'  
+#'
 #'  responses <- run_questionnaire()
 #'  cleanedData <- clean_data_new(myData, responses)
 #'}

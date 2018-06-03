@@ -8,6 +8,7 @@ BdQuestion <-
             question = "character",
             possible.responses = "character",
             users.answer = "character",
+            validationFunction = "function",
             child.questions = "list",
             quality.checks = "list",
             question.type = "character",
@@ -16,15 +17,16 @@ BdQuestion <-
         methods = list(
             initialize = function(question = character(),
                                   possible.responses = character(),
+                                  validationFunction = NULL,
                                   quality.checks = list(),
                                   question.type = character(),
                                   router.condition = character()) {
                 .self$question <- question
                 .self$possible.responses <- possible.responses
-                .self$child.questions <- child.questions
                 .self$quality.checks <- quality.checks
                 .self$question.type <- question.type
                 .self$router.condition <- router.condition
+                .self$validationFunction <- validationFunction
             },
             
             printQuestion = function() {
@@ -38,13 +40,40 @@ BdQuestion <-
             
             getResponse = function() {
                 ans <- readline()
-                if (length(.self$possible.responses) > 0) {
-                    .self$users.answer <-
-                        .self$possible.responses[as.numeric(ans)]
-                } else {
-                    .self$users.answer <- ans
-                }
+                length <- length(.self$possible.responses)
                 
+                if (length > 0) {
+                    # Means it was a menu question, and not an open answer
+                    ans <- suppressWarnings(as.numeric(ans))
+                    
+                    if (!is.na(ans) &&
+                        ans > 0 &&
+                        ans <= length) {
+                        # Validating user renponse is a menu number.
+                        .self$users.answer <-
+                            .self$possible.responses[as.numeric(ans)]
+                    } else {
+                        message("Please choose number from menu...")
+                        .self$getResponse()
+                    }
+                    
+                } else {
+                    # Means answer is open ended
+                    
+                    if (is.null(.self$validationFunction)) {
+                        # If a validation function is not given
+                        .self$users.answer <- ans
+                    } else {
+                        val = .self$validationFunction(ans)
+                        
+                        if (val) {
+                            # If the validation function passes (returns true)
+                            .self$users.answer <- ans
+                        } else {
+                            .self$getResponse()
+                        }
+                    }
+                }
             },
             
             addChildQuestion = function(questions) {
@@ -99,7 +128,7 @@ BdQuestionContainer <-
         fields = list(BdQuestions = "list"),
         methods = list(
             initialize = function(BdQuestions = NA) {
-                "Construct an instance of sampleInfoCollectionClass after validating the type."
+                "Construct an instance of BdQuestionContainer after validating the type."
                 
                 if (class(BdQuestions[[1]]) != "BdQuestion") {
                     stop("Incompatible input type. Provide a list of BdQuestion")
