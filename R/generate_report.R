@@ -7,13 +7,13 @@ store_report_data <- function(inputData, cleanedData, responses) {
         length(unique(cleanedData$scientificName))
     
     earliestInputDate <-
-        min(as.POSIXct(unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S"))
+        min(as.POSIXct(unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S", "GMT"))
     latestInputDate <-
-        max(as.POSIXct(unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S"))
+        max(as.POSIXct(unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S", "GMT"))
     earliestOutputDate <-
-        min(as.POSIXct(unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S"))
+        min(as.POSIXct(unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S", "GMT"))
     latestOutputDate <-
-        max(as.POSIXct(unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S"))
+        max(as.POSIXct(unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S", "GMT"))
     
     InputData <-
         c(
