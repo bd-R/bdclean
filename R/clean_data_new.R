@@ -86,7 +86,7 @@ store_report_data <- function(inputData, cleanedData, responses) {
             paste(earliestOutputDate, "-", latestOutputDate)
         )
     
-    data.summary <- data.frame(inputData, CleanedData) # One
+    data.summary <- data.frame(InputData, CleanedData) # One
     row.names(data.summary) <- c("Rows", "Columns", "Number of unique scientific names", "Date Range")
     
     spatialChecks <- 0
