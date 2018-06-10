@@ -151,6 +151,12 @@ clean_data <- function(bddata,
 
 # Support functions that are called within main function
 
+
+#' Clean data based on lower taxon level
+#'
+#' Clean data based on lower taxon level
+#'
+#'@export
 taxoLevel <- function(bddata, res = "SPECIES") {
     ranks <-
         c("CLASS",
@@ -175,11 +181,22 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     return(retmat)
 }
 
+#' Data cleaning according to configuration supplied
+#'
+#' Use \code{get_config} to generate configuration and pass it to this
+#' function to process the data accordingly.
+#'
+#'@export
 misNames <- function(bddata, res = "No") {
     cat("\n fxn misNames not implemented yet \n")
     return(bddata)
 }
 
+#' Clean data based on spatial resolution
+#'
+#' Clean data based on spatial resolution
+#'
+#'@export
 spatialResolution <- function(bddata, res = 100) {
     #print("fxn Spatial Resoultion")
     res <- as.numeric(res)
@@ -190,6 +207,11 @@ spatialResolution <- function(bddata, res = 100) {
     return(retmat)
 }
 
+#' Clean data based on learliest date.
+#'
+#' Clean data based on learliest date.
+#'
+#'@export
 earliestDate <- function(bddata, res = "1700-01-01") {
     bddata <- as.data.frame(bddata)
     ed <- try(as.Date(res, format = "%Y-%m-%d"))
@@ -201,6 +223,11 @@ earliestDate <- function(bddata, res = "1700-01-01") {
     return(retmat)
 }
 
+#' Clean data based on temporal resolution
+#'
+#' Clean data based on temporal resolution
+#'
+#'@export
 temporalResolution <- function(bddata, res = "Day") {
     bddata <- as.data.frame(bddata)
     if (res == "Day") {

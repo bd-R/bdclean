@@ -24,6 +24,15 @@
 create_default_questionnaire <- function() {
     question1 <-
         BdQuestion(
+            question = "Do you worry about taxonomical aspect of the data?",
+            possible.responses = c("Yes" , "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", 1)
+        )
+    
+    
+    question2 <-
+        BdQuestion(
             question = "What is the lowest taxonomic level you require in your data?",
             possible.responses = c(
                 "CLASS",
@@ -33,81 +42,110 @@ create_default_questionnaire <- function() {
                 "SPECIES",
                 "SUBSPECIES"
             ),
-            question.type = "Atomic",
-            quality.checks = c(taxoLevel)
+            question.type = "Child",
+            quality.checks = c("taxoLevel")
         )
     
-    question2 <-
-        BdQuestion(
-            question = "What you want to do with data with mismatched names?",
-            possible.responses = c("Keep as it is", "Remove"),
-            question.type = "Atomic"
-        )
+    question1$addChildQuestion(c(question2))
     
     question3 <-
         BdQuestion(
-            question = "What is the spatial resolution required for your data? (in meteres)",
-            question.type = "Atomic",
-            quality.checks = c(spatialResolution),
-            validationFunction = function(answer) {
-                answer <- suppressWarnings(as.numeric(answer))
-                check <-
-                    (!is.na(answer) && answer > 0 && answer < 100000)
-                if (!check) {
-                    message(
-                        "Spatial resolution should be a number between 0 to 100 KM. Please give a correct value."
-                    )
-                }
-                return(check)
-                }
-        )
-    
-    question4 <-
-        BdQuestion(
-            question = "Do you care about dates of your observations?",
+            question = "Do you worry about spatial aspect of the data?",
             possible.responses = c("Yes" , "No"),
             question.type = "Router",
             router.condition = c("Yes", "Y", 1)
         )
     
+    
+    question4 <-
+        BdQuestion(
+            question = "What is the spatial resolution required for your data? (in meteres)",
+            question.type = "Child",
+            quality.checks = c("spatialResolution")
+        )
+    
+    question4$addValidationFunction(function(answer) {
+        answer <- suppressWarnings(as.numeric(answer))
+        check <-
+            (!is.na(answer) &&
+                 answer > 0 && answer < 100000)
+        if (!check) {
+            message(
+                "Spatial resolution should be a number between 0 to 100 KM. Please give a correct value."
+            )
+        }
+        return(check)
+    })
+    
+    question3$addChildQuestion(c(question4))
+    
     question5 <-
         BdQuestion(
-            question = "What is the earliest date of your observations in this data set? In format (YYYY-mm-dd)",
-            question.type = "Child",
-            quality.checks = c(earliestDate),
-            validationFunction = function(answer) {
-                d <- try(as.Date(answer))
-                if( class( d ) == "try-error" || is.na( d ) ) {
-                    message("Invalid Date! Please follow the date format (YYYY-mm-dd)")
-                    return(FALSE)
-                }
-                return(TRUE)
-            }
+            question = "Do you worry about temporal aspect of your data?",
+            possible.responses = c("Yes" , "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", 1)
         )
     
     question6 <-
         BdQuestion(
-            question = "What temporal resolution are you interested in?",
-            possible.responses = c("Year", "Month", "Day"),
-            question.type = "Atomic",
-            quality.checks = c(temporalResolution)
+            question = "What is the earliest date of your observations in this data set? In format (YYYY-mm-dd)",
+            question.type = "Child",
+            quality.checks = c("earliestDate")
         )
     
-    question4$addChildQuestion(c(question5, question6))
+    question6$addValidationFunction(function(answer) {
+        d <- try(as.Date(answer))
+        if (class(d) == "try-error" || is.na(d)) {
+            message("Invalid Date! Please follow the date format (YYYY-mm-dd)")
+            return(FALSE)
+        }
+        return(TRUE)
+    })
+    
+    question7 <-
+        BdQuestion(
+            question = "What temporal resolution are you interested in?",
+            possible.responses = c("Year", "Month", "Day"),
+            question.type = "Child",
+            quality.checks = c("temporalResolution")
+        )
+    
+    
+    question5$addChildQuestion(c(question6, question7))
+    
+    question8 <-
+        BdQuestion(
+            question = "What cleaning procedure do you want?",
+            possible.responses = c("Just flagging", "Removing"),
+            question.type = "Atomic"
+        )
+    
+    question9 <-
+        BdQuestion(
+            question = "What cleaning intensity do you require?",
+            possible.responses = c("High", "Moderate", "Low"),
+            question.type = "Atomic"
+        )
     
     
     allQuestions <-
-        BdQuestionContainer(c(
-            question1,
-            question2,
-            question3,
-            question4,
-            question5,
-            question6
-        ))
+        BdQuestionContainer(
+            c(
+                question1,
+                question2,
+                question3,
+                question4,
+                question5,
+                question6,
+                question7,
+                question8,
+                question9
+            )
+        )
     
     return(allQuestions)
-            }
+}
 
 
 #' Execute the Questionnaire and save user responses.
@@ -131,10 +169,10 @@ create_default_questionnaire <- function() {
 #'}
 #'
 #'@export
-run_questionnaire <- function(customQuestionnaire = NA) {
+run_questionnaire <- function(customQuestionnaire = NULL) {
     responses <- list()
     
-    if (is.na(customQuestionnaire)) {
+    if (is.null(customQuestionnaire)) {
         message("Custom Questionnaire not given. Using package default Questionnaire...")
         responses <- create_default_questionnaire()
         

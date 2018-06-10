@@ -1,6 +1,7 @@
 #' The Question Reference Class
 #'
 #' @export BdQuestion
+#' @importFrom tools Rd_db
 BdQuestion <-
     setRefClass(
         "BdQuestion",
@@ -8,17 +9,17 @@ BdQuestion <-
             question = "character",
             possible.responses = "character",
             users.answer = "character",
-            validationFunction = "function",
+            validation.function = "function",
             child.questions = "list",
-            quality.checks = "list",
+            quality.checks = "character",
             question.type = "character",
-            router.condition = "character"
+            router.condition = "character",
+            cleaning.details = "list"
         ),
         methods = list(
             initialize = function(question = character(),
                                   possible.responses = character(),
-                                  validationFunction = NULL,
-                                  quality.checks = list(),
+                                  quality.checks = character(),
                                   question.type = character(),
                                   router.condition = character()) {
                 .self$question <- question
@@ -26,7 +27,6 @@ BdQuestion <-
                 .self$quality.checks <- quality.checks
                 .self$question.type <- question.type
                 .self$router.condition <- router.condition
-                .self$validationFunction <- validationFunction
             },
             
             printQuestion = function() {
@@ -36,6 +36,10 @@ BdQuestion <-
                         cat(" ", i, " ", .self$possible.responses[i], "\n")
                     }
                 }
+            },
+            
+            addValidationFunction = function(valFunction) {
+                .self$validation.function <- valFunction
             },
             
             getResponse = function() {
@@ -60,11 +64,11 @@ BdQuestion <-
                 } else {
                     # Means answer is open ended
                     
-                    if (is.null(.self$validationFunction)) {
+                    if (is.null(.self$validation.function)) {
                         # If a validation function is not given
                         .self$users.answer <- ans
                     } else {
-                        val = .self$validationFunction(ans)
+                        val = .self$validation.function(ans)
                         
                         if (val) {
                             # If the validation function passes (returns true)
@@ -82,25 +86,47 @@ BdQuestion <-
             
             addQualityChecks = function(newChecks) {
                 cat("Adding Quality Checks.")
-                .self$quality.checks <-
-                    c(.self$quality.checks, newChecks)
+                .self$quality.checks <- newChecks
             },
             
             cleanData = function(data) {
                 flaggedData <- data
+                packageDocumentation <- tools::Rd_db("bdclean")
+                
                 if (length(.self$quality.checks) > 0) {
                     for (i in 1:length(.self$quality.checks)) {
-                        check <- .self$quality.checks[[i]]
+                        initialRows <- nrow(flaggedData)
+                        checkName <- .self$quality.checks[i]
                         flaggedData <-
-                            check(flaggedData, .self$users.answer)
+                            get(checkName)(flaggedData, .self$users.answer)
+                        .self$addToReport(checkName,
+                                          initialRows - nrow(flaggedData),
+                                          packageDocumentation)
                     }
                 }
                 
                 return(flaggedData)
             },
             
-            addToReport = function() {
-                cat("Adding to Report.")
+            addToReport = function(nameOfQualityCheck,
+                                   countOfAffectedData,
+                                   packageDocumentation) {
+                functionDocumentation <-
+                    packageDocumentation[grep(nameOfQualityCheck, names(packageDocumentation))]
+                description <-
+                    lapply(functionDocumentation,
+                           tools:::.Rd_get_metadata,
+                           "description")[[1]]
+                
+                temp <- list()
+                
+                temp$description <- paste(description, collapse = " ")
+                temp$samplePassData <- "Species"
+                temp$sampleFailData <- "Phylum"
+                temp$checkCategory <- "Spatial"
+                temp$affectedData <- countOfAffectedData
+                
+                .self$cleaning.details[nameOfQualityCheck] <- temp
             },
             
             notify = function() {

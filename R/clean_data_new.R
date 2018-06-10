@@ -43,9 +43,97 @@ clean_data_new <- function(data, customQuestionnaire = NA) {
     }
     
     for (question in responses$BdQuestions) {
-        if (question$question.type != "Router" && length(question$users.answer) > 0) {
+        if (question$question.type != "Router" &&
+            length(question$users.answer) > 0) {
             cleanedData <- question$cleanData(cleanedData)
         }
     }
+    
+    store_report_data(data, cleanedData, responses)
+    
     return(cleanedData)
+}
+
+store_report_data <- function(inputData, cleanedData, responses) {
+    inputSize <- dim(inputData)
+    outputSize <- dim(cleanedData)
+    
+    inputUniqueSpecies <- length(unique(inputData$scientificName))
+    outputUniqueSpecies <-
+        length(unique(cleanedData$scientificName))
+    
+    earliestInputDate <-
+        min(as.POSIXct(unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S"))
+    latestInputDate <-
+        max(as.POSIXct(unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S"))
+    earliestOutputDate <-
+        min(as.POSIXct(unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S"))
+    latestOutputDate <-
+        max(as.POSIXct(unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S"))
+    
+    data.summary <- data.frame() # One
+    data.summary$InputData <-
+        c(
+            inputSize[1],
+            inputSize[2],
+            inputUniqueSpecies,
+            paste(earliestInputDate, "-", latestInputDate)
+        )
+    data.summary$OutputData <-
+        c(
+            outputSize[1],
+            outputSize[2],
+            outputUniqueSpecies,
+            paste(earliestOutputDate, "-", latestOutputDate)
+        )
+    
+    spatialChecks <- 0
+    temporalChecks <- 0
+    taxonChecks <- 0
+    otherChecks <- 0
+    
+    checks.records <- list() # Three
+    index <- 1
+    
+    for (question in responses$BdQuestions) {
+        if (question$question.type != "Router" &&
+            length(question$users.answer) > 0) {
+            
+            checks.records[question$question] <- list()
+            checks.records[question$question]$answer <- question$users.answer
+            checks.records[question$question]$checks <- question$cleaning.details
+            
+            
+            if (question$cleaning.details$checkCategory == "spatial") {
+                spatialChecks = spatialChecks + 1
+            } else if (question$cleaning.details$checkCategory == "temporal") {
+                temporalChecks = spatialChecks + 1
+            } else if (question$cleaning.details$checkCategory == "taxon") {
+                taxonChecks = spatialChecks + 1
+            } else {
+                otherChecks = spatialChecks + 1
+            }
+        }
+    }
+    
+    check.summary <- data.frame() # Two
+    check.summary$Checks <-
+        c(
+            "Taxonomical quality Checks",
+            "Spatial quality Checks",
+            "Temporal quality Checks",
+            "Total quality Checks"
+        )
+    
+    check.summary$Count <-
+        c(
+            taxonChecks,
+            spatialChecks,
+            temporalChecks,
+            (taxonChecks + spatialChecks + temporalChecks + otherChecks)
+        )
+    
+    print(kable(data.summary, format = "markdown"))
+    print(kable(check.summary, format = "markdown"))
+    print(kable(checks.records, format = "markdown"))
 }

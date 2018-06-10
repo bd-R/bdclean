@@ -21,10 +21,10 @@ occdat1 <- occ_data(
  limit=5000,         # Get only 5000 records
  )
  myData<-occdat1$data
- 
+
  responses <- run_questionnaire()
  cleanedData <- clean_data_new(myData, responses)
- 
+
  customQuestionnaire <- create_default_questionnaire()
  customResponses <- run_questionnaire(customQuestionnaire)
  cleanedData <- clean_data_new(myData, customResponses)

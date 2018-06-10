@@ -4,7 +4,7 @@
 \alias{run_questionnaire}
 \title{Execute the Questionnaire and save user responses.}
 \usage{
-run_questionnaire(customQuestionnaire = NA)
+run_questionnaire(customQuestionnaire = NULL)
 }
 \arguments{
 \item{customQuestionnaire}{Custom User Created Questionnaire if already available.}
@@ -24,7 +24,7 @@ occdat1 <- occ_data(
  limit=5000,         # Get only 5000 records
  )
  myData<-occdat1$data
- 
+
  responses <- run_questionnaire()
  cleanedData <- clean_data_new(myData, responses)
 }
