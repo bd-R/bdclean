@@ -71,21 +71,23 @@ store_report_data <- function(inputData, cleanedData, responses) {
     latestOutputDate <-
         max(as.POSIXct(unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S"))
     
-    data.summary <- data.frame() # One
-    data.summary$InputData <-
+    InputData <-
         c(
             inputSize[1],
             inputSize[2],
             inputUniqueSpecies,
             paste(earliestInputDate, "-", latestInputDate)
         )
-    data.summary$OutputData <-
+    CleanedData <-
         c(
             outputSize[1],
             outputSize[2],
             outputUniqueSpecies,
             paste(earliestOutputDate, "-", latestOutputDate)
         )
+    
+    data.summary <- data.frame(inputData, CleanedData) # One
+    row.names(data.summary) <- c("Rows", "Columns", "Number of unique scientific names", "Date Range")
     
     spatialChecks <- 0
     temporalChecks <- 0
@@ -116,8 +118,7 @@ store_report_data <- function(inputData, cleanedData, responses) {
         }
     }
     
-    check.summary <- data.frame() # Two
-    check.summary$Checks <-
+    Checks <-
         c(
             "Taxonomical quality Checks",
             "Spatial quality Checks",
@@ -125,13 +126,15 @@ store_report_data <- function(inputData, cleanedData, responses) {
             "Total quality Checks"
         )
     
-    check.summary$Count <-
+    Count <-
         c(
             taxonChecks,
             spatialChecks,
             temporalChecks,
             (taxonChecks + spatialChecks + temporalChecks + otherChecks)
         )
+    
+    check.summary <- data.frame(Checks, Count) # Two
     
     print(kable(data.summary, format = "markdown"))
     print(kable(check.summary, format = "markdown"))
