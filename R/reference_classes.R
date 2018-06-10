@@ -128,7 +128,7 @@ BdQuestion <-
                 temp$checkCategory <- "Spatial"
                 temp$affectedData <- countOfAffectedData
                 
-                .self$cleaning.details[nameOfQualityCheck] <- temp
+                .self$cleaning.details[nameOfQualityCheck] <- list(temp)
             },
             
             notify = function() {

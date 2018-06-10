@@ -87,7 +87,11 @@ store_report_data <- function(inputData, cleanedData, responses) {
         )
     
     data.summary <- data.frame(InputData, CleanedData) # One
-    row.names(data.summary) <- c("Rows", "Columns", "Number of unique scientific names", "Date Range")
+    row.names(data.summary) <-
+        c("Rows",
+          "Columns",
+          "Number of unique scientific names",
+          "Date Range")
     
     spatialChecks <- 0
     temporalChecks <- 0
@@ -100,10 +104,9 @@ store_report_data <- function(inputData, cleanedData, responses) {
     for (question in responses$BdQuestions) {
         if (question$question.type != "Router" &&
             length(question$users.answer) > 0) {
-            
-            checks.records[question$question] <- list()
-            checks.records[question$question]$answer <- question$users.answer
-            checks.records[question$question]$checks <- question$cleaning.details
+            checks.records[question$question] <-
+                list(answer = question$users.answer,
+                     checks = question$cleaning.details)
             
             message(question$cleaning.details)
             
