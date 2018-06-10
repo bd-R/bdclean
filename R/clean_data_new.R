@@ -32,11 +32,11 @@
 #'  }
 #'
 #'@export
-clean_data_new <- function(data, customQuestionnaire = NA) {
+clean_data_new <- function(data, customQuestionnaire = NULL) {
     responses <- list()
     cleanedData <- data
     
-    if (is.na(customQuestionnaire)) {
+    if (is.null(customQuestionnaire)) {
         responses <- run_questionnaire()
     } else {
         responses <- customQuestionnaire
@@ -104,6 +104,8 @@ store_report_data <- function(inputData, cleanedData, responses) {
             checks.records[question$question] <- list()
             checks.records[question$question]$answer <- question$users.answer
             checks.records[question$question]$checks <- question$cleaning.details
+            
+            message(question$cleaning.details)
             
             
             if (question$cleaning.details$checkCategory == "spatial") {

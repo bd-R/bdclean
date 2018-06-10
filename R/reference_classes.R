@@ -99,9 +99,11 @@ BdQuestion <-
                         checkName <- .self$quality.checks[i]
                         flaggedData <-
                             get(checkName)(flaggedData, .self$users.answer)
+                        
                         .self$addToReport(checkName,
                                           initialRows - nrow(flaggedData),
                                           packageDocumentation)
+                        
                     }
                 }
                 
