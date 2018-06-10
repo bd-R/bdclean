@@ -4,7 +4,7 @@
 \alias{clean_data_new}
 \title{Data cleaning according to Questionnaire Responses.}
 \usage{
-clean_data_new(data, customQuestionnaire = NA)
+clean_data_new(data, customQuestionnaire = NULL)
 }
 \arguments{
 \item{customQuestionnaire}{Custom User Created Questionnaire Responses if

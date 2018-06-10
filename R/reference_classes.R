@@ -125,7 +125,7 @@ BdQuestion <-
                 temp$description <- paste(description, collapse = " ")
                 temp$samplePassData <- "Species"
                 temp$sampleFailData <- "Phylum"
-                temp$checkCategory <- "Spatial"
+                temp$checkCategory <- "spatial"
                 temp$affectedData <- countOfAffectedData
                 
                 .self$cleaning.details[nameOfQualityCheck] <- list(temp)
