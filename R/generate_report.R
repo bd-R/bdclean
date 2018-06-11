@@ -8,7 +8,8 @@ create_report_data <-
         inputSize <- dim(inputData)
         outputSize <- dim(cleanedData)
         
-        inputUniqueSpecies <- length(unique(inputData$scientificName))
+        inputUniqueSpecies <-
+            length(unique(inputData$scientificName))
         outputUniqueSpecies <-
             length(unique(cleanedData$scientificName))
         
@@ -79,17 +80,19 @@ create_report_data <-
         )
         
         checkIndex <- 1
-        for (check in question$checks) {
-            recordsTable <-
-                rbind(
-                    recordsTable,
-                    data.frame(
-                        DataCleaningProcedure = names(question$checks[checkIndex]),
-                        NoOfRecords = check$affectedData,
-                        Action = "Removal"
+        for (question in checks.records) {
+            for (check in question$checks) {
+                recordsTable <-
+                    rbind(
+                        recordsTable,
+                        data.frame(
+                            DataCleaningProcedure = names(question$checks[checkIndex]),
+                            NoOfRecords = check$affectedData,
+                            Action = "Removal"
+                        )
                     )
-                )
-            checkIndex <- checkIndex + 1
+                checkIndex <- checkIndex + 1
+            }
         }
         
         remainingRecords <-
@@ -154,7 +157,6 @@ generateShortReport <- function(recordsTable, format) {
 
 generateDetailedReport <-
     function(data.summary, checks.records, format) {
-        
         try(rmarkdown::render(
             system.file("rmd/generateDetailedReport.Rmd", package = "bdclean"),
             format,
