@@ -1,7 +1,7 @@
 ---
 title: 'Detailed Data Cleaning Report of package bdclean'
 author: "`r Sys.info()[['user']]`"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "`r date()`"
 ---
 
 ```{r setup, include=FALSE}
@@ -25,7 +25,6 @@ otherChecks <- 0
 
 for (question in checks.records) {
     for (check in question$checks) {
-        
         if (check$checkCategory == 'spatial') {
             spatialChecks = spatialChecks + 1
         } else if (check$checkCategory == 'temporal') {
@@ -36,7 +35,6 @@ for (question in checks.records) {
             otherChecks = otherChecks + 1
         }
     }
-    
 }
 
 Checks <-
@@ -55,13 +53,11 @@ Count <-
     )
 check.summary <- data.frame(Checks, Count)
 kable(check.summary)
-
 ```
 
 ## Quality Checks
 
 ```{r echo=FALSE, results='asis'}
-
 index <- 1
 checkIndex <- 1
 
@@ -72,14 +68,15 @@ for (question in checks.records) {
     cat(paste('Received Response: ', question$answer, '\n', sep = ''))
     cat('\n')
     
-    for (check in question$checks) { 
-        cat(paste('####',
-                'Quality Check ',
-                checkIndex,
-                ': ',
-                names(question$checks[checkIndex]),
-                sep = ''
-            ))
+    for (check in question$checks) {
+        cat(paste(
+            '####',
+            'Quality Check ',
+            checkIndex,
+            ': ',
+            names(question$checks[checkIndex]),
+            sep = ''
+        ))
         
         Type <-
             c('Description',

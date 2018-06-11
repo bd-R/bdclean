@@ -2,15 +2,16 @@
 % Please edit documentation in R/clean_data.R
 \name{clean_data}
 \alias{clean_data}
-\title{Data cleaning according to configuration supplied}
+\title{Data cleaning according to Questionnaire Responses.}
 \usage{
-clean_data(bddata, config, verbose = T, report = T,
-  format = c("md_document", "html_document", "pdf_document"))
+clean_data(data, customQuestionnaire, verbose = FALSE, report = TRUE,
+  format = c("html_document", "pdf_document"))
 }
 \arguments{
-\item{bddata}{Biodiversity data in a data frame}
+\item{data}{Biodiversity data in a data frame}
 
-\item{config}{Configuration generated using \code{get_config}}
+\item{customQuestionnaire}{Custom User Created Questionnaire Responses if
+already available to pypass asking questions each time.}
 
 \item{verbose}{Verbose output if TRUE else brief output if FALSE}
 
@@ -22,8 +23,13 @@ clean_data(bddata, config, verbose = T, report = T,
 data frame with clean data
 }
 \description{
-Use \code{get_config} to generate configuration and pass it to this
-function to process the data accordingly.
+Use \code{run_questionnaire} to create Questionnaire Responses and pass it to this
+function to process the data faster.
+}
+\details{
+Use \code{create_default_questionnaire} to create default Questionnaire object.
+You can add your custom questions and then pass it to this
+function to process the data.
 }
 \examples{
 \dontrun{
@@ -34,9 +40,15 @@ occdat1 <- occ_data(
  limit=5000,         # Get only 5000 records
  )
  myData<-occdat1$data
- myConfig <- get_config()
- cleanData <- clean_data(myData,myConfig)
- cleanData <- clean_data(myData,myConfig, report = T)
-}
+
+ cleanedData <- clean_data_new(myData)
+
+ responses <- run_questionnaire()
+ cleanedData <- clean_data_new(myData, responses)
+
+ customQuestionnaire <- create_default_questionnaire()
+ customResponses <- run_questionnaire(customQuestionnaire)
+ cleanedData <- clean_data_new(myData, customResponses)
+ }
 
 }

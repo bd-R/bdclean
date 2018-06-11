@@ -122,13 +122,15 @@ BdQuestion <-
                 
                 temp <- list()
                 
-                temp$description <- paste(description, collapse = " ")
+                temp$description <-
+                    paste(description, collapse = " ")
                 temp$samplePassData <- "Species"
                 temp$sampleFailData <- "Phylum"
                 temp$checkCategory <- "spatial"
                 temp$affectedData <- countOfAffectedData
                 
-                .self$cleaning.details[nameOfQualityCheck] <- list(temp)
+                .self$cleaning.details[nameOfQualityCheck] <-
+                    list(temp)
             },
             
             notify = function() {
