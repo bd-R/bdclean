@@ -140,17 +140,20 @@ generateShortReport <- function(recordsTable, format) {
     
     dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
     
+    message("Created folder")
+    
     try(rmarkdown::render(
         system.file("rmd/generateShortReport.Rmd", package = "bdclean"),
         format,
         quiet = T,
         output_dir = "CleaningReports"
     ))
+    
+    message("generated simple")
 }
 
 generateDetailedReport <-
     function(data.summary, checks.records, format) {
-        dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
         
         try(rmarkdown::render(
             system.file("rmd/generateDetailedReport.Rmd", package = "bdclean"),
