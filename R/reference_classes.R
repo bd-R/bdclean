@@ -119,25 +119,24 @@ BdQuestion <-
                            tools:::.Rd_get_metadata,
                            "description")[[1]]
                 
-                samplePassData <-
-                    lapply(functionDocumentation,
-                           tools:::.Rd_get_metadata,
-                           "samplePassData")[[1]]
+                sections <- as.character(lapply(functionDocumentation,
+                                   tools:::.Rd_get_metadata,
+                                   "section")[[1]])
                 
-                sampleFailData <-
-                    lapply(functionDocumentation,
-                           tools:::.Rd_get_metadata,
-                           "sampleFailData")[[1]]
+                sectionsVector <-
+                    gsub("\\\\n",
+                         "",
+                         gsub(
+                             "[^[:alnum:][:blank:]+?&/\\-]",
+                             "",
+                             substr(sections, 5, nchar(sections))
+                         ))
                 
-                checkCategory <-
-                    lapply(functionDocumentation,
-                           tools:::.Rd_get_metadata,
-                           "checkCategory")[[1]]
-                
-                targetDWCField <-
-                    lapply(functionDocumentation,
-                           tools:::.Rd_get_metadata,
-                           "targetDWCField")[[1]]
+                samplePassData <- sectionsVector(match('samplePassData', sectionsVector) + 1)
+                sampleFailData <- sectionsVector(match('sampleFailData', sectionsVector) + 1)
+                checkCategory <- sectionsVector(match('checkCategory', sectionsVector) + 1)
+                targetDWCField <- sectionsVector(match('targetDWCField', sectionsVector) + 1)
+                     
                 
                 temp <- list()
                 
