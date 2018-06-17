@@ -127,13 +127,9 @@ BdQuestion <-
                     )[[1]])
                 
                 sectionsVector <-
-                    gsub("\\\\n",
-                         "",
-                         gsub(
-                             "[^[:alnum:][:blank:]+?&/\\-]",
-                             "",
-                             substr(sections, 5, nchar(sections))
-                         ))
+                    gsub(", ,", "", gsub("\\\\n", "", gsub(
+                        "[()\"]", "", substr(sectionsString, 5, nchar(sectionsString))
+                    )))
                 
                 samplePassData <-
                     sectionsVector[match('samplePassData', sectionsVector) + 1]
