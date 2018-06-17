@@ -2,7 +2,19 @@
 #'
 #' Clean data based on lower taxon level
 #'
-#'@export
+#' @section samplePassData:
+#' When resolution is Species, Subspecies and Species will pass.
+#' 
+#' @section sampleFailData:
+#' When resolution is Species, Family or Genus or any lower ranks will fail.
+#' 
+#' @section targetDWCField:
+#' taxonRank
+#' 
+#' @section checkCategory:
+#' taxonomic
+#'
+#' @export
 taxoLevel <- function(bddata, res = "SPECIES") {
     ranks <-
         c("CLASS",
@@ -20,7 +32,7 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     retmat <- NULL
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            resmat <- bddata[which(bddata$taxonRank == ranks[i]), ]
+            resmat <- bddata[which(bddata$taxonRank == ranks[i]),]
             retmat <- rbind(retmat, resmat)
         }
     }
@@ -30,6 +42,18 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #' Clean data based on spatial resolution
 #'
 #' Clean data based on spatial resolution
+#' 
+#' @section samplePassData:
+#' When resolution is 100 meters, Coordinate Uncertainities below 100 meteres will pass.
+#' 
+#' @section sampleFailData:
+#' When resolution is 100 meters, Coordinate Uncertainities above 100 meteres will fail.
+#' 
+#' @section targetDWCField:
+#' coordinateUncertaintyInMeters
+#' 
+#' @section checkCategory:
+#' spatial
 #'
 #'@export
 spatialResolution <- function(bddata, res = 100) {
@@ -37,14 +61,26 @@ spatialResolution <- function(bddata, res = 100) {
     res <- as.numeric(res)
     if (res > 0) {
         retmat <-
-            bddata[which(bddata$coordinateUncertaintyInMeters < res), ]
+            bddata[which(bddata$coordinateUncertaintyInMeters < res),]
     }
     return(retmat)
 }
 
-#' Clean data based on learliest date.
+#' Clean data based on earliest date.
 #'
-#' Clean data based on learliest date.
+#' Clean data based on earliest date.
+#' 
+#' @section samplePassData:
+#' When resolution is 20-Jan-2005, records recorded after the date will pass.
+#' 
+#' @section sampleFailData:
+#' When resolution is 20-Jan-2005, records recorded before the date will fail.
+#' 
+#' @section targetDWCField:
+#' eventDate
+#' 
+#' @section checkCategory:
+#' temporal
 #'
 #'@export
 earliestDate <- function(bddata, res = "1700-01-01") {
@@ -54,7 +90,7 @@ earliestDate <- function(bddata, res = "1700-01-01") {
         print("That date wasn't correct!")
         return(bddata)
     }
-    retmat <- bddata[which(as.Date(bddata$eventDate) > ed), ]
+    retmat <- bddata[which(as.Date(bddata$eventDate) > ed),]
     return(retmat)
 }
 
@@ -62,17 +98,29 @@ earliestDate <- function(bddata, res = "1700-01-01") {
 #'
 #' Clean data based on temporal resolution
 #'
+#' @section samplePassData:
+#' When resolution is day, records with day specified will pass.
+#' 
+#' @section sampleFailData:
+#' When resolution is month, records with NA/empty month specified will fail.
+#' 
+#' @section targetDWCField:
+#' day, month, year
+#' 
+#' @section checkCategory:
+#' temporal
+#'
 #'@export
 temporalResolution <- function(bddata, res = "Day") {
     bddata <- as.data.frame(bddata)
     if (res == "Day") {
-        retmat <- bddata[which(!is.na(bddata$day)), ]
+        retmat <- bddata[which(!is.na(bddata$day)),]
     }
     if (res == "Month") {
-        retmat <- bddata[which(!is.na(bddata$month)), ]
+        retmat <- bddata[which(!is.na(bddata$month)),]
     }
     if (res == "Year") {
-        retmat <- bddata[which(!is.na(bddata$year)), ]
+        retmat <- bddata[which(!is.na(bddata$year)),]
     }
     return(retmat)
 }

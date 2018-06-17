@@ -9,3 +9,23 @@ temporalResolution(bddata, res = "Day")
 \description{
 Clean data based on temporal resolution
 }
+\section{samplePassData}{
+
+When resolution is day, records with day specified will pass.
+}
+
+\section{sampleFailData}{
+
+When resolution is month, records with NA/empty month specified will fail.
+}
+
+\section{targetDWCField}{
+
+day, month, year
+}
+
+\section{checkCategory}{
+
+temporal
+}
+

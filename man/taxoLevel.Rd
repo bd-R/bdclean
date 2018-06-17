@@ -9,3 +9,23 @@ taxoLevel(bddata, res = "SPECIES")
 \description{
 Clean data based on lower taxon level
 }
+\section{samplePassData}{
+
+When resolution is Species, Subspecies and Species will pass.
+}
+
+\section{sampleFailData}{
+
+When resolution is Species, Family or Genus or any lower ranks will fail.
+}
+
+\section{targetDWCField}{
+
+taxonRank
+}
+
+\section{checkCategory}{
+
+taxonomic
+}
+

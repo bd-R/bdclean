@@ -103,7 +103,6 @@ BdQuestion <-
                         .self$addToReport(checkName,
                                           initialRows - nrow(flaggedData),
                                           packageDocumentation)
-                        
                     }
                 }
                 
@@ -120,13 +119,34 @@ BdQuestion <-
                            tools:::.Rd_get_metadata,
                            "description")[[1]]
                 
+                samplePassData <-
+                    lapply(functionDocumentation,
+                           tools:::.Rd_get_metadata,
+                           "samplePassData")[[1]]
+                
+                sampleFailData <-
+                    lapply(functionDocumentation,
+                           tools:::.Rd_get_metadata,
+                           "sampleFailData")[[1]]
+                
+                checkCategory <-
+                    lapply(functionDocumentation,
+                           tools:::.Rd_get_metadata,
+                           "checkCategory")[[1]]
+                
+                targetDWCField <-
+                    lapply(functionDocumentation,
+                           tools:::.Rd_get_metadata,
+                           "targetDWCField")[[1]]
+                
                 temp <- list()
                 
                 temp$description <-
                     paste(description, collapse = " ")
-                temp$samplePassData <- "Species"
-                temp$sampleFailData <- "Phylum"
-                temp$checkCategory <- "spatial"
+                temp$samplePassData <- samplePassData
+                temp$sampleFailData <- sampleFailData
+                temp$checkCategory <- checkCategory
+                temp$targetDWCField <- targetDWCField
                 temp$affectedData <- countOfAffectedData
                 
                 .self$cleaning.details[nameOfQualityCheck] <-

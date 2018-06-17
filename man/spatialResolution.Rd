@@ -9,3 +9,23 @@ spatialResolution(bddata, res = 100)
 \description{
 Clean data based on spatial resolution
 }
+\section{samplePassData}{
+
+When resolution is 100 meters, Coordinate Uncertainities below 100 meteres will pass.
+}
+
+\section{sampleFailData}{
+
+When resolution is 100 meters, Coordinate Uncertainities above 100 meteres will fail.
+}
+
+\section{targetDWCField}{
+
+coordinateUncertaintyInMeters
+}
+
+\section{checkCategory}{
+
+spatial
+}
+

@@ -2,10 +2,30 @@
 % Please edit documentation in R/quality_checks.R
 \name{earliestDate}
 \alias{earliestDate}
-\title{Clean data based on learliest date.}
+\title{Clean data based on earliest date.}
 \usage{
 earliestDate(bddata, res = "1700-01-01")
 }
 \description{
-Clean data based on learliest date.
+Clean data based on earliest date.
 }
+\section{samplePassData}{
+
+When resolution is 20-Jan-2005, records recorded after the date will pass.
+}
+
+\section{sampleFailData}{
+
+When resolution is 20-Jan-2005, records recorded before the date will fail.
+}
+
+\section{targetDWCField}{
+
+eventDate
+}
+
+\section{checkCategory}{
+
+temporal
+}
+
