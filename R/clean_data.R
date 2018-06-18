@@ -70,6 +70,14 @@ clean_data <-
         return(cleanedData)
     }
 
+cleaning_function <- function(bddata, intensity){
+    checkColumns <- grep("bdclean", colnames(bddata))
+    checkData <- bddata[, checkColumns]
+    failedData <- which(rowSums(checkData != 10) >= 1)
+    
+    return(bddata[!passedData, !checkColumns])
+}
+
 
 #' Execute the Questionnaire and save user responses.
 #'

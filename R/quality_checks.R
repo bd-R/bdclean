@@ -23,20 +23,21 @@ taxoLevel <- function(bddata, res = "SPECIES") {
           "GENUS",
           "SPECIES",
           "SUBSPECIES")
+    
     if (!(res %in% ranks)) {
         print("Rank Value unknown. It should be FAMILY, GENUS, SPECIES or SUBSPECIES")
         return(bddata)
     }
+    
     idx <- which(ranks == res)
     cat(paste("\n Removing records above :", res, "\n"))
-    retmat <- NULL
+    bddata$bdclean.taxoLevel <- 0
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            resmat <- bddata[which(bddata$taxonRank == ranks[i]),]
-            retmat <- rbind(retmat, resmat)
+            bddata[which(bddata$taxonRank == ranks[i]), 'bdclean.taxoLevel'] <- 10
         }
     }
-    return(retmat)
+    return(bddata)
 }
 
 #' Clean data based on spatial resolution
@@ -59,11 +60,11 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 spatialResolution <- function(bddata, res = 100) {
     #print("fxn Spatial Resoultion")
     res <- as.numeric(res)
+    bddata$bdclean.spatialResolution <- 0
     if (res > 0) {
-        retmat <-
-            bddata[which(bddata$coordinateUncertaintyInMeters < res),]
+        bddata[which(bddata$coordinateUncertaintyInMeters < res), 'bdclean.spatialResolution'] <- 10
     }
-    return(retmat)
+    return(bddata)
 }
 
 #' Clean data based on earliest date.
@@ -90,8 +91,9 @@ earliestDate <- function(bddata, res = "1700-01-01") {
         print("That date wasn't correct!")
         return(bddata)
     }
-    retmat <- bddata[which(as.Date(bddata$eventDate) > ed),]
-    return(retmat)
+    bddata$bdclean.earliestDate <- 0
+    bddata[which(as.Date(bddata$eventDate) > ed), 'bdclean.earliestDate'] <- 10
+    return(bddata)
 }
 
 #' Clean data based on temporal resolution
@@ -113,14 +115,15 @@ earliestDate <- function(bddata, res = "1700-01-01") {
 #'@export
 temporalResolution <- function(bddata, res = "Day") {
     bddata <- as.data.frame(bddata)
+    bddata$bdclean.temporalResolution <- 0
     if (res == "Day") {
-        retmat <- bddata[which(!is.na(bddata$day)),]
+        bddata[which(!is.na(bddata$day)), "bdclean.temporalResolution"] <- 10
     }
     if (res == "Month") {
-        retmat <- bddata[which(!is.na(bddata$month)),]
+        bddata[which(!is.na(bddata$month)), "bdclean.temporalResolution"] <- 10
     }
     if (res == "Year") {
-        retmat <- bddata[which(!is.na(bddata$year)),]
+        bddata[which(!is.na(bddata$year)), "bdclean.temporalResolution"] <- 10
     }
     return(retmat)
 }

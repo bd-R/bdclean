@@ -30,7 +30,6 @@ create_default_questionnaire <- function() {
             router.condition = c("Yes", "Y", 1)
         )
     
-    
     question2 <-
         BdQuestion(
             question = "What is the lowest taxonomic level you require in your data?",
@@ -55,7 +54,6 @@ create_default_questionnaire <- function() {
             question.type = "Router",
             router.condition = c("Yes", "Y", 1)
         )
-    
     
     question4 <-
         BdQuestion(
@@ -118,16 +116,19 @@ create_default_questionnaire <- function() {
         BdQuestion(
             question = "What cleaning procedure do you want?",
             possible.responses = c("Just flagging", "Removing"),
-            question.type = "Atomic"
+            question.type = "Atomic-Router",
+            router.condition = c("Removing", 2)
         )
     
     question9 <-
         BdQuestion(
             question = "What cleaning intensity do you require?",
             possible.responses = c("High", "Moderate", "Low"),
-            question.type = "Atomic"
+            question.type = "Child",
+            quality.checks = c("cleaning_function")
         )
     
+    question8$addChildQuestion(question9)
     
     allQuestions <-
         BdQuestionContainer(
