@@ -125,7 +125,7 @@ temporalResolution <- function(bddata, res = "Day") {
     if (res == "Year") {
         bddata[which(!is.na(bddata$year)), "bdclean.temporalResolution"] <- 10
     }
-    return(retmat)
+    return(bddata)
 }
 
 # repeating_digits
