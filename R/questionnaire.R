@@ -128,7 +128,7 @@ create_default_questionnaire <- function() {
             quality.checks = c("cleaning_function")
         )
     
-    question8$addChildQuestion(c(question9)
+    question8$addChildQuestion(c(question9))
     
     allQuestions <-
         BdQuestionContainer(
