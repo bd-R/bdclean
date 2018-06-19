@@ -97,7 +97,6 @@ BdQuestion <-
                     for (i in 1:length(.self$quality.checks)) {
                         initialRows <- nrow(flaggedData)
                         checkName <- .self$quality.checks[i]
-                        message(checkName)
                         flaggedData <-
                             get(checkName)(flaggedData, .self$users.answer)
                         
@@ -120,9 +119,7 @@ BdQuestion <-
                            tools:::.Rd_get_metadata,
                            "description")[[1]]
                 
-                message("Going: ", nameOfQualityCheck)
-                
-                sections <-
+                sectionsString <-
                     as.character(lapply(
                         functionDocumentation,
                         tools:::.Rd_get_metadata,
@@ -138,9 +135,7 @@ BdQuestion <-
                     sectionsVector[match('samplePassData', sectionsVector) + 1]
                 sampleFailData <-
                     sectionsVector[match('sampleFailData', sectionsVector) + 1]
-                checkCategory <-
-                    sectionsVector[match('checkCategory', sectionsVector) + 1]
-                message(sectionsVector)
+                checkCategory <- gsub(" ", "", sectionsVector[match('checkCategory', sectionsVector) + 1])
                 targetDWCField <-
                     sectionsVector[match('targetDWCField', sectionsVector) + 1]
                 
@@ -157,9 +152,6 @@ BdQuestion <-
                 
                 .self$cleaning.details[nameOfQualityCheck] <-
                     list(temp)
-                
-                message("cleaning:")
-                message(cleanedData <- clean_data(myData, responses))
             },
             
             notify = function() {
