@@ -120,6 +120,8 @@ BdQuestion <-
                            tools:::.Rd_get_metadata,
                            "description")[[1]]
                 
+                message("Going: ", nameOfQualityCheck)
+                
                 sections <-
                     as.character(lapply(
                         functionDocumentation,
@@ -138,7 +140,7 @@ BdQuestion <-
                     sectionsVector[match('sampleFailData', sectionsVector) + 1]
                 checkCategory <-
                     sectionsVector[match('checkCategory', sectionsVector) + 1]
-                message(checkCategory)
+                message(sectionsVector)
                 targetDWCField <-
                     sectionsVector[match('targetDWCField', sectionsVector) + 1]
                 
@@ -155,6 +157,9 @@ BdQuestion <-
                 
                 .self$cleaning.details[nameOfQualityCheck] <-
                     list(temp)
+                
+                message("cleaning:")
+                message(cleanedData <- clean_data(myData, responses))
             },
             
             notify = function() {
