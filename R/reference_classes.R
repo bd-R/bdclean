@@ -97,6 +97,7 @@ BdQuestion <-
                     for (i in 1:length(.self$quality.checks)) {
                         initialRows <- nrow(flaggedData)
                         checkName <- .self$quality.checks[i]
+                        message(checkName)
                         flaggedData <-
                             get(checkName)(flaggedData, .self$users.answer)
                         
@@ -137,6 +138,7 @@ BdQuestion <-
                     sectionsVector[match('sampleFailData', sectionsVector) + 1]
                 checkCategory <-
                     sectionsVector[match('checkCategory', sectionsVector) + 1]
+                message(checkCategory)
                 targetDWCField <-
                     sectionsVector[match('targetDWCField', sectionsVector) + 1]
                 
