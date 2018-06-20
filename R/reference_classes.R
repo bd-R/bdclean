@@ -89,7 +89,7 @@ BdQuestion <-
                 .self$quality.checks <- newChecks
             },
             
-            cleanData = function(data) {
+            cleanData = function(data, skipReport = FALSE) {
                 flaggedData <- data
                 packageDocumentation <- tools::Rd_db("bdclean")
                 
@@ -100,9 +100,11 @@ BdQuestion <-
                         flaggedData <-
                             get(checkName)(flaggedData, .self$users.answer)
                         
-                        .self$addToReport(checkName,
-                                          initialRows - nrow(flaggedData),
-                                          packageDocumentation)
+                        if (!skipReport){
+                            .self$addToReport(checkName,
+                                              initialRows - nrow(flaggedData),
+                                              packageDocumentation)
+                        }
                     }
                 }
                 

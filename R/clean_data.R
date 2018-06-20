@@ -58,7 +58,8 @@ clean_data <-
         for (question in responses$BdQuestions) {
             if (question$question.type != "Router" &&
                 length(question$users.answer) > 0) {
-                cleanedData <- question$cleanData(cleanedData)
+                if (question$question.type == "Decision-Child")
+                cleanedData <- question$cleanData(cleanedData, skipReport=TRUE)
             }
             if (verbose) {
                 cat("\n Records remaining...", dim(cleanedData)[1], "\n")
