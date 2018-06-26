@@ -15,7 +15,7 @@
 #'}
 #'
 #'@export
-get_config1 <- function(quest=NULL){
+get_config <- function(quest=NULL){
   data(quest, envir=environment())
   data(responses, envir=environment())
   quest1<-(quest)
