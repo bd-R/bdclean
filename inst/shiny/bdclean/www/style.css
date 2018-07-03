@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito+Sans');
 
 body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
-font-family: 'Nunito Sans', sans-serif !important;
+font-family: 'Nunito Sans', sans-serif;
 }
 
 #dataToConfigure.done {
@@ -14,6 +14,7 @@ color: white
   top: 33%;
   left: 33%;
   right: 33%;
+  opacity: 1;
 }
 
 #shiny-notification-panel .progress-bar{

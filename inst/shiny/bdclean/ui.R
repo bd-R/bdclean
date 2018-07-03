@@ -11,11 +11,11 @@ shinyUI(dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             id = "sideBar",
-            menuItem("Add Data", tabName = "add", icon = icon("database")),
+            menuItem("Add Data", tabName = "add", icon = icon("plus-circle")),
             menuItem(
                 "Configure Cleaning",
                 tabName = "configure",
-                icon = icon("sliders")
+                icon = icon("wrench")
             ),
             menuItem("Flag Records", tabName = "flag", icon = icon("flag")),
             menuItem("Clean", tabName = "clean", icon = icon("trash")),
@@ -70,20 +70,20 @@ shinyUI(dashboardPage(
                                         selected = 'gbif'
                                     ),
                                     br(),
-                                    actionButton("queryDatabase", "Query Database", icon("download"))
+                                    div(class = "primaryButton", actionButton("queryDatabase", "Query Database", icon("download")))
                                     
                                     
                                 ),
                                 tabPanel(
                                     "Option 02",
                                     div(class = "secondaryHeaders", h3("Option 02: From Local disk")),
-                                    fileInput(
+                                    div(class = "primaryButton", fileInput(
                                         "inputFile",
                                         label = h3("CSV file input"),
                                         accept = c("text/csv",
                                                    "text/comma-separated-values,text/plain",
                                                    ".csv")
-                                    )
+                                    ))
                                 ),
                                 div(class = "progressStep", taskItem(
                                     value = 15, color = "green",
@@ -99,7 +99,7 @@ shinyUI(dashboardPage(
                                    type = "tabs",
                                    tabPanel("Map View",
                                             leafletOutput("mymap", height = "700")),
-                                   tabPanel("Tabel View",
+                                   tabPanel("Table View",
                                             DT::dataTableOutput("inputDataTable"))
                                ))
                         
@@ -107,85 +107,40 @@ shinyUI(dashboardPage(
             tabItem("configure",
                     fluidRow(column(
                         12,
+                        h1("Configure Cleaning"),
                         column(
                             12,
-                            h1("Configure Cleaning"),
-                            br(),
-                            h4("1) What is the lowest taxonomic level you require in your data?"),
-                            selectInput(
-                                "select",
-                                label = "",
-                                choices = list(
-                                    "Sub Species" = 1,
-                                    "Species" = 2,
-                                    "Family" = 3,
-                                    "Phylum" = 4,
-                                    "Kingdom" = 5
+                            tabsetPanel(
+                                type = "tabs",
+                                tabPanel(
+                                    "Option 01",
+                                    div(class = "secondaryHeaders", h3("Option 01: Questionnaire")),
+                                    br(),
+                                    
+                                    # -------------------------------
+                                    
+                                    uiOutput("questionnaire")
+                                    
+                                    
+                                    # -------------------------------
                                 ),
-                                selected = 1
-                            ),
-                            br(),
-                            
-                            h4(
-                                "2) What is the spatial resolution required for your data? (in meteres)"
-                            ),
-                            sliderInput(
-                                "slider1",
-                                label = "",
-                                min = 0,
-                                max = 50000,
-                                value = 500
-                            ),
-                            br(),
-                            
-                            h4(
-                                "3) What is the range of date of your observations in this data set? In format (YYYY-mm-dd)"
-                            ),
-                            dateRangeInput("dates",
-                                           label = ""),
-                            br(),
-                            
-                            h4("4) What temporal resolution are you interested in?"),
-                            selectInput(
-                                "select",
-                                label = "",
-                                choices = list(
-                                    "Day" = 1,
-                                    "Month" = 2,
-                                    "Year" = 3
+                                tabPanel(
+                                    "Option 02",
+                                    div(class = "secondaryHeaders", h3("Option 02: Cleaning Templates")),
+                                    p("Under Development")
                                 ),
-                                selected = 1
-                            ),
-                            br(),
-                            
-                            h4("5) What cleaning procedure do you want?"),
-                            selectInput(
-                                "select",
-                                label = "",
-                                choices = list("Just Flagging" = 1,
-                                               "Cleaning" = 2),
-                                selected = 1
-                            ),
-                            
-                            br(),
-                            
-                            h4("6) What cleaning intensity do you want?"),
-                            selectInput(
-                                "select",
-                                label = "",
-                                choices = list(
-                                    "Max" = 1,
-                                    "Medium" = 2,
-                                    "Low" = 3
+                                tabPanel(
+                                    "Option 03",
+                                    div(class = "secondaryHeaders", h3("Option 03: Customized Checks")),
+                                    p("Yet to be developed")
                                 ),
-                                selected = 1
+                                div(class = "progressStep", taskItem(
+                                    value = 30, color = "orange",
+                                    "Step 2 of 6"
+                                ))
                             ),
-                            
-                            br(),
-                            br(),
-                            taskItem(value = 30, color = "orange",
-                                     "Step 2 of 6"),
-                            actionButton("action", label = "Next: Flag Data")
+                            actionButton("configureToFlag", "Next: Begin Flagging")
+                
                         )
                         
                     ))),
@@ -209,7 +164,7 @@ shinyUI(dashboardPage(
                                     ),
                                     selected = 1
                                 ),
-                                actionButton("action", label = "Flag Data Again")
+                                actionButton("flagButton", label = "Flag Data")
                             ),
                             
                             br(),
@@ -271,7 +226,7 @@ shinyUI(dashboardPage(
                             
                             
                             h4("Flagged Data:"),
-                            DT::dataTableOutput("tableTwo", width = 300)
+                            DT::dataTableOutput("flaggedDataTable", width = 300)
                             
                             
                             

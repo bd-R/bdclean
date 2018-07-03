@@ -12,21 +12,27 @@ BdQuestion <-
             validation.function = "function",
             child.questions = "list",
             quality.checks = "character",
-            question.type = "character",
             router.condition = "character",
-            cleaning.details = "list"
+            cleaning.details = "list",
+            question.type = "character",
+            question.id = "character",
+            ui.type = "character"
         ),
         methods = list(
             initialize = function(question = character(),
                                   possible.responses = character(),
                                   quality.checks = character(),
                                   question.type = character(),
-                                  router.condition = character()) {
+                                  router.condition = character(),
+                                  question.id = character(),
+                                  ui.type = character()) {
                 .self$question <- question
                 .self$possible.responses <- possible.responses
                 .self$quality.checks <- quality.checks
                 .self$question.type <- question.type
                 .self$router.condition <- router.condition
+                .self$question.id <- question.id
+                .self$ui.type <- ui.type
             },
             
             printQuestion = function() {
@@ -40,6 +46,17 @@ BdQuestion <-
             
             addValidationFunction = function(valFunction) {
                 .self$validation.function <- valFunction
+            },
+            
+            setResponse = function(response) {
+                message(class(response))
+                
+                if(class(response) == "logical"){
+                    .self$users.answer <- ifelse(response, "yes", "no")
+                } else {
+                    message("in")
+                    .self$users.answer <- as.character(response)
+                }
             },
             
             getResponse = function() {

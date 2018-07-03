@@ -27,22 +27,26 @@ create_default_questionnaire <- function() {
             question = "Do you worry about taxonomical aspect of the data?",
             possible.responses = c("Yes" , "No"),
             question.type = "Router",
-            router.condition = c("Yes", "Y", 1)
+            router.condition = c("Yes", "Y", "yes" ,1, TRUE, "TRUE"),
+            question.id = "taxonMain",
+            ui.type = "single-checkbox"
         )
     
     question2 <-
         BdQuestion(
             question = "What is the lowest taxonomic level you require in your data?",
             possible.responses = c(
-                "CLASS",
-                "ORDER",
-                "FAMILY",
-                "GENUS",
-                "SPECIES",
-                "SUBSPECIES"
+                "Sub-Species",
+                "species",
+                "Genus",
+                "Family",
+                "Order",
+                "Class"
             ),
             question.type = "Child",
-            quality.checks = c("taxoLevel")
+            quality.checks = c("taxoLevel"),
+            question.id = "taxonLevel",
+            ui.type = "select"
         )
     
     question1$addChildQuestion(c(question2))
@@ -52,14 +56,18 @@ create_default_questionnaire <- function() {
             question = "Do you worry about spatial aspect of the data?",
             possible.responses = c("Yes" , "No"),
             question.type = "Router",
-            router.condition = c("Yes", "Y", 1)
+            router.condition = c("Yes", "Y", "yes" ,1, TRUE, "TRUE"),
+            question.id = "spatialMain",
+            ui.type = "single-checkbox"
         )
     
     question4 <-
         BdQuestion(
             question = "What is the spatial resolution required for your data? (in meteres)",
             question.type = "Child",
-            quality.checks = c("spatialResolution")
+            quality.checks = c("spatialResolution"),
+            question.id = "spatialResolution",
+            ui.type = "numericInput"
         )
     
     question4$addValidationFunction(function(answer) {
@@ -82,14 +90,18 @@ create_default_questionnaire <- function() {
             question = "Do you worry about temporal aspect of your data?",
             possible.responses = c("Yes" , "No"),
             question.type = "Router",
-            router.condition = c("Yes", "Y", 1)
+            router.condition = c("Yes", "Y", "yes" ,1, TRUE, "TRUE"),
+            question.id = "temporalMain",
+            ui.type = "single-checkbox"
         )
     
     question6 <-
         BdQuestion(
-            question = "What is the earliest date of your observations in this data set? In format (YYYY-mm-dd)",
+            question = "What is the range of dates of the observations in this data set? In format (YYYY-mm-dd)",
             question.type = "Child",
-            quality.checks = c("earliestDate")
+            quality.checks = c("earliestDate"),
+            question.id = "temporalEarliest",
+            ui.type = "date-range"
         )
     
     question6$addValidationFunction(function(answer) {
@@ -106,29 +118,13 @@ create_default_questionnaire <- function() {
             question = "What temporal resolution are you interested in?",
             possible.responses = c("Year", "Month", "Day"),
             question.type = "Child",
-            quality.checks = c("temporalResolution")
+            quality.checks = c("temporalResolution"),
+            question.id = "temporalResolution",
+            ui.type = "radio"
         )
     
     
     question5$addChildQuestion(c(question6, question7))
-    
-    question8 <-
-        BdQuestion(
-            question = "What cleaning procedure do you want?",
-            possible.responses = c("Just flagging", "Removing"),
-            question.type = "Atomic-Router",
-            router.condition = c("Removing", 2)
-        )
-    
-    question9 <-
-        BdQuestion(
-            question = "What cleaning intensity do you require?",
-            possible.responses = c("High", "Moderate", "Low"),
-            question.type = "Child",
-            quality.checks = c("cleaning_function")
-        )
-    
-    question8$addChildQuestion(c(question9))
     
     allQuestions <-
         BdQuestionContainer(
@@ -139,9 +135,7 @@ create_default_questionnaire <- function() {
                 question4,
                 question5,
                 question6,
-                question7,
-                question8,
-                question9
+                question7
             )
         )
     
