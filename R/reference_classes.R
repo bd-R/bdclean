@@ -49,12 +49,9 @@ BdQuestion <-
             },
             
             setResponse = function(response) {
-                message(class(response))
-                
                 if(class(response) == "logical"){
                     .self$users.answer <- ifelse(response, "yes", "no")
                 } else {
-                    message("in")
                     .self$users.answer <- as.character(response)
                 }
             },
@@ -114,6 +111,8 @@ BdQuestion <-
                     for (i in 1:length(.self$quality.checks)) {
                         initialRows <- nrow(flaggedData)
                         checkName <- .self$quality.checks[i]
+                        message(checkName)
+                        print(nrow(flaggedData))
                         flaggedData <-
                             get(checkName)(flaggedData, .self$users.answer)
                         

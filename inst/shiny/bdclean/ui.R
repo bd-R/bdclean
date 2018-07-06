@@ -7,18 +7,23 @@ shinyUI(dashboardPage(
     #Header Title
     dashboardHeader(title = "bdclean"),
     
+    
+    
     #Sidebar
     dashboardSidebar(
         sidebarMenu(
             id = "sideBar",
-            menuItem("Add Data", tabName = "add", icon = icon("plus-circle")),
+            menuItem(
+                "Add Data",
+                tabName = "add",
+                icon = icon("plus-circle")
+            ),
             menuItem(
                 "Configure Cleaning",
                 tabName = "configure",
                 icon = icon("wrench")
             ),
-            menuItem("Flag Records", tabName = "flag", icon = icon("flag")),
-            menuItem("Clean", tabName = "clean", icon = icon("trash")),
+            menuItem("Flag & Clean", tabName = "flag", icon = icon("flag")),
             menuItem("Document", tabName = "document", icon = icon("file")),
             menuItem("Citations", tabName = "citTab", icon = icon("bookmark"))
         )
@@ -70,7 +75,9 @@ shinyUI(dashboardPage(
                                         selected = 'gbif'
                                     ),
                                     br(),
-                                    div(class = "primaryButton", actionButton("queryDatabase", "Query Database", icon("download")))
+                                    div(class = "primaryButton", actionButton(
+                                        "queryDatabase", "Query Database", icon("download")
+                                    ))
                                     
                                     
                                 ),
@@ -86,7 +93,7 @@ shinyUI(dashboardPage(
                                     ))
                                 ),
                                 div(class = "progressStep", taskItem(
-                                    value = 15, color = "green",
+                                    value = 15, color = "orange",
                                     "Step 1 of 6"
                                 ))
                                 
@@ -135,12 +142,12 @@ shinyUI(dashboardPage(
                                     p("Yet to be developed")
                                 ),
                                 div(class = "progressStep", taskItem(
-                                    value = 30, color = "orange",
+                                    value = 30, color = "green",
                                     "Step 2 of 6"
                                 ))
                             ),
-                            actionButton("configureToFlag", "Next: Begin Flagging")
-                
+                            actionButton("configureToFlag", "Next: Flagging")
+                            
                         )
                         
                     ))),
@@ -150,85 +157,38 @@ shinyUI(dashboardPage(
                         12,
                         column(
                             12,
-                            h1("Flagged Data"),
+                            h1("Flag Data"),
                             br(),
                             
-                            fluidRow(
-                                selectInput(
-                                    "select",
-                                    label = "Cleaning Intensity",
-                                    choices = list(
-                                        "High" = 1,
-                                        "Medium" = 2,
-                                        "Low" = 3
+                            h4("Input Data"),
+                            
+                            div(
+                                class = "center",
+                                fluidRow(
+                                    infoBox("# of Records", textOutput("inputDataRows"), icon = icon("list-ol")),
+                                    infoBox(
+                                        "# of Fields",
+                                        textOutput("inputDataColumns"),
+                                        icon = icon("th-list"),
+                                        color = "purple"
                                     ),
-                                    selected = 1
+                                    infoBox(
+                                        "# of Unique Scientific Names",
+                                        textOutput("inputDataSpecies"),
+                                        icon = icon("paw"),
+                                        color = "yellow"
+                                    )
                                 ),
-                                actionButton("flagButton", label = "Flag Data")
-                            ),
-                            
-                            br(),
-                            
-                            p("Input Data"),
-                            fluidRow(
-                                infoBox("Rows", 5000, icon = icon("flag"), width = 2),
-                                infoBox(
-                                    "Columns",
-                                    92,
-                                    icon = icon("flag"),
-                                    width = 2,
-                                    color = "purple"
-                                ),
-                                infoBox(
-                                    "Unique Species",
-                                    235,
-                                    icon = icon("flag"),
-                                    width = 2,
-                                    color = "yellow"
-                                )
-                            ),
-                            
-                            p("Flagged Data"),
-                            fluidRow(
-                                infoBox(
-                                    "Clean Data",
-                                    "56%",
-                                    icon = icon("flag") ,
-                                    width = 2,
-                                    color = "red"
-                                ),
-                                infoBox("Rows", 3268, icon = icon("flag"), width = 2),
-                                infoBox(
-                                    "Columns",
-                                    96,
-                                    icon = icon("flag"),
-                                    width = 2,
-                                    color = "purple"
-                                ),
-                                infoBox(
-                                    "Unique Species",
-                                    186,
-                                    icon = icon("flag"),
-                                    width = 2,
-                                    color = "yellow"
-                                )
                                 
+                                taskItem(value = 45, color = "yellow",
+                                         "Step 3 of 6"),
+                                
+                                fluidRow(actionButton("flagButton", label = "Flag Data"))
                             ),
                             
-                            taskItem(value = 45, color = "red",
-                                     "Step 3 of 6"),
-                            actionButton("action", label = "Next: Continue with Cleaning"),
-                            
-                            actionButton("action", label = "Next: Continue with Just Flagging"),
-                            
-                            br(),
                             br(),
                             
-                            
-                            h4("Flagged Data:"),
-                            DT::dataTableOutput("flaggedDataTable", width = 300)
-                            
-                            
+                            uiOutput("flaggedContentUI")
                             
                         )
                     ))),

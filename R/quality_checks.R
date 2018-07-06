@@ -23,6 +23,7 @@ taxoLevel <- function(bddata, res = "SPECIES") {
           "GENUS",
           "SPECIES",
           "SUBSPECIES")
+    res <- toupper(res)
     
     if (!(res %in% ranks)) {
         print("Rank Value unknown. It should be FAMILY, GENUS, SPECIES or SUBSPECIES")
@@ -59,6 +60,8 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #'@export
 spatialResolution <- function(bddata, res = 100) {
     #print("fxn Spatial Resoultion")
+    cat("spatialResolution")
+    bddata$bdclean.taxoLevel <- 0
     res <- as.numeric(res)
     bddata$bdclean.spatialResolution <- 0
     if (res > 0) {
@@ -85,6 +88,7 @@ spatialResolution <- function(bddata, res = 100) {
 #'
 #'@export
 earliestDate <- function(bddata, res = "1700-01-01") {
+    cat("earliestDate")
     bddata <- as.data.frame(bddata)
     ed <- try(as.Date(res, format = "%Y-%m-%d"))
     if (class(ed) == "try-error" || is.na(ed)) {
@@ -114,6 +118,7 @@ earliestDate <- function(bddata, res = "1700-01-01") {
 #'
 #'@export
 temporalResolution <- function(bddata, res = "Day") {
+    cat("temporalResolution")
     bddata <- as.data.frame(bddata)
     bddata$bdclean.temporalResolution <- 0
     if (res == "Day") {

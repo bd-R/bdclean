@@ -28,3 +28,8 @@ list-style: none;
 .secondaryHeaders{
 color: #3c8dbc;
 }
+
+#flagButton {
+    background-color: green;
+    color: white;
+}

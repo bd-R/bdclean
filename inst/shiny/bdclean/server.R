@@ -3,6 +3,8 @@ shinyServer(function(input, output, session) {
     cleanedData <- data.frame()
     questionnaire <- create_default_questionnaire()
     
+    shinyjs::hide("flaggedContent")
+    
     # ------------- Next Buttons Navigation Control -------------------
     observeEvent(input$dataToConfigure, {
         updateTabItems(session, "sideBar", "configure")
@@ -28,6 +30,8 @@ shinyServer(function(input, output, session) {
                 getResponse(question)
             }
         }
+        
+        updateTabItems(session, "sideBar", "flag")
     })
     
     # ------------- End of Side Bar Tab Navigation Control -------------------
@@ -38,22 +42,16 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$queryDatabase, {
         withProgress(message = paste("Querying", input$queryDB, "..."), {
-            dataset <-
+            data <-
                 spocc::occ(input$scientificName,
                            input$queryDB,
                            limit = input$recordSize)
+            
+            dataset <<- data$gbif$data$Puma_concolor
+            
         })
         
-        leafletProxy("mymap", data = dataset$gbif$data$Puma_concolor) %>%
-            clearShapes() %>%
-            addCircles(~ longitude, ~ latitude)
-        
-        output$inputDataTable <- DT::renderDataTable(DT::datatable({
-            dataset$gbif$data$Puma_concolor
-        }))
-        
-        shinyjs::addClass(id = 'dataToConfigure', 'done')
-        showNotification("Recieved Data")
+        dataLoadedTask(dataset)
     })
     
     observeEvent(input$inputFile, {
@@ -61,22 +59,32 @@ shinyServer(function(input, output, session) {
             if (is.null(input$inputFile))
                 return("No data to view")
             
-            dataset <- read.csv(input$inputFile$datapath)
+            dataset <<- read.csv(input$inputFile$datapath)
         })
         
-        leafletProxy("mymap", data = dataset) %>%
+        dataLoadedTask(dataset)
+    })
+    
+    dataLoadedTask <- function(data) {
+        leafletProxy("mymap", data = data) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude)
+            addCircles( ~ longitude, ~ latitude)
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
-            dataset
+            data
         }, options = list(scrollX = TRUE)))
         
         shinyjs::addClass(id = 'dataToConfigure',
                           selector = 'dataToConfigure',
                           class = 'done')
         showNotification("Read Data")
-    })
+        
+        
+        output$inputDataRows <- renderText(nrow(data))
+        output$inputDataColumns <- renderText(length(data))
+        output$inputDataSpecies <-
+            renderText(length(unique(data$scientificName)))
+    }
     
     output$mymap <- renderLeaflet({
         leaflet() %>%
@@ -191,19 +199,83 @@ shinyServer(function(input, output, session) {
     # ------------- Flagging Module -------------------
     
     observeEvent(input$flagButton, {
+        shinyjs::show("flaggedContent")
+        
         cleanedData <- dataset
-        message(length(cleanedData))
-        for (question in responses$BdQuestions) {
+        for (question in questionnaire$BdQuestions) {
             if (question$question.type != "Router" &&
                 length(question$users.answer) > 0) {
                 cleanedData <- question$cleanData(cleanedData)
             }
         }
-        message(length(cleanedData))
+        
+        output$flaggedContentUI <- renderUI({
+            tagList(
+                h3("Flagged Data"),
+                
+                sliderInput(
+                    "cleanControl",
+                    label = h4("Cleanliness Treshold:"),
+                    min = 0,
+                    max = 10,
+                    value = 7
+                ),
+                
+                helpText(
+                    "Note: Cleanliness Score determines how clean your data has to be.",
+                    "Score of 10 will return only the perfect records, while scores less than 3 will also return somewhat okay records.",
+                    "Tweak the score value and check the remaining records in statistics boxes to determine the score you require."
+                ),
+                br(),
+                
+                fluidRow(
+                    infoBox(
+                        "Clean Data",
+                        "56%",
+                        icon = icon("flag"),
+                        color = "red"
+                    ),
+                    infoBox(
+                        "# of Clean Records",
+                        nrow(cleanedData),
+                        icon = icon("list-ol")
+                    ),
+                    infoBox(
+                        "# of Newly Added Columns",
+                        length(cleanedData) - length(dataset),
+                        icon = icon("th-list"),
+                        color = "purple"
+                    ),
+                    infoBox(
+                        "# of Unique Scientific Names Remaining",
+                        length(unique(cleanedData$scientificName)),
+                        icon = icon("paw"),
+                        color = "yellow"
+                    )
+                    
+                ),
+                
+                
+                
+                actionButton("action", label = "Next: Remove Flagged Data"),
+                
+                actionButton("action", label = "Next: Continue with Just Flagging"),
+                
+                taskItem(value = 45, color = "red",
+                         "Step 4 of 6"),
+                
+                h3("Flagged Data:"),
+                
+                br(),
+                
+                downloadButton("downloadData", "Download Flagged Data"),
+                br(),
+                
+                DT::renderDataTable(cleanedData, width = 300)
+            )
+        })
     })
     
-    flaggedDataTable <-  DT::renderDT(
-        cleanedData
-    )
+    output$flaggedDataTable <-  reactive(DT::renderDT(cleanedData))
     
 })

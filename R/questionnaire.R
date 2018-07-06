@@ -36,8 +36,8 @@ create_default_questionnaire <- function() {
         BdQuestion(
             question = "What is the lowest taxonomic level you require in your data?",
             possible.responses = c(
-                "Sub-Species",
-                "species",
+                "Subspecies",
+                "Species",
                 "Genus",
                 "Family",
                 "Order",
