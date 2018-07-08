@@ -1,4 +1,4 @@
-cleaning_function <- function(bddata, intensity){
+cleaning_function <- function(bddata, intensity) {
     checkColumns <- grep("bdclean", colnames(bddata))
     checkData <- bddata[, checkColumns]
     
@@ -12,11 +12,11 @@ cleaning_function <- function(bddata, intensity){
     
     # ------------- End of Decision Making of Cleaning -------------
     
-    return(bddata[!failedData, !checkColumns])
+    return(bddata[!failedData,!checkColumns])
 }
 
 
-perform_Cleaning <- function(flaggedData){
+perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
     flagColumns <- which(grepl("bdclean", names(flaggedData)))
     cleanedData <- flaggedData
     cleanedData$cleanlinessScore <- 0
@@ -24,12 +24,34 @@ perform_Cleaning <- function(flaggedData){
     for (columnIndex in flagColumns) {
         cleanedData$cleanlinessScore <-
             cleanedData$cleanlinessScore + cleanedData[, columnIndex]
-        
     }
     cleanedData$cleanlinessScore <-
         cleanedData$cleanlinessScore / length(flagColumns)
     cleanedData <-
-        cleanedData[cleanedData$cleanlinessScore > 5, c(flagColumns, length(cleanedData)) * -1]
+        cleanedData[cleanedData$cleanlinessScore >= cleaningThreshold, c(flagColumns, length(cleanedData)) * -1]
     
     return(cleanedData)
 }
+
+get_flagging_statistics <-
+    function(flaggedData, cleaningThreshold = 5) {
+        if (nrow(flaggedData) == 0) {
+            return(0)
+        }
+        
+        flagColumns <- which(grepl("bdclean", names(flaggedData)))
+        cleanedData <- flaggedData
+        cleanedData$cleanlinessScore <- 0
+        
+        
+        
+        for (columnIndex in flagColumns) {
+            cleanedData$cleanlinessScore <-
+                cleanedData$cleanlinessScore + cleanedData[, columnIndex]
+            
+        }
+        cleanedData$cleanlinessScore <-
+            cleanedData$cleanlinessScore / length(flagColumns)
+        
+        return(sum(cleanedData$cleanlinessScore >= cleaningThreshold, na.rm = TRUE))
+    }

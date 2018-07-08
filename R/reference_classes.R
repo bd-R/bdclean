@@ -119,7 +119,9 @@ BdQuestion <-
                 return(flaggedData)
             },
             
-            addToReport = function(flaggedData, CleaningThreshold = 5, clean = TRUE) {
+            addToReport = function(flaggedData,
+                                   CleaningThreshold = 5,
+                                   clean = TRUE) {
                 packageDocumentation <- tools::Rd_db("bdclean")
                 
                 for (i in 1:length(.self$quality.checks)) {

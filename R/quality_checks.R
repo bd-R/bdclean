@@ -4,13 +4,13 @@
 #'
 #' @section samplePassData:
 #' When resolution is Species, Subspecies and Species will pass.
-#' 
+#'
 #' @section sampleFailData:
 #' When resolution is Species, Family or Genus or any lower ranks will fail.
-#' 
+#'
 #' @section targetDWCField:
 #' taxonRank
-#' 
+#'
 #' @section checkCategory:
 #' taxonomic
 #'
@@ -35,7 +35,8 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     bddata$bdclean.taxoLevel <- 0
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            bddata[which(bddata$taxonRank == ranks[i]), 'bdclean.taxoLevel'] <- 10
+            bddata[which(bddata$taxonRank == ranks[i]), 'bdclean.taxoLevel'] <-
+                10
         }
     }
     return(bddata)
@@ -44,16 +45,16 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #' Clean data based on spatial resolution
 #'
 #' Clean data based on spatial resolution
-#' 
+#'
 #' @section samplePassData:
 #' When resolution is 100 meters, Coordinate Uncertainities below 100 meteres will pass.
-#' 
+#'
 #' @section sampleFailData:
 #' When resolution is 100 meters, Coordinate Uncertainities above 100 meteres will fail.
-#' 
+#'
 #' @section targetDWCField:
 #' coordinateUncertaintyInMeters
-#' 
+#'
 #' @section checkCategory:
 #' spatial
 #'
@@ -65,7 +66,8 @@ spatialResolution <- function(bddata, res = 100) {
     res <- as.numeric(res)
     bddata$bdclean.spatialResolution <- 0
     if (res > 0) {
-        bddata[which(bddata$coordinateUncertaintyInMeters < res), 'bdclean.spatialResolution'] <- 10
+        bddata[which(bddata$coordinateUncertaintyInMeters < res), 'bdclean.spatialResolution'] <-
+            10
     }
     return(bddata)
 }
@@ -73,16 +75,16 @@ spatialResolution <- function(bddata, res = 100) {
 #' Clean data based on earliest date.
 #'
 #' Clean data based on earliest date.
-#' 
+#'
 #' @section samplePassData:
 #' When resolution is 20-Jan-2005, records recorded after the date will pass.
-#' 
+#'
 #' @section sampleFailData:
 #' When resolution is 20-Jan-2005, records recorded before the date will fail.
-#' 
+#'
 #' @section targetDWCField:
 #' eventDate
-#' 
+#'
 #' @section checkCategory:
 #' temporal
 #'
@@ -97,7 +99,8 @@ earliestDate <- function(bddata, res = "1700-01-01") {
         return(bddata)
     }
     bddata$bdclean.earliestDate <- 0
-    bddata[which(as.Date(bddata$eventDate) > ed), 'bdclean.earliestDate'] <- 10
+    bddata[which(as.Date(bddata$eventDate) > ed), 'bdclean.earliestDate'] <-
+        10
     return(bddata)
 }
 
@@ -107,13 +110,13 @@ earliestDate <- function(bddata, res = "1700-01-01") {
 #'
 #' @section samplePassData:
 #' When resolution is day, records with day specified will pass.
-#' 
+#'
 #' @section sampleFailData:
 #' When resolution is month, records with NA/empty month specified will fail.
-#' 
+#'
 #' @section targetDWCField:
 #' day, month, year
-#' 
+#'
 #' @section checkCategory:
 #' temporal
 #'
@@ -123,13 +126,16 @@ temporalResolution <- function(bddata, res = "Day") {
     bddata <- as.data.frame(bddata)
     bddata$bdclean.temporalResolution <- 0
     if (res == "Day") {
-        bddata[which(!is.na(bddata$day)), "bdclean.temporalResolution"] <- 10
+        bddata[which(!is.na(bddata$day)), "bdclean.temporalResolution"] <-
+            10
     }
     if (res == "Month") {
-        bddata[which(!is.na(bddata$month)), "bdclean.temporalResolution"] <- 10
+        bddata[which(!is.na(bddata$month)), "bdclean.temporalResolution"] <-
+            10
     }
     if (res == "Year") {
-        bddata[which(!is.na(bddata$year)), "bdclean.temporalResolution"] <- 10
+        bddata[which(!is.na(bddata$year)), "bdclean.temporalResolution"] <-
+            10
     }
     return(bddata)
 }

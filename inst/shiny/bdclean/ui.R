@@ -7,8 +7,6 @@ shinyUI(dashboardPage(
     #Header Title
     dashboardHeader(title = "bdclean"),
     
-    
-    
     #Sidebar
     dashboardSidebar(
         sidebarMenu(
@@ -24,7 +22,7 @@ shinyUI(dashboardPage(
                 icon = icon("wrench")
             ),
             menuItem("Flag & Clean", tabName = "flag", icon = icon("flag")),
-            menuItem("Document", tabName = "document", icon = icon("file")),
+            menuItem("Artifacts & Documentation", tabName = "document", icon = icon("file")),
             menuItem("Citations", tabName = "citTab", icon = icon("bookmark"))
         )
     ),
@@ -188,8 +186,9 @@ shinyUI(dashboardPage(
                             
                             br(),
                             
-                            uiOutput("flaggedContentUI")
+                            uiOutput("flaggedContentUI"),
                             
+                            uiOutput("cleanedResultsUI")
                         )
                     ))),
             tabItem("document",
@@ -199,7 +198,7 @@ shinyUI(dashboardPage(
                             12,
                             h1("Cleaning Report"),
                             br(),
-                            downloadButton("downloadData", "Download Report"),
+                            downloadButton("downloadDoc", "Download Report"),
                             br()
                         )
                     )))

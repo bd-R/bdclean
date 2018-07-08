@@ -1,15 +1,15 @@
 shinyServer(function(input, output, session) {
-    dataset <- data.frame()
+    inputData <- data.frame()
+    flaggedData <- data.frame()
     cleanedData <- data.frame()
     questionnaire <- create_default_questionnaire()
     
-    shinyjs::hide("flaggedContent")
+    cleaningThresholdControl <- 7
     
     # ------------- Next Buttons Navigation Control -------------------
     observeEvent(input$dataToConfigure, {
         updateTabItems(session, "sideBar", "configure")
     })
-    
     
     observeEvent(input$configureToFlag, {
         getResponse <- function(bdQuestion) {
@@ -42,16 +42,21 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$queryDatabase, {
         withProgress(message = paste("Querying", input$queryDB, "..."), {
-            data <-
-                spocc::occ(input$scientificName,
-                           input$queryDB,
-                           limit = input$recordSize)
-            
-            dataset <<- data$gbif$data$Puma_concolor
-            
+            if (length(input$queryDatabase == 1) && input$queryDatabase == "gbif"){
+                print("in")
+                data <- occ_search(input$scientificName, limit = input$recordSize)
+                inputData <<- data$data
+                
+            } else {
+                data <-
+                    spocc::occ(input$scientificName,
+                               input$queryDB,
+                               limit = input$recordSize)
+                inputData <<- data$gbif$data$Puma_concolor
+            }
         })
         
-        dataLoadedTask(dataset)
+        dataLoadedTask(inputData)
     })
     
     observeEvent(input$inputFile, {
@@ -59,10 +64,10 @@ shinyServer(function(input, output, session) {
             if (is.null(input$inputFile))
                 return("No data to view")
             
-            dataset <<- read.csv(input$inputFile$datapath)
+            inputData <<- read.csv(input$inputFile$datapath)
         })
         
-        dataLoadedTask(dataset)
+        dataLoadedTask(inputData)
     })
     
     dataLoadedTask <- function(data) {
@@ -199,17 +204,28 @@ shinyServer(function(input, output, session) {
     # ------------- Flagging Module -------------------
     
     observeEvent(input$flagButton, {
-        shinyjs::show("flaggedContent")
-        
-        cleanedData <- dataset
-        for (question in questionnaire$BdQuestions) {
-            if (question$question.type != "Router" &&
-                length(question$users.answer) > 0) {
-                cleanedData <- question$cleanData(cleanedData)
+        tempData <- inputData
+        withProgress(message = "Flagging Data...", {
+            for (question in questionnaire$BdQuestions) {
+                if (question$question.type != "Router" &&
+                    length(question$users.answer) > 0) {
+                    tempData <- question$flagData(tempData)
+                }
             }
-        }
+            
+            flaggedData <<- tempData
+        })
+    })
+    
+    output$flaggedContentUI <- renderUI({
+        input$flagButton
+        input$cleanControl
         
-        output$flaggedContentUI <- renderUI({
+        flaggedCount <-
+            get_flagging_statistics(flaggedData, cleaningThresholdControl)
+        
+        conditionalPanel(
+            "input.flagButton > 0",
             tagList(
                 h3("Flagged Data"),
                 
@@ -218,64 +234,103 @@ shinyServer(function(input, output, session) {
                     label = h4("Cleanliness Treshold:"),
                     min = 0,
                     max = 10,
-                    value = 7
+                    value = cleaningThresholdControl
                 ),
                 
                 helpText(
                     "Note: Cleanliness Score determines how clean your data has to be.",
-                    "Score of 10 will return only the perfect records, while scores less than 3 will also return somewhat okay records.",
-                    "Tweak the score value and check the remaining records in statistics boxes to determine the score you require."
+                    "Score of 10 will return only the perfect records, while scores less
+                    than 3 will also return somewhat okay records.",
+                    "Tweak the score value and check the remaining records in statistics 
+                    boxes below to determine the score you require."
                 ),
                 br(),
                 
-                fluidRow(
-                    infoBox(
-                        "Clean Data",
-                        "56%",
-                        icon = icon("flag"),
-                        color = "red"
-                    ),
-                    infoBox(
-                        "# of Clean Records",
-                        nrow(cleanedData),
-                        icon = icon("list-ol")
-                    ),
-                    infoBox(
-                        "# of Newly Added Columns",
-                        length(cleanedData) - length(dataset),
-                        icon = icon("th-list"),
-                        color = "purple"
-                    ),
-                    infoBox(
-                        "# of Unique Scientific Names Remaining",
-                        length(unique(cleanedData$scientificName)),
-                        icon = icon("paw"),
-                        color = "yellow"
+                tabsetPanel(
+                    type = "tabs",
+                    tabPanel(
+                        "Statistics View",
+                        div(class = "secondaryHeaders", h3("View 01: Statistics Boxes")),
+                        fluidRow(
+                            infoBox(
+                                "Clean Data",
+                                paste(((
+                                    flaggedCount / nrow(inputData)
+                                ) * 100), "%", sep = ""),
+                                icon = icon("flag"),
+                                color = "red"
+                            ),
+                            infoBox("# of Clean Records",
+                                    flaggedCount,
+                                    icon = icon("list-ol")),
+                            infoBox(
+                                "# of Newly Added Columns",
+                                length(flaggedData) - length(inputData),
+                                icon = icon("th-list"),
+                                color = "purple"
+                            ),
+                            infoBox(
+                                "# of Unique Scientific Names Remaining",
+                                length(unique(flaggedData$scientificName)),
+                                icon = icon("paw"),
+                                color = "yellow"
+                            )
+                            
+                        )
+                        
+                    ),tabPanel(
+                        "Table View",
+                        div(class = "secondaryHeaders", h3("View 02: Summarized Table")),
+                        DT::renderDataTable(flaggedData, width = 300)
+                        
                     )
-                    
-                ),
+                    ),
                 
+                actionButton("flagToClean", label = "Next: Perform Cleaning"),
+                actionButton("flagToDocument", label = "Next: Continue with Just Flagging"),
                 
-                
-                actionButton("action", label = "Next: Remove Flagged Data"),
-                
-                actionButton("action", label = "Next: Continue with Just Flagging"),
-                
-                taskItem(value = 45, color = "red",
-                         "Step 4 of 6"),
-                
-                h3("Flagged Data:"),
-                
-                br(),
-                
-                downloadButton("downloadData", "Download Flagged Data"),
-                br(),
-                
-                DT::renderDataTable(cleanedData, width = 300)
+                taskItem(value = 60, color = "red",
+                         "Step 4 of 6")
+               
             )
-        })
+        )
     })
     
-    output$flaggedDataTable <-  reactive(DT::renderDT(cleanedData))
+    output$cleanedResultsUI <- renderUI({
+        conditionalPanel(
+            "input.flagToClean > 0",
+            tagList(
+                p(paste("Wow! Cleaning is succesfully done.")),
+                
+                actionButton("cleanToDocument", label = "Next: Manage Artifacts and Reports"),
+                
+                taskItem(value = 80, color = "red",
+                         "Step 5 of 6")
+            )
+        )
+    })
+    
+    observeEvent(input$flagToClean, {
+        withProgress(message = "Cleaning Data...", {
+            cleanedData <<- perform_Cleaning(flaggedData, cleaningThreshold = cleaningThresholdControl)
+        })
+        
+    })
+    
+    observeEvent(input$flagToDocument, {
+        cleanedData <<- flaggedData
+        updateTabItems(session, "sideBar", "document")
+        
+    })
+    
+    observeEvent(input$cleanToDocument, {
+        updateTabItems(session, "sideBar", "document")
+    })
+    
+    observeEvent(input$cleanControl, {
+        cleaningThresholdControl <<- input$cleanControl
+    })
+    
+    output$flaggedDataTable <-  reactive(DT::renderDT(flaggedData))
     
 })
