@@ -49,7 +49,7 @@ BdQuestion <-
             },
             
             setResponse = function(response) {
-                if(class(response) == "logical"){
+                if (class(response) == "logical") {
                     .self$users.answer <- ifelse(response, "yes", "no")
                 } else {
                     .self$users.answer <- as.character(response)
@@ -103,73 +103,76 @@ BdQuestion <-
                 .self$quality.checks <- newChecks
             },
             
-            cleanData = function(data, skipReport = FALSE) {
+            flagData = function(data) {
                 flaggedData <- data
-                packageDocumentation <- tools::Rd_db("bdclean")
                 
                 if (length(.self$quality.checks) > 0) {
                     for (i in 1:length(.self$quality.checks)) {
-                        initialRows <- nrow(flaggedData)
                         checkName <- .self$quality.checks[i]
-                        message(checkName)
-                        print(nrow(flaggedData))
                         flaggedData <-
                             get(checkName)(flaggedData, .self$users.answer)
                         
-                        if (!skipReport){
-                            .self$addToReport(checkName,
-                                              initialRows - nrow(flaggedData),
-                                              packageDocumentation)
-                        }
+                        
                     }
                 }
                 
                 return(flaggedData)
             },
             
-            addToReport = function(nameOfQualityCheck,
-                                   countOfAffectedData,
-                                   packageDocumentation) {
-                functionDocumentation <-
-                    packageDocumentation[grep(nameOfQualityCheck, names(packageDocumentation))]
-                description <-
-                    lapply(functionDocumentation,
-                           tools:::.Rd_get_metadata,
-                           "description")[[1]]
+            addToReport = function(flaggedData, CleaningThreshold = 5, clean = TRUE) {
+                packageDocumentation <- tools::Rd_db("bdclean")
                 
-                sectionsString <-
-                    as.character(lapply(
-                        functionDocumentation,
-                        tools:::.Rd_get_metadata,
-                        "section"
-                    )[[1]])
-                
-                sectionsVector <-
-                    gsub(", ,", "", gsub("\\\\n", "", gsub(
-                        "[()\"]", "", substr(sectionsString, 5, nchar(sectionsString))
-                    )))
-                
-                samplePassData <-
-                    sectionsVector[match('samplePassData', sectionsVector) + 1]
-                sampleFailData <-
-                    sectionsVector[match('sampleFailData', sectionsVector) + 1]
-                checkCategory <- gsub(" ", "", sectionsVector[match('checkCategory', sectionsVector) + 1])
-                targetDWCField <-
-                    sectionsVector[match('targetDWCField', sectionsVector) + 1]
-                
-                
-                temp <- list()
-                
-                temp$description <-
-                    paste(description, collapse = " ")
-                temp$samplePassData <- samplePassData
-                temp$sampleFailData <- sampleFailData
-                temp$checkCategory <- checkCategory
-                temp$targetDWCField <- targetDWCField
-                temp$affectedData <- countOfAffectedData
-                
-                .self$cleaning.details[nameOfQualityCheck] <-
-                    list(temp)
+                for (i in 1:length(.self$quality.checks)) {
+                    nameOfQualityCheck <- .self$quality.checks[i]
+                    flag <-
+                        flaggedData[, paste("bdclean", nameOfQualityCheck, sep = ".")]
+                    
+                    countOfFlaggedData <-
+                        sum(flag < CleaningThreshold, na.rm = TRUE)
+                    
+                    # ------ Parsing MetaData for check from .Rd file
+                    functionDocumentation <-
+                        packageDocumentation[grep(nameOfQualityCheck, names(packageDocumentation))]
+                    description <-
+                        lapply(functionDocumentation,
+                               tools:::.Rd_get_metadata,
+                               "description")[[1]]
+                    
+                    sectionsString <-
+                        as.character(lapply(
+                            functionDocumentation,
+                            tools:::.Rd_get_metadata,
+                            "section"
+                        )[[1]])
+                    
+                    sectionsVector <-
+                        gsub(", ,", "", gsub("\\\\n", "", gsub(
+                            "[()\"]", "", substr(sectionsString, 5, nchar(sectionsString))
+                        )))
+                    
+                    samplePassData <-
+                        sectionsVector[match('samplePassData', sectionsVector) + 1]
+                    sampleFailData <-
+                        sectionsVector[match('sampleFailData', sectionsVector) + 1]
+                    checkCategory <-
+                        gsub(" ", "", sectionsVector[match('checkCategory', sectionsVector) + 1])
+                    targetDWCField <-
+                        sectionsVector[match('targetDWCField', sectionsVector) + 1]
+                    # ------ End of Parsing MetaData for check from .Rd file
+                    
+                    temp <- list()
+                    
+                    temp$description <-
+                        paste(description, collapse = " ")
+                    temp$samplePassData <- samplePassData
+                    temp$sampleFailData <- sampleFailData
+                    temp$checkCategory <- checkCategory
+                    temp$targetDWCField <- targetDWCField
+                    temp$affectedData <- countOfFlaggedData
+                    
+                    .self$cleaning.details[nameOfQualityCheck] <-
+                        list(temp)
+                }
             },
             
             notify = function() {

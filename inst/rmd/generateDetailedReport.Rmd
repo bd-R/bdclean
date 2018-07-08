@@ -85,7 +85,7 @@ for (question in checks.records) {
               'Sample Fail Data',
               'Target DwC Field',
               'Check Category',
-              'Removed Records')
+              'Flagged Records')
         
         Value <-
             c(

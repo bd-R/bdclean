@@ -14,3 +14,22 @@ cleaning_function <- function(bddata, intensity){
     
     return(bddata[!failedData, !checkColumns])
 }
+
+
+perform_Cleaning <- function(flaggedData){
+    flagColumns <- which(grepl("bdclean", names(flaggedData)))
+    cleanedData <- flaggedData
+    cleanedData$cleanlinessScore <- 0
+    
+    for (columnIndex in flagColumns) {
+        cleanedData$cleanlinessScore <-
+            cleanedData$cleanlinessScore + cleanedData[, columnIndex]
+        
+    }
+    cleanedData$cleanlinessScore <-
+        cleanedData$cleanlinessScore / length(flagColumns)
+    cleanedData <-
+        cleanedData[cleanedData$cleanlinessScore > 5, c(flagColumns, length(cleanedData)) * -1]
+    
+    return(cleanedData)
+}

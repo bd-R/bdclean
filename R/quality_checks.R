@@ -89,8 +89,9 @@ spatialResolution <- function(bddata, res = 100) {
 #'@export
 earliestDate <- function(bddata, res = "1700-01-01") {
     cat("earliestDate")
+    dates <- strsplit(res, " ")[[1]]
     bddata <- as.data.frame(bddata)
-    ed <- try(as.Date(res, format = "%Y-%m-%d"))
+    ed <- try(as.Date(dates[1], format = "%Y-%m-%d"))
     if (class(ed) == "try-error" || is.na(ed)) {
         print("That date wasn't correct!")
         return(bddata)

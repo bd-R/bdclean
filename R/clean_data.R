@@ -39,11 +39,16 @@
 clean_data <-
     function(data,
              customQuestionnaire,
+             cleaningThreshold = 5,
+             clean = TRUE,
              verbose = FALSE,
              report = TRUE,
              format = c("html_document", "pdf_document")) {
         responses <- list()
+        inputData <- data
+        flaggedData <- data
         cleanedData <- data
+        
         
         if (is.null(customQuestionnaire)) {
             responses <- run_questionnaire()
@@ -52,20 +57,30 @@ clean_data <-
         }
         
         if (verbose) {
-            cat("\n Initial records ...", dim(cleanedData)[1], "\n")
+            cat("\n Initial records ...", dim(inputData)[1], "\n")
         }
         
         for (question in responses$BdQuestions) {
             if (question$question.type != "Router" &&
                 length(question$users.answer) > 0) {
-                if (question$question.type == "Decision-Child")
-                cleanedData <- question$cleanData(cleanedData, skipReport=TRUE)
+                flaggedData <- question$flagData(flaggedData)
             }
+            
             if (verbose) {
-                cat("\n Records remaining...", dim(cleanedData)[1], "\n")
+                cat("\n Records remaining...", dim(flaggedData)[1], "\n")
             }
         }
         
+        # Decision Making
+        cleanedData <- perform_Cleaning(flaggedData)
+        
+        # Report
+        for (question in responses$BdQuestions) {
+            if (question$question.type != "Router" &&
+                length(question$users.answer) > 0) {
+                question$addToReport(flaggedData, cleaningThreshold, clean)
+            }
+        }
         create_report_data(data, cleanedData, responses, verbose, format)
         
         return(cleanedData)

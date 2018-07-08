@@ -97,7 +97,7 @@ create_default_questionnaire <- function() {
     
     question6 <-
         BdQuestion(
-            question = "What is the range of dates of the observations in this data set? In format (YYYY-mm-dd)",
+            question = "What is the range of dates of the observations in this data set? In format (YYYY-mm-dd YYYY-mm-dd)",
             question.type = "Child",
             quality.checks = c("earliestDate"),
             question.id = "temporalEarliest",
@@ -105,7 +105,13 @@ create_default_questionnaire <- function() {
         )
     
     question6$addValidationFunction(function(answer) {
-        d <- try(as.Date(answer))
+        dates <- strsplit(answer, " ")[[1]]
+        d <- try(as.Date(dates[1]))
+        if (class(d) == "try-error" || is.na(d)) {
+            message("Invalid Date! Please follow the date format (YYYY-mm-dd)")
+            return(FALSE)
+        }
+        d <- try(as.Date(dates[2]))
         if (class(d) == "try-error" || is.na(d)) {
             message("Invalid Date! Please follow the date format (YYYY-mm-dd)")
             return(FALSE)
@@ -116,7 +122,7 @@ create_default_questionnaire <- function() {
     question7 <-
         BdQuestion(
             question = "What temporal resolution are you interested in?",
-            possible.responses = c("Year", "Month", "Day"),
+            possible.responses = c("Day", "Month", "Year"),
             question.type = "Child",
             quality.checks = c("temporalResolution"),
             question.id = "temporalResolution",

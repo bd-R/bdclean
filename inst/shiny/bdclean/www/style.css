@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito+Sans');
 
 body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
-font-family: 'Nunito Sans', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
 }
 
 #dataToConfigure.done {
     background-color: green;
-color: white
+    color: white
 }
 
 .shiny-notification{
@@ -18,15 +18,15 @@ color: white
 }
 
 #shiny-notification-panel .progress-bar{
-background-color: #f38f12e6;
+    background-color: #f38f12e6;
 }
 
 .progressStep li {
-list-style: none;
+    list-style: none;
 }
 
 .secondaryHeaders{
-color: #3c8dbc;
+    color: #3c8dbc;
 }
 
 #flagButton {
