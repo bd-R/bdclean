@@ -165,7 +165,9 @@ shinyUI(dashboardPage(
                                 tabPanel(
                                     "Option 01",
                                     div(class = "secondaryHeaders", h3("Option 01: Questionnaire")),
-                                    br(),
+                                    helpText("Note: If you have limited knowledge in Biodiversity data, this option is preferred.",
+                                             "Answer a few questions and let bdclean take care of the cleaning."),
+                                   
                                     
                                     # -------------------------------
                                     
@@ -177,12 +179,17 @@ shinyUI(dashboardPage(
                                 tabPanel(
                                     "Option 02",
                                     div(class = "secondaryHeaders", h3("Option 02: Customized Checks")),
+                                    helpText("Note: Select the quality checks you prefer and 
+                                             continue cleaning with just those checks"),
+                                   
                                     uiOutput("qualityChecks")
                                 ),
                                 tabPanel(
                                     "Option 03",
                                     div(class = "secondaryHeaders", h3("Option 03: Cleaning Templates")),
-                                    p("Yet to be developed")
+                                    helpText("Note: Choose the cleaning, customized for special domains and needs"),
+                                    
+                                    uiOutput("domainCleaning")
                                 ),
                                 div(class = "progressStep", taskItem(
                                     value = 30, color = "green",
