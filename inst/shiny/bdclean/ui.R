@@ -22,7 +22,11 @@ shinyUI(dashboardPage(
                 icon = icon("wrench")
             ),
             menuItem("Flag & Clean", tabName = "flag", icon = icon("flag")),
-            menuItem("Artifacts & Documentation", tabName = "document", icon = icon("file")),
+            menuItem(
+                "Artifacts & Documentation",
+                tabName = "document",
+                icon = icon("file")
+            ),
             menuItem("Citations", tabName = "citTab", icon = icon("bookmark"))
         )
     ),
@@ -30,7 +34,8 @@ shinyUI(dashboardPage(
     #Dashboard Tabs
     dashboardBody(
         tags$head(
-            tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+            tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
+            tags$link(rel = "stylesheet", type = "text/css", href = "checkbox.css")
         ),
         useShinyjs(),
         tabItems(
@@ -73,37 +78,77 @@ shinyUI(dashboardPage(
                                         selected = 'gbif'
                                     ),
                                     br(),
-                                    div(class = "primaryButton", actionButton(
-                                        "queryDatabase", "Query Database", icon("download")
-                                    ))
-                                    
-                                    
+                                    div(
+                                        id = "queryDatabaseDiv",
+                                        class = "activeButton",
+                                        actionButton("queryDatabase", "Query Database", icon("download"))
+                                    )
                                 ),
                                 tabPanel(
                                     "Option 02",
-                                    div(class = "secondaryHeaders", h3("Option 02: From Local disk")),
-                                    div(class = "primaryButton", fileInput(
-                                        "inputFile",
-                                        label = h3("CSV file input"),
-                                        accept = c("text/csv",
-                                                   "text/comma-separated-values,text/plain",
-                                                   ".csv")
-                                    ))
+                                    div(class = "secondaryHeaders", h3("Option 02: From Local Disk")),
+                                    div(
+                                        id = "inputFileDiv",
+                                        class = "activeButton",
+                                        fileInput(
+                                            "inputFile",
+                                            label = h3("CSV file input"),
+                                            accept = c("text/csv",
+                                                       "text/comma-separated-values,text/plain",
+                                                       ".csv")
+                                        )
+                                    )
                                 ),
+                                
                                 div(class = "progressStep", taskItem(
                                     value = 15, color = "orange",
                                     "Step 1 of 6"
                                 ))
                                 
                             ),
-                            actionButton("dataToConfigure", "Next: Configure Cleaning")
+                            div(
+                                id = "dataToConfigureDiv",
+                                actionButton("dataToConfigure", "Next: Configure Cleaning")
+                            )
                             
                         ),
                         column(9,
                                tabsetPanel(
                                    type = "tabs",
-                                   tabPanel("Map View",
-                                            leafletOutput("mymap", height = "700")),
+                                   tabPanel(
+                                       "Map View",
+                                       leafletOutput("mymap", height = "700"),
+                                       absolutePanel(
+                                           top = 60,
+                                           right = 20,
+                                           selectInput(
+                                               "mapTexture",
+                                               "Map Texture",
+                                               choices = list(
+                                                   "OpenStreetMap.Mapnik" = "OpenStreetMap.Mapnik",
+                                                   "OpenStreetMap.BlackAndWhite" = "OpenStreetMap.BlackAndWhite",
+                                                   "Stamen.Toner" = "Stamen.Toner",
+                                                   "CartoDB.Positron" = "CartoDB.Positron",
+                                                   "Esri.NatGeoWorldMap" = "Esri.NatGeoWorldMap",
+                                                   "Stamen.Watercolor" = "Stamen.Watercolor",
+                                                   "Stamen.Terrain" = "Stamen.Terrain",
+                                                   "Esri.WorldImagery" = "Esri.WorldImagery",
+                                                   "Esri.WorldTerrain" = "Esri.WorldTerrain"
+                                               ),
+                                               selected = "Stamen.Watercolor"
+                                           ),
+                                           selectInput(
+                                               "mapColor",
+                                               "Points Color",
+                                               choices = list(
+                                                   "Red" = 'red',
+                                                   "Green" = "green",
+                                                   "Blue" = "blue",
+                                                   "Black" = "black"
+                                               )
+                                           )
+                                       )
+                                   ),
                                    tabPanel("Table View",
                                             DT::dataTableOutput("inputDataTable"))
                                ))
@@ -131,12 +176,12 @@ shinyUI(dashboardPage(
                                 ),
                                 tabPanel(
                                     "Option 02",
-                                    div(class = "secondaryHeaders", h3("Option 02: Cleaning Templates")),
-                                    p("Under Development")
+                                    div(class = "secondaryHeaders", h3("Option 02: Customized Checks")),
+                                    uiOutput("qualityChecks")
                                 ),
                                 tabPanel(
                                     "Option 03",
-                                    div(class = "secondaryHeaders", h3("Option 03: Customized Checks")),
+                                    div(class = "secondaryHeaders", h3("Option 03: Cleaning Templates")),
                                     p("Yet to be developed")
                                 ),
                                 div(class = "progressStep", taskItem(
@@ -144,7 +189,7 @@ shinyUI(dashboardPage(
                                     "Step 2 of 6"
                                 ))
                             ),
-                            actionButton("configureToFlag", "Next: Flagging")
+                            div(class = "activeButton", actionButton("configureToFlag", "Next: Flagging"))
                             
                         )
                         
@@ -178,8 +223,10 @@ shinyUI(dashboardPage(
                                     )
                                 ),
                                 
-                                taskItem(value = 45, color = "yellow",
-                                         "Step 3 of 6"),
+                                div(class = "progressStep", taskItem(
+                                    value = 45, color = "yellow",
+                                    "Step 3 of 6"
+                                ))                                ,
                                 
                                 fluidRow(actionButton("flagButton", label = "Flag Data"))
                             ),
@@ -196,10 +243,9 @@ shinyUI(dashboardPage(
                         12,
                         column(
                             12,
-                            h1("Cleaning Report"),
+                            h1("Artifacts and Reports"),
                             br(),
-                            downloadButton("downloadDoc", "Download Report"),
-                            br()
+                            uiOutput("documentContentUI")
                         )
                     )))
             

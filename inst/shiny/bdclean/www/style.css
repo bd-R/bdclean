@@ -4,11 +4,6 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
     font-family: 'Nunito Sans', sans-serif;
 }
 
-#dataToConfigure.done {
-    background-color: green;
-    color: white
-}
-
 .shiny-notification{
   position: fixed;
   top: 33%;
@@ -18,7 +13,7 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
 }
 
 #shiny-notification-panel .progress-bar{
-    background-color: #f38f12e6;
+    background-color: #f38f12;
 }
 
 .progressStep li {
@@ -32,4 +27,38 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
 #flagButton {
     background-color: green;
     color: white;
+}
+
+#completedIcon img {
+    width: 10%;
+}
+
+#typeInput {
+    width: 100%;
+}
+
+.checksListTopic{
+    color: grey;
+}
+
+.checksListContent {
+        margin-left: 5%;
+    margin-top: -3%;
+}
+
+.checksListContent h4{
+    color: orange;
+}
+
+.readyButton .btn{
+    background-color: transparent;
+}
+
+.activeButton .btn{
+    background-color: orange;
+}
+
+.completedButton .btn{
+    background-color: green;
+    color: white
 }

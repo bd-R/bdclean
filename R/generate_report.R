@@ -164,5 +164,5 @@ generateDetailedReport <-
             output_dir = "CleaningReports"
         ))
         
-        message("Saved generated reports to 'workingDirectory/CleaningReports'")
+        message(paste("Saved generated reports to '", getwd() ,"/CleaningReports'", sep = ""))
     }
