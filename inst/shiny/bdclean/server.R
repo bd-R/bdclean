@@ -1,12 +1,13 @@
 source("functions/decision_making.R")
 source("functions/generate_report.R")
 options(shiny.maxRequestSize=50*1024^2) 
+library(bdclean)
 
 shinyServer(function(input, output, session) {
     inputData <- data.frame()
     flaggedData <- data.frame()
     cleanedData <- data.frame()
-    questionnaire <- create_default_questionnaire()
+    questionnaire <- bdclean::create_default_questionnaire()
     qualityChecks <- get_checks_list()
     
     cleaningThresholdControl <- 7
