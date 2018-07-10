@@ -1,5 +1,6 @@
 source("functions/decision_making.R")
 source("functions/generate_report.R")
+options(shiny.maxRequestSize=50*1024^2) 
 
 shinyServer(function(input, output, session) {
     inputData <- data.frame()
