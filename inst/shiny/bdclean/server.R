@@ -1,3 +1,6 @@
+source("functions/decision_making.R")
+source("functions/generate_report.R")
+
 shinyServer(function(input, output, session) {
     inputData <- data.frame()
     flaggedData <- data.frame()
