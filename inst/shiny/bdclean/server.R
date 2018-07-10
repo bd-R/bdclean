@@ -1,6 +1,6 @@
 source("functions/decision_making.R")
 source("functions/generate_report.R")
-options(shiny.maxRequestSize=50*1024^2) 
+options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 library(bdclean)
 
 shinyServer(function(input, output, session) {
@@ -12,6 +12,28 @@ shinyServer(function(input, output, session) {
     
     cleaningThresholdControl <- 7
     cleaningControl <- FALSE
+    
+    showModal(modalDialog(
+        title = h3("Welcome to bdclean!"),
+        p(
+            "Clean your Biodiversity data with this tool with greater control."
+        ),
+        p(
+            "Click the tabs in the left and follow the instructions to customize cleaning."
+        ),
+        img(src = 'bdverse.png', align = "center"),
+        helpText(
+            "MIT License ©Tomer Gueta, Vijay Barve, Thiloshon Nagarajah, Ashwin Agrawal and Carmel Yohay (2018).
+            bdclean: Biodiversity Data Cleaning Workflow. R package version 1.0.0."
+        ),
+        helpText(
+            "Contribute: ",
+            a("https://github.com/bd-R/bdclean", href = "https://github.com/bd-R/bdclean"),
+            " Join: ",
+            a("https://bd-r-group.slack.com",     href = "https://bd-r-group.slack.com")
+        )
+        
+        ))
     
     # ------------- Next Buttons Navigation Control -------------------
     observeEvent(input$dataToConfigure, {
@@ -85,7 +107,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = inputData) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
@@ -94,13 +116,13 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = inputData) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
         leafletProxy("mymap", data = data) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data
@@ -197,113 +219,119 @@ shinyServer(function(input, output, session) {
     
     output$domainCleaning <- renderUI({
         components <- list()
-       
-            components[[1]] <- tagList(
-                HTML(
-                    paste(
-                        "<input type=radio
-                        name=domainInput value=",
-                        "as",
-                        ">"
-                    )
-                ),
-                
-                div(
-                    class = "checksListContent",
-                    h4("Marine Research"),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Description: ")),
-                    div(class = "checksListTitle", p("Researches focused on marine species and marine occarance distribution")),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
-                    div(class = "checksListTitle", p(
-                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
-, center_of_the_country_coordinates_flag
-, coordinate_negated_flag"
-                    )),
-                    
-                    div(class = "checksListTopic col-sm-3", p(
-                        "DWC Fields Targetted by Checks: "
-                    )),
-                    div(class = "checksListTitle", p(
-                        "coordinates"
-                    ))
-                ),
-                
-                br(),
-                br()
-            )
+        
+        components[[1]] <- tagList(
+            HTML(
+                paste("<input type=radio
+                      name=domainInput value=",
+                      "as",
+                      ">")
+            ),
             
-            components[[2]] <- tagList(
-                HTML(
-                    paste(
-                        "<input type=radio
-                        name=domainInput value=",
-                        "as",
-                        ">"
+            div(
+                class = "checksListContent",
+                h4("Marine Research"),
+                
+                div(class = "checksListTopic col-sm-3", p("Description: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "Researches focused on marine species and marine occarance distribution"
                     )
                 ),
                 
+                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
                 div(
-                    class = "checksListContent",
-                    h4("Climate Research"),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Description: ")),
-                    div(class = "checksListTitle", p("Researches focused on climate changes and affects on species")),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
-                    div(class = "checksListTitle", p(
+                    class = "checksListTitle",
+                    p(
                         "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
                         , center_of_the_country_coordinates_flag
                         , coordinate_negated_flag"
-                    )),
-                    
-                    div(class = "checksListTopic col-sm-3", p(
-                        "DWC Fields Targetted by Checks: "
-                    )),
-                    div(class = "checksListTitle", p(
-                        "coordinates"
-                    ))
+                    )
                     ),
                 
-                br(),
-                br()
-                    )
+                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
+                div(class = "checksListTitle", p("coordinates"))
+                    ),
             
-            components[[3]] <- tagList(
-                HTML(
-                    paste(
-                        "<input type=radio
-                        name=domainInput value=",
-                        "as",
-                        ">"
+            br(),
+            br()
+            )
+        
+        components[[2]] <- tagList(
+            HTML(
+                paste("<input type=radio
+                      name=domainInput value=",
+                      "as",
+                      ">")
+            ),
+            
+            div(
+                class = "checksListContent",
+                h4("Climate Research"),
+                
+                div(class = "checksListTopic col-sm-3", p("Description: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "Researches focused on climate changes and affects on species"
                     )
                 ),
                 
+                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
                 div(
-                    class = "checksListContent",
-                    h4("Genetics Research"),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Description: ")),
-                    div(class = "checksListTitle", p("Researches focused on genetics and bioinformnatics of species")),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
-                    div(class = "checksListTitle", p(
+                    class = "checksListTitle",
+                    p(
                         "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
                         , center_of_the_country_coordinates_flag
                         , coordinate_negated_flag"
-                    )),
-                    
-                    div(class = "checksListTopic col-sm-3", p(
-                        "DWC Fields Targetted by Checks: "
-                    )),
-                    div(class = "checksListTitle", p(
-                        "coordinates"
-                    ))
+                    )
+                    ),
+                
+                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
+                div(class = "checksListTitle", p("coordinates"))
+                    ),
+            
+            br(),
+            br()
+            )
+        
+        components[[3]] <- tagList(
+            HTML(
+                paste("<input type=radio
+                      name=domainInput value=",
+                      "as",
+                      ">")
+            ),
+            
+            div(
+                class = "checksListContent",
+                h4("Genetics Research"),
+                
+                div(class = "checksListTopic col-sm-3", p("Description: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "Researches focused on genetics and bioinformnatics of species"
+                    )
                 ),
                 
-                br(),
-                br()
+                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
+                        , center_of_the_country_coordinates_flag
+                        , coordinate_negated_flag"
+                    )
+                    ),
+                
+                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
+                div(class = "checksListTitle", p("coordinates"))
+                    ),
+            
+            br(),
+            br()
             )
         
         return(

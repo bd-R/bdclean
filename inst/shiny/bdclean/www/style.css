@@ -66,3 +66,16 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
     background-color: green;
     color: white
 }
+
+.modal-dialog {
+    width: 90%;
+    text-align: center;
+}
+
+.modal-content img{
+    width: 60%;
+}
+
+.modal-header {
+    color: orange;
+}
