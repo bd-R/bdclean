@@ -114,6 +114,3 @@ IsDate <- function(mydate, date.format = "%Y-%m-%d") {
            error = function(err) {FALSE})
 }
 
-
-X<-get_config()
-dat<-clean_data(occdat1$data,X)
