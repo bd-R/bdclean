@@ -48,6 +48,15 @@ clean_data <- function(bddata,
     ##------- End Of Initializing dataframe and variables that hold output table details -------##
     
     for (i in 1:dim(config)[1]) {
+      count=1
+      if(config$quest[i]!="dateCheck"){
+        
+        if(i>4){
+          if(config$response[4]!="Yes"){
+            count=0
+          }
+        }
+      if(count==1){
         cat(paste("\n", config$quest[i], config$response[i], "\n"))
         res <- as.character(config$response[i])
         
@@ -82,6 +91,7 @@ clean_data <- function(bddata,
                 selectedOption <- "Temporal Resolution Fixing"
                 actionRequired <- "Repair"
             }
+            
         )
         if (verbose) {
             cat("\n Records remaining...", dim(bddata)[1], "\n")
@@ -98,6 +108,8 @@ clean_data <- function(bddata,
                 )
             )
         ## ------- End of Adding record of this iteration to the records dataframe ------- ##
+        }
+      }
     }
     
     ## ------- Adding Final results to the records dataframe ------- ##
