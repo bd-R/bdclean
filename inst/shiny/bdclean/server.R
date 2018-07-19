@@ -95,7 +95,8 @@ shinyServer(function(input, output, session) {
             if (is.null(input$inputFile))
                 return("No data to view")
             
-            inputData <<- read.csv(input$inputFile$datapath, row.names = NULL)
+            inputData <<-
+                read.csv(input$inputFile$datapath, sep = "\t")
         })
         
         dataLoadedTask(inputData)
@@ -107,7 +108,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = inputData) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles(~ longitude, ~ latitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
@@ -116,21 +117,21 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = inputData) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles(~ longitude, ~ latitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
-        
-        if("decimallatitude" %in% names(data)){
+        if ("decimallatitude" %in% names(data)) {
             colnames(data)[colnames(data) == "decimallatitude"] <- "latitude"
-            colnames(data)[colnames(data) == "decimallongitude"] <- "longitude"
+            colnames(data)[colnames(data) == "decimallongitude"] <-
+                "longitude"
             
             inputData <<- data
         }
         
         leafletProxy("mymap", data = data) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles(~ longitude, ~ latitude, color = input$mapColor)
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data
@@ -466,7 +467,12 @@ shinyServer(function(input, output, session) {
             for (question in questionnaire$BdQuestions) {
                 if (question$question.type != "Router" &&
                     length(question$users.answer) > 0) {
-                    tempData <- question$flagData(tempData)
+                    
+                    temp <- try({
+                        question$flagData(tempData)
+                    })
+                    
+                    if(!is(temp, "try-error")) {tempData <- temp}
                 }
             }
             
@@ -585,9 +591,13 @@ shinyServer(function(input, output, session) {
             for (question in questionnaire$BdQuestions) {
                 if (question$question.type != "Router" &&
                     length(question$users.answer) > 0) {
-                    question$addToReport(flaggedData,
-                                         cleaningThresholdControl,
-                                         cleaningControl)
+                    try({
+                        question$addToReport(flaggedData,
+                                             cleaningThresholdControl,
+                                             cleaningControl)
+                    })
+                    
+                  
                 }
             }
             create_report_data(inputData,
