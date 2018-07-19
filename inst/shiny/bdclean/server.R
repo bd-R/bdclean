@@ -121,9 +121,11 @@ shinyServer(function(input, output, session) {
     
     dataLoadedTask <- function(data) {
         
-        if("decimallatitude" %in% names(r)){
+        if("decimallatitude" %in% names(data)){
             colnames(data)[colnames(data) == "decimallatitude"] <- "latitude"
             colnames(data)[colnames(data) == "decimallongitude"] <- "longitude"
+            
+            inputData <<- data
         }
         
         leafletProxy("mymap", data = data) %>%
