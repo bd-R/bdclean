@@ -2,6 +2,7 @@ source("functions/decision_making.R")
 source("functions/generate_report.R")
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 library(bdclean)
+library(data.table)
 
 shinyServer(function(input, output, session) {
     inputData <- data.frame()
@@ -96,7 +97,7 @@ shinyServer(function(input, output, session) {
                 return("No data to view")
             
             inputData <<-
-                read.csv(input$inputFile$datapath, sep = "\t")
+                data.table::fread(input$inputFile$datapath)
         })
         
         dataLoadedTask(inputData)
@@ -124,6 +125,12 @@ shinyServer(function(input, output, session) {
         if ("decimallatitude" %in% names(data)) {
             colnames(data)[colnames(data) == "decimallatitude"] <- "latitude"
             colnames(data)[colnames(data) == "decimallongitude"] <-
+                "longitude"
+            
+            inputData <<- data
+        } else if  ("decimalLatitude" %in% names(data)) {
+            colnames(data)[colnames(data) == "decimalLatitude"] <- "latitude"
+            colnames(data)[colnames(data) == "decimalLongitude"] <-
                 "longitude"
             
             inputData <<- data
