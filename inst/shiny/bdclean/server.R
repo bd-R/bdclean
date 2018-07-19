@@ -95,7 +95,7 @@ shinyServer(function(input, output, session) {
             if (is.null(input$inputFile))
                 return("No data to view")
             
-            inputData <<- read.csv(input$inputFile$datapath)
+            inputData <<- read.csv(input$inputFile$datapath, row.names = NULL)
         })
         
         dataLoadedTask(inputData)
