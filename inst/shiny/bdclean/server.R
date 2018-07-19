@@ -120,6 +120,12 @@ shinyServer(function(input, output, session) {
     })
     
     dataLoadedTask <- function(data) {
+        
+        if("decimallatitude" %in% names(r)){
+            colnames(data)[colnames(data) == "decimallatitude"] <- "latitude"
+            colnames(data)[colnames(data) == "decimallongitude"] <- "longitude"
+        }
+        
         leafletProxy("mymap", data = data) %>%
             clearShapes() %>%
             addCircles( ~ longitude, ~ latitude, color = input$mapColor)
