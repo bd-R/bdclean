@@ -17,7 +17,6 @@
 get_config <- function(){
   data(quest, envir=environment())
   data(responses, envir=environment())
-  quest1<-(quest)
   res<-vector(mode="character",length = nrow(quest))
   for (i in 1:nrow(quest)){
     if(quest$qlink[i]>0){
