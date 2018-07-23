@@ -1,18 +1,30 @@
+library(bdclean)
+library(data.table)
 source("functions/decision_making.R")
 source("functions/generate_report.R")
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
-library(bdclean)
-library(data.table)
 
 shinyServer(function(input, output, session) {
-    inputData <- data.frame()
-    flaggedData <- data.frame()
-    cleanedData <- data.frame()
-    questionnaire <- bdclean::create_default_questionnaire()
-    qualityChecks <- get_checks_list()
+    dataStore <-
+        list(
+            inputData = data.frame(),
+            inputReceived = FALSE,
+            
+            configuredCleaning = FALSE,
+            
+            flaggedData = data.frame(),
+            flaggingDone = FALSE,
+            
+            cleanedData = data.frame(),
+            cleaningDone = FALSE,
+            
+            questionnaire = bdclean::create_default_questionnaire(),
+            qualityChecks = get_checks_list(),
+            
+            cleaningThresholdControl = 7
+        )
     
-    cleaningThresholdControl <- 7
-    cleaningControl <- FALSE
+    # ------------- Information Modal ------------------------
     
     showModal(modalDialog(
         title = h3("Welcome to bdclean!"),
@@ -36,9 +48,18 @@ shinyServer(function(input, output, session) {
         
         ))
     
+    # ------------- End of Information Modal ------------------------
+    
+    
     # ------------- Next Buttons Navigation Control -------------------
+    
     observeEvent(input$dataToConfigure, {
-        updateTabItems(session, "sideBar", "configure")
+        if (dataStore$inputReceived) {
+            updateTabItems(session, "sideBar", "configure")
+        } else {
+            showNotification("Please add data first!", duration = 2)
+        }
+        
     })
     
     observeEvent(input$configureToFlag, {
@@ -55,16 +76,48 @@ shinyServer(function(input, output, session) {
             }
         }
         
-        for (question in questionnaire$BdQuestions) {
+        for (question in dataStore$questionnaire$BdQuestions) {
             if (question$question.type != "Child") {
                 getResponse(question)
             }
         }
         
+        dataStore$configuredCleaning <<- TRUE
         updateTabItems(session, "sideBar", "flag")
     })
     
-    # ------------- End of Side Bar Tab Navigation Control -------------------
+    observeEvent(input$flagToClean, {
+        if (!dataStore$flaggingDone) {
+            showNotification("Please click Flag first!", duration = 2)
+            return()
+        }
+        
+        withProgress(message = "Cleaning Data...", {
+            dataStore$cleanedData <<-
+                perform_Cleaning(dataStore$flaggedData,
+                                 cleaningThreshold = dataStore$cleaningThresholdControl)
+            
+        })
+        dataStore$cleaningDone <<- TRUE
+    })
+    
+    observeEvent(input$flagToDocument, {
+        if (!dataStore$flaggingDone) {
+            showNotification("Please click Flag first!", duration = 2)
+            return()
+        }
+        
+        dataStore$cleaningDone <- FALSE
+        dataStore$cleanedData <-   dataStore$flaggedData
+        updateTabItems(session, "sideBar", "document")
+    })
+    
+    observeEvent(input$cleanToDocument, {
+        updateTabItems(session, "sideBar", "document")
+    })
+    
+    # ------------- End of Next Buttons Navigation Control -------------------
+    
     
     # ------------- Add Data Module -------------------
     
@@ -76,19 +129,22 @@ shinyServer(function(input, output, session) {
                 input$queryDatabase == "gbif") {
                 print("in")
                 data <-
-                    rgbif::occ_search(scientificName = input$scientificName, limit = input$recordSize)
-                inputData <<- data$data
+                    rgbif::occ_search(
+                        scientificName = input$scientificName,
+                        limit = input$recordSize
+                    )
+                dataStore$inputData <<- data$data
                 
             } else {
                 data <-
                     spocc::occ(input$scientificName,
                                input$queryDB,
                                limit = input$recordSize)
-                inputData <<- data$gbif$data$Puma_concolor
+                dataStore$inputData <<- data$gbif$data$Puma_concolor
             }
         })
         
-        dataLoadedTask(inputData)
+        dataLoadedTask(dataStore$inputData)
     })
     
     observeEvent(input$inputFile, {
@@ -96,29 +152,29 @@ shinyServer(function(input, output, session) {
             if (is.null(input$inputFile))
                 return("No data to view")
             
-            inputData <<-
+            dataStore$inputData <<-
                 data.table::fread(input$inputFile$datapath)
         })
         
-        dataLoadedTask(inputData)
+        dataLoadedTask(dataStore$inputData)
     })
     
     observeEvent(input$mapTexture, {
-        if (length(inputData) == 0) {
+        if (length(dataStore$inputData) == 0) {
             return(NULL)
         }
-        leafletProxy("mymap", data = inputData) %>%
+        leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
-        if (length(inputData) == 0) {
+        if (length(dataStore$inputData) == 0) {
             return(NULL)
         }
-        leafletProxy("mymap", data = inputData) %>%
+        leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
@@ -127,18 +183,18 @@ shinyServer(function(input, output, session) {
             colnames(data)[colnames(data) == "decimallongitude"] <-
                 "longitude"
             
-            inputData <<- data
-        } else if  ("decimalLatitude" %in% names(data)) {
+            dataStore$inputData <<- data
+        } else if ("decimalLatitude" %in% names(data)) {
             colnames(data)[colnames(data) == "decimalLatitude"] <- "latitude"
             colnames(data)[colnames(data) == "decimalLongitude"] <-
                 "longitude"
             
-            inputData <<- data
+            dataStore$inputData <<- data
         }
         
         leafletProxy("mymap", data = data) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data
@@ -161,6 +217,7 @@ shinyServer(function(input, output, session) {
         
         showNotification("Read Data Succesfully", duration = 2)
         
+        dataStore$inputReceived <<- TRUE
         
         output$inputDataRows <- renderText(nrow(data))
         output$inputDataColumns <- renderText(length(data))
@@ -174,196 +231,8 @@ shinyServer(function(input, output, session) {
             setView(0, 0, zoom = 2)
     })
     
-    output$qualityChecks <- renderUI({
-        components <- list()
-        
-        for (i in 1:length(qualityChecks)) {
-            components[[i]] <- tagList(
-                HTML(
-                    paste(
-                        "<input type=checkbox
-                        name=typeInput value=",
-                        qualityChecks[[i]]$nameOfQualityCheck,
-                        ">"
-                    )
-                ),
-                div(
-                    class = "checksListContent",
-                    h4(qualityChecks[[i]]$nameOfQualityCheck),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Description: ")),
-                    div(class = "checksListTitle", p(qualityChecks[[i]]$description)),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Sample Passing Data: ")),
-                    div(class = "checksListTitle", p(
-                        qualityChecks[[i]]$samplePassData
-                    )),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Sample Failing Data: ")),
-                    div(class = "checksListTitle", p(
-                        qualityChecks[[i]]$sampleFailData
-                    )),
-                    
-                    div(class = "checksListTopic col-sm-3", p("Category of Quality Check: ")),
-                    div(class = "checksListTitle", p(
-                        qualityChecks[[i]]$checkCategory
-                    )),
-                    
-                    div(class = "checksListTopic col-sm-3", p(
-                        "DWC Field Targetted by Check: "
-                    )),
-                    div(class = "checksListTitle", p(
-                        qualityChecks[[i]]$targetDWCField
-                    ))
-                ),
-                br(),
-                br()
-            )
-        }
-        
-        return(
-            div(
-                id = 'typeInput',
-                class = "form-group shiny-input-checkboxgroup shiny-input-container shiny-bound-input",
-                tags$br(),
-                tags$br(),
-                column(width = 12,
-                       components)
-            )
-        )
-    })
-    
-    output$domainCleaning <- renderUI({
-        components <- list()
-        
-        components[[1]] <- tagList(
-            HTML(
-                paste("<input type=radio
-                      name=domainInput value=",
-                      "as",
-                      ">")
-            ),
-            
-            div(
-                class = "checksListContent",
-                h4("Marine Research"),
-                
-                div(class = "checksListTopic col-sm-3", p("Description: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "Researches focused on marine species and marine occarance distribution"
-                    )
-                ),
-                
-                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
-                        , center_of_the_country_coordinates_flag
-                        , coordinate_negated_flag"
-                    )
-                    ),
-                
-                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
-                div(class = "checksListTitle", p("coordinates"))
-                    ),
-            
-            br(),
-            br()
-            )
-        
-        components[[2]] <- tagList(
-            HTML(
-                paste("<input type=radio
-                      name=domainInput value=",
-                      "as",
-                      ">")
-            ),
-            
-            div(
-                class = "checksListContent",
-                h4("Climate Research"),
-                
-                div(class = "checksListTopic col-sm-3", p("Description: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "Researches focused on climate changes and affects on species"
-                    )
-                ),
-                
-                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
-                        , center_of_the_country_coordinates_flag
-                        , coordinate_negated_flag"
-                    )
-                    ),
-                
-                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
-                div(class = "checksListTitle", p("coordinates"))
-                    ),
-            
-            br(),
-            br()
-            )
-        
-        components[[3]] <- tagList(
-            HTML(
-                paste("<input type=radio
-                      name=domainInput value=",
-                      "as",
-                      ">")
-            ),
-            
-            div(
-                class = "checksListContent",
-                h4("Genetics Research"),
-                
-                div(class = "checksListTopic col-sm-3", p("Description: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "Researches focused on genetics and bioinformnatics of species"
-                    )
-                ),
-                
-                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
-                        , center_of_the_country_coordinates_flag
-                        , coordinate_negated_flag"
-                    )
-                    ),
-                
-                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
-                div(class = "checksListTitle", p("coordinates"))
-                    ),
-            
-            br(),
-            br()
-            )
-        
-        return(
-            div(
-                id = 'domainInput',
-                class = "form-group shiny-input-radiogroup shiny-input-container shiny-bound-input",
-                tags$br(),
-                tags$br(),
-                column(width = 12,
-                       components)
-            )
-        )
-        
-    })
-    
     # ------------- End of Add Data Module -------------------
+    
     
     # ------------- Questionnaire Module -------------------
     
@@ -455,7 +324,7 @@ shinyServer(function(input, output, session) {
             }
         }
         
-        for (question in questionnaire$BdQuestions) {
+        for (question in dataStore$questionnaire$BdQuestions) {
             if (question$question.type != "Child") {
                 createUIContainer(question)
             }
@@ -466,24 +335,224 @@ shinyServer(function(input, output, session) {
     
     # ------------- End of Questionnaire Module -------------------
     
+    
+    # ------------- Quality Checks Module -------------------
+    
+    output$qualityChecks <- renderUI({
+        components <- list()
+        
+        for (i in 1:length(dataStore$qualityChecks)) {
+            components[[i]] <- tagList(
+                HTML(
+                    paste(
+                        "<input type=checkbox
+                        name=typeInput value=",
+                        dataStore$qualityChecks[[i]]$nameOfQualityCheck,
+                        ">"
+                    )
+                ),
+                div(
+                    class = "checksListContent",
+                    h4(dataStore$qualityChecks[[i]]$nameOfQualityCheck),
+                    
+                    div(class = "checksListTopic col-sm-3", p("Description: ")),
+                    div(class = "checksListTitle", p(
+                        dataStore$qualityChecks[[i]]$description
+                    )),
+                    
+                    div(class = "checksListTopic col-sm-3", p("Sample Passing Data: ")),
+                    div(
+                        class = "checksListTitle",
+                        p(dataStore$qualityChecks[[i]]$samplePassData)
+                    ),
+                    
+                    div(class = "checksListTopic col-sm-3", p("Sample Failing Data: ")),
+                    div(
+                        class = "checksListTitle",
+                        p(dataStore$qualityChecks[[i]]$sampleFailData)
+                    ),
+                    
+                    div(class = "checksListTopic col-sm-3", p("Category of Quality Check: ")),
+                    div(
+                        class = "checksListTitle",
+                        p(dataStore$qualityChecks[[i]]$checkCategory)
+                    ),
+                    
+                    div(class = "checksListTopic col-sm-3", p(
+                        "DWC Field Targetted by Check: "
+                    )),
+                    div(
+                        class = "checksListTitle",
+                        p(dataStore$qualityChecks[[i]]$targetDWCField)
+                    )
+                ),
+                br(),
+                br()
+            )
+        }
+        
+        return(
+            div(
+                id = 'typeInput',
+                class = "form-group shiny-input-checkboxgroup shiny-input-container shiny-bound-input",
+                tags$br(),
+                tags$br(),
+                column(width = 12,
+                       components)
+            )
+        )
+    })
+    
+    # ------------- End of Quality Checks Module -------------------
+    
+    
+    # ------------- Domain Cleaning Module -------------------
+    
+    output$domainCleaning <- renderUI({
+        components <- list()
+        
+        components[[1]] <- tagList(
+            HTML(
+                paste("<input type=radio
+                      name=domainInput value=",
+                      "as",
+                      ">")
+            ),
+            div(
+                class = "checksListContent",
+                h4("Marine Research"),
+                
+                div(class = "checksListTopic col-sm-3", p("Description: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "Researches focused on marine species and marine occarance distribution"
+                    )
+                ),
+                
+                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
+                        , center_of_the_country_coordinates_flag
+                        , coordinate_negated_flag"
+                    )
+                    ),
+                
+                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
+                div(class = "checksListTitle", p("coordinates"))
+                    ),
+            br(),
+            br()
+            )
+        
+        components[[2]] <- tagList(
+            HTML(
+                paste("<input type=radio
+                      name=domainInput value=",
+                      "as",
+                      ">")
+            ),
+            div(
+                class = "checksListContent",
+                h4("Climate Research"),
+                
+                div(class = "checksListTopic col-sm-3", p("Description: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "Researches focused on climate changes and affects on species"
+                    )
+                ),
+                
+                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
+                        , center_of_the_country_coordinates_flag
+                        , coordinate_negated_flag"
+                    )
+                    ),
+                
+                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
+                div(class = "checksListTitle", p("coordinates"))
+                    ),
+            br(),
+            br()
+            )
+        
+        components[[3]] <- tagList(
+            HTML(
+                paste("<input type=radio
+                      name=domainInput value=",
+                      "as",
+                      ">")
+            ),
+            div(
+                class = "checksListContent",
+                h4("Genetics Research"),
+                
+                div(class = "checksListTopic col-sm-3", p("Description: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "Researches focused on genetics and bioinformnatics of species"
+                    )
+                ),
+                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
+                div(
+                    class = "checksListTitle",
+                    p(
+                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
+                        , center_of_the_country_coordinates_flag
+                        , coordinate_negated_flag"
+                    )
+                    ),
+                
+                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
+                div(class = "checksListTitle", p("coordinates"))
+                    ),
+            br(),
+            br()
+            )
+        
+        return(
+            div(
+                id = 'domainInput',
+                class = "form-group shiny-input-radiogroup shiny-input-container shiny-bound-input",
+                tags$br(),
+                tags$br(),
+                column(width = 12,
+                       components)
+            )
+        )
+    })
+    
+    # ------------- End of Domain Cleaning Module -------------------
+    
+    
     # ------------- Flagging Module -------------------
     
     observeEvent(input$flagButton, {
-        tempData <- inputData
+        tempData <- dataStore$inputData
         withProgress(message = "Flagging Data...", {
-            for (question in questionnaire$BdQuestions) {
+            for (question in dataStore$questionnaire$BdQuestions) {
                 if (question$question.type != "Router" &&
                     length(question$users.answer) > 0) {
-                    
                     temp <- try({
                         question$flagData(tempData)
                     })
                     
-                    if(!is(temp, "try-error")) {tempData <- temp}
+                    if (!is(temp, "try-error")) {
+                        tempData <- temp
+                    }
                 }
             }
             
-            flaggedData <<- tempData
+            dataStore$flaggedData <<- tempData
+            dataStore$flaggingDone <<- TRUE
         })
     })
     
@@ -492,7 +561,8 @@ shinyServer(function(input, output, session) {
         input$cleanControl
         
         flaggedCount <-
-            get_flagging_statistics(flaggedData, cleaningThresholdControl)
+            get_flagging_statistics(dataStore$flaggedData,
+                                    dataStore$cleaningThresholdControl)
         
         conditionalPanel(
             "input.flagButton > 0",
@@ -504,7 +574,7 @@ shinyServer(function(input, output, session) {
                     label = h4("Cleanliness Treshold:"),
                     min = 0,
                     max = 10,
-                    value = cleaningThresholdControl
+                    value = dataStore$cleaningThresholdControl
                 ),
                 
                 helpText(
@@ -525,7 +595,7 @@ shinyServer(function(input, output, session) {
                             infoBox(
                                 "Clean Data",
                                 paste(((
-                                    flaggedCount / nrow(inputData)
+                                    flaggedCount / nrow(dataStore$inputData)
                                 ) * 100), "%", sep = ""),
                                 icon = icon("flag"),
                                 color = "red"
@@ -535,25 +605,25 @@ shinyServer(function(input, output, session) {
                                     icon = icon("list-ol")),
                             infoBox(
                                 "# of Newly Added Columns",
-                                length(flaggedData) - length(inputData),
+                                length(dataStore$flaggedData) - length(dataStore$inputData),
                                 icon = icon("th-list"),
                                 color = "purple"
                             ),
                             infoBox(
                                 "# of Unique Scientific Names Remaining",
-                                length(unique(flaggedData$scientificName)),
+                                length(unique(
+                                    dataStore$flaggedData$scientificName
+                                )),
                                 icon = icon("paw"),
                                 color = "yellow"
                             )
-                            
                         )
                         
                     ),
                     tabPanel(
                         "Table View",
                         div(class = "secondaryHeaders", h3("View 02: Summarized Table")),
-                        DT::renderDataTable(flaggedData, width = 300)
-                        
+                        DT::renderDataTable(dataStore$flaggedData, width = 300)
                     )
                 ),
                 
@@ -564,12 +634,17 @@ shinyServer(function(input, output, session) {
                     value = 60, color = "red",
                     "Step 4 of 6"
                 ))
-                
-                
-                
                 )
         )
     })
+    
+    output$flaggedDataTable <-
+        reactive(DT::renderDT(dataStore$flaggedData))
+    
+    # ------------- End of Flagging Module -------------------
+    
+    
+    # ------------- Cleaning Module ------------------------
     
     output$cleanedResultsUI <- renderUI({
         conditionalPanel("input.flagToClean > 0",
@@ -585,43 +660,47 @@ shinyServer(function(input, output, session) {
                                  value = 80, color = "red",
                                  "Step 5 of 6"
                              ))
-                             
-                             
                          ))
     })
     
+    observeEvent(input$cleanControl, {
+        dataStore$cleaningThresholdControl <<- input$cleanControl
+    })
     
+    # ------------- End of Cleaning Module ------------------------
+    
+    
+    # ------------- Documentation Module ------------------------
     
     output$documentContentUI <- renderUI({
-        
         withProgress(message = "Generating Artifacts...", {
             # Report
-            for (question in questionnaire$BdQuestions) {
+            for (question in dataStore$questionnaire$BdQuestions) {
                 if (question$question.type != "Router" &&
                     length(question$users.answer) > 0) {
                     try({
-                        question$addToReport(flaggedData,
-                                             cleaningThresholdControl,
-                                             cleaningControl)
+                        question$addToReport(
+                            dataStore$flaggedData,
+                            dataStore$cleaningThresholdControl,
+                            dataStore$cleaningDone
+                        )
                     })
-                    
-                  
                 }
             }
-            create_report_data(inputData,
-                               cleanedData,
-                               questionnaire,
-                               FALSE,
-                               c("md_document"))
+            
+            create_report_data(
+                dataStore$inputData,
+                dataStore$cleanedData,
+                dataStore$questionnaire,
+                dataStore$cleaningDone,
+                c("md_document")
+            )
         })
         
         return(tagList(
-            
-            
             conditionalPanel(
                 "input.flagToDocument > 0 || input.cleanToDocument > 0",
                 tagList(
-                    
                     tabsetPanel(
                         type = "tabs",
                         tabPanel(
@@ -630,8 +709,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadInput", "Download Input Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(inputData, width = 300)
-                            
+                            DT::renderDataTable(dataStore$inputData, width = 300)
                         ),
                         tabPanel(
                             "Flagged Data",
@@ -641,8 +719,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadFlagged", "Download Flagged Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(flaggedData, width = 300)
-                            
+                            DT::renderDataTable(dataStore$flaggedData, width = 300)
                         ),
                         tabPanel(
                             "Cleaned Data",
@@ -650,8 +727,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadCleaned", "Download Cleaned Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(cleanedData, width = 300)
-                            
+                            DT::renderDataTable(dataStore$cleanedData, width = 300)
                         ),
                         tabPanel(
                             "Cleaning Report",
@@ -673,7 +749,6 @@ shinyServer(function(input, output, session) {
                             br(),
                             br(),
                             includeMarkdown("CleaningReports/generateDetailedReport.md")
-                            
                         ),
                         tabPanel(
                             "Source Code",
@@ -682,33 +757,26 @@ shinyServer(function(input, output, session) {
                             )),
                             downloadButton("downloadCode", "Download Detailed Report"),
                             br()
-                            
                         ),
                         tabPanel(
                             "R Environment",
                             div(class = "secondaryHeaders", h3("Environment 02: R Environment")),
                             downloadButton("downloadDetailedReport", "Download Detailed Report"),
                             br()
-                            # DT::renderDataTable(inputData, width = 300)
-                            
                         )
                     ),
-                    
                     div(
                         class = "progressStep",
                         taskItem(value = 100, color = "green",
                                  "Step 6 of 6")
                     )
-                    
                 )
             )
         ))
-        
     })
     
     output$downloadShortReport <- downloadHandler(
         filename = function() {
-            
             paste('shortReport-', Sys.Date(), switch(
                 input$reportFormat,
                 "pdf_document" = ".pdf",
@@ -717,16 +785,16 @@ shinyServer(function(input, output, session) {
                 "md_document" = ".md"
             ), sep = "")
         },
-        
         content = function(file) {
             withProgress(message = "Preparing download...", {
-                create_report_data(inputData,
-                                   cleanedData,
-                                   questionnaire,
-                                   FALSE,
-                                   input$reportFormat)
+                create_report_data(
+                    dataStore$inputData,
+                    dataStore$cleanedData,
+                    dataStore$questionnaire,
+                    dataStore$cleaningDone,
+                    input$reportFormat
+                )
             })
-            
             
             file.copy(file.path(
                 getwd(),
@@ -745,7 +813,6 @@ shinyServer(function(input, output, session) {
     
     output$downloadDetailedReport <- downloadHandler(
         filename = function() {
-            
             paste('detailedReport-', Sys.Date(), switch(
                 input$reportFormat,
                 "pdf_document" = ".pdf",
@@ -754,17 +821,16 @@ shinyServer(function(input, output, session) {
                 "md_document" = ".md"
             ), sep = "")
         },
-        
         content = function(file) {
             withProgress(message = "Preparing download...", {
-                create_report_data(inputData,
-                                   cleanedData,
-                                   questionnaire,
-                                   FALSE,
-                                   input$reportFormat)
+                create_report_data(
+                    dataStore$inputData,
+                    dataStore$cleanedData,
+                    dataStore$questionnaire,
+                    dataStore$cleaningDone,
+                    input$reportFormat
+                )
             })
-            
-            
             file.copy(file.path(
                 getwd(),
                 "CleaningReports",
@@ -779,23 +845,24 @@ shinyServer(function(input, output, session) {
             file)
         }
     )
-  
+    
     
     output$downloadInput <- downloadHandler(
         filename = function() {
             paste('inputData-', Sys.Date(), '.csv')
         },
         content = function(con) {
-            write.csv(inputData, con)
+            print(length(dataStore$inputData))
+            print(dataStore$inputData)
+            write.csv(dataStore$inputData, con)
         }
     )
-    
     output$downloadFlagged <- downloadHandler(
         filename = function() {
             paste('flaggedData-', Sys.Date(), '.csv')
         },
         content = function(con) {
-            write.csv(flaggedData, con)
+            write.csv(dataStore$flaggedData, con)
         }
     )
     
@@ -804,35 +871,9 @@ shinyServer(function(input, output, session) {
             paste('cleanedData-', Sys.Date(), '.csv')
         },
         content = function(con) {
-            write.csv(cleanedData, con)
+            write.csv(dataStore$cleanedData, con)
         }
     )
     
-    observeEvent(input$flagToClean, {
-        cleaningControl <<- TRUE
-        withProgress(message = "Cleaning Data...", {
-            cleanedData <<-
-                perform_Cleaning(flaggedData, cleaningThreshold = cleaningThresholdControl)
-        })
-        
-    })
-    
-    observeEvent(input$flagToDocument, {
-        cleaningControl <- FALSE
-        cleanedData <<- flaggedData
-        updateTabItems(session, "sideBar", "document")
-        
-    })
-    
-    observeEvent(input$cleanToDocument, {
-        updateTabItems(session, "sideBar", "document")
-        
-    })
-    
-    observeEvent(input$cleanControl, {
-        cleaningThresholdControl <<- input$cleanControl
-    })
-    
-    output$flaggedDataTable <-  reactive(DT::renderDT(flaggedData))
-    
+    # ------------- End of Documentation Module ------------------------
 })

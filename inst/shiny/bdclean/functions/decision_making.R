@@ -18,6 +18,11 @@ cleaning_function <- function(bddata, intensity) {
 
 perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
     flagColumns <- which(grepl("bdclean", names(flaggedData)))
+    
+    if(length(flagColumns) == 0){
+        return(flaggedData)
+    }
+    
     cleanedData <- flaggedData
     cleanedData$cleanlinessScore <- 0
     

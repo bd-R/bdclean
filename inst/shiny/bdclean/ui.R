@@ -7,7 +7,7 @@ shinyUI(dashboardPage(
     #Header Title
     dashboardHeader(title = "bdclean"),
     
-    #Sidebar
+    # ------------- Sidebar  -------------------
     dashboardSidebar(
         sidebarMenu(
             id = "sideBar",
@@ -31,7 +31,8 @@ shinyUI(dashboardPage(
         )
     ),
     
-    #Dashboard Tabs
+    # ------------- End of Sidebar  -------------------
+    
     dashboardBody(
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
@@ -39,6 +40,8 @@ shinyUI(dashboardPage(
         ),
         useShinyjs(),
         tabItems(
+            
+            # ------------- Add Data Module -------------------
             tabItem("add",
                     fluidRow(column(
                         12,
@@ -47,6 +50,9 @@ shinyUI(dashboardPage(
                             3,
                             tabsetPanel(
                                 type = "tabs",
+                                
+                                # ------------- DB Module -------------------
+                                
                                 tabPanel(
                                     "Option 01",
                                     div(class = "secondaryHeaders", h3("Option 01: From Online Database")),
@@ -84,6 +90,10 @@ shinyUI(dashboardPage(
                                         actionButton("queryDatabase", "Query Database", icon("download"))
                                     )
                                 ),
+                                
+                                # ------------- End of DB Module -------------------
+                                
+                                # ------------- Local Disk Module -------------------
                                 tabPanel(
                                     "Option 02",
                                     div(class = "secondaryHeaders", h3("Option 02: From Local Disk")),
@@ -99,6 +109,7 @@ shinyUI(dashboardPage(
                                         )
                                     )
                                 ),
+                                # ------------- End of Local Disk Module -------------------
                                 
                                 div(class = "progressStep", taskItem(
                                     value = 15, color = "orange",
@@ -110,8 +121,9 @@ shinyUI(dashboardPage(
                                 id = "dataToConfigureDiv",
                                 actionButton("dataToConfigure", "Next: Configure Cleaning")
                             )
-                            
                         ),
+                        
+                        # ------------- Map / Table Module -------------------
                         column(9,
                                tabsetPanel(
                                    type = "tabs",
@@ -153,7 +165,13 @@ shinyUI(dashboardPage(
                                             DT::dataTableOutput("inputDataTable"))
                                ))
                         
+                        # ------------- End of Map/Table Module -------------------
                     ))),
+            
+   # -------------  End of Add Data Module -------------------
+   
+   # ------------- Cleaning Configuration Module -------------------
+   
             tabItem("configure",
                     fluidRow(column(
                         12,
@@ -173,7 +191,6 @@ shinyUI(dashboardPage(
                                     
                                     uiOutput("questionnaire")
                                     
-                                    
                                     # -------------------------------
                                 ),
                                 tabPanel(
@@ -182,14 +199,23 @@ shinyUI(dashboardPage(
                                     helpText("Note: Select the quality checks you prefer and 
                                              continue cleaning with just those checks"),
                                    
+                                    # -------------------------------
+                                    
                                     uiOutput("qualityChecks")
+                                    
+                                    # -------------------------------
+                                    
                                 ),
                                 tabPanel(
                                     "Option 03",
                                     div(class = "secondaryHeaders", h3("Option 03: Cleaning Templates")),
                                     helpText("Note: Choose the cleaning, customized for special domains and needs"),
                                     
+                                    # -------------------------------
+                                    
                                     uiOutput("domainCleaning")
+                                    
+                                    # -------------------------------
                                 ),
                                 div(class = "progressStep", taskItem(
                                     value = 30, color = "green",
@@ -197,11 +223,14 @@ shinyUI(dashboardPage(
                                 ))
                             ),
                             div(class = "activeButton", actionButton("configureToFlag", "Next: Flagging"))
-                            
                         )
-                        
                     ))),
             
+   # ------------- End of Cleaning Configuration Module -------------------
+   
+   
+   # ------------- Flagging Module -------------------
+   
             tabItem("flag",
                     fluidRow(column(
                         12,
@@ -209,9 +238,7 @@ shinyUI(dashboardPage(
                             12,
                             h1("Flag Data"),
                             br(),
-                            
                             h4("Input Data"),
-                            
                             div(
                                 class = "center",
                                 fluidRow(
@@ -229,7 +256,6 @@ shinyUI(dashboardPage(
                                         color = "yellow"
                                     )
                                 ),
-                                
                                 div(class = "progressStep", taskItem(
                                     value = 45, color = "yellow",
                                     "Step 3 of 6"
@@ -237,14 +263,22 @@ shinyUI(dashboardPage(
                                 
                                 fluidRow(actionButton("flagButton", label = "Flag Data"))
                             ),
-                            
                             br(),
+                            
+                            # -------------------------------
                             
                             uiOutput("flaggedContentUI"),
                             
                             uiOutput("cleanedResultsUI")
+                            
+                            # -------------------------------
                         )
                     ))),
+   
+   # ------------- End of Flagging Module -------------------
+   
+   # ------------- Documentation Module -------------------
+   
             tabItem("document",
                     fluidRow(column(
                         12,
@@ -263,10 +297,17 @@ shinyUI(dashboardPage(
                                 ),
                                 selected = "pdf_document"
                             ),
+                            
+                            # -------------------------------
+                            
                             uiOutput("documentContentUI")
+                            
+                            # -------------------------------
                         )
                     )))
-            
         )
+   
+   # ------------- End of Documentation Module -------------------
+   
     )
 ))

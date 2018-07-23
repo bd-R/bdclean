@@ -2,7 +2,7 @@ create_report_data <-
     function(inputData,
              cleanedData,
              responses,
-             verbose,
+             cleaningDone,
              format) {
         # --------------- Data required for detailed report ---------------
         inputSize <- dim(inputData)
@@ -129,10 +129,7 @@ create_report_data <-
             )
         
         # ------------ End of data required for short report ---------------
-        
-        if (verbose) {
-            print(kable(recordsTable, format = "markdown"))
-        }
+       
         
         generateShortReport(recordsTable, format)
         generateDetailedReport(data.summary, checks.records, format)
