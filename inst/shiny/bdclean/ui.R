@@ -69,11 +69,11 @@ shinyUI(dashboardPage(
                                         choices = list(
                                             "GBIF" = 'gbif',
                                             "Vertnet" = 'vertnet',
-                                            "Bison" = 3,
-                                            "Inat" = 4,
-                                            "eBird" = 5,
-                                            "Ecoengine" = 6,
-                                            "Vertnet" = 7
+                                            "Bison" = 'bison',
+                                            "Inat" = 'inat',
+                                            "eBird" = 'ebird',
+                                            "Ecoengine" = 'ecoengine',
+                                            "Vertnet" = 'vertnet'
                                         ),
                                         selected = 'gbif'
                                     ),
@@ -252,6 +252,17 @@ shinyUI(dashboardPage(
                             12,
                             h1("Artifacts and Reports"),
                             br(),
+                            selectInput(
+                                "reportFormat",
+                                "Report Type",
+                                choices = list(
+                                    "PDF" = 'pdf_document',
+                                    "HTML" = "html_document",
+                                    "Word" = "word_document",
+                                    "Markdown" = "md_document"
+                                ),
+                                selected = "pdf_document"
+                            ),
                             uiOutput("documentContentUI")
                         )
                     )))

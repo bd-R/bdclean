@@ -76,7 +76,7 @@ shinyServer(function(input, output, session) {
                 input$queryDatabase == "gbif") {
                 print("in")
                 data <-
-                    occ_search(input$scientificName, limit = input$recordSize)
+                    rgbif::occ_search(scientificName = input$scientificName, limit = input$recordSize)
                 inputData <<- data$data
                 
             } else {
@@ -590,8 +590,9 @@ shinyServer(function(input, output, session) {
                          ))
     })
     
+    
+    
     output$documentContentUI <- renderUI({
-        print(getwd())
         
         withProgress(message = "Generating Artifacts...", {
             # Report
@@ -614,89 +615,171 @@ shinyServer(function(input, output, session) {
                                c("md_document"))
         })
         
-        conditionalPanel(
-            "input.flagToDocument > 0 || input.cleanToDocument > 0",
-            tagList(
-                tabsetPanel(
-                    type = "tabs",
-                    tabPanel(
-                        "Input Data",
-                        div(class = "secondaryHeaders", h3("Artifact 01: Input RAW Data")),
-                        downloadButton("downloadInput", "Download Input Data"),
-                        br(),
-                        br(),
-                        DT::renderDataTable(inputData, width = 300)
-                        
+        return(tagList(
+            
+            
+            conditionalPanel(
+                "input.flagToDocument > 0 || input.cleanToDocument > 0",
+                tagList(
+                    
+                    tabsetPanel(
+                        type = "tabs",
+                        tabPanel(
+                            "Input Data",
+                            div(class = "secondaryHeaders", h3("Artifact 01: Input RAW Data")),
+                            downloadButton("downloadInput", "Download Input Data"),
+                            br(),
+                            br(),
+                            DT::renderDataTable(inputData, width = 300)
+                            
+                        ),
+                        tabPanel(
+                            "Flagged Data",
+                            div(class = "secondaryHeaders", h3(
+                                "Artifact 02: Complete Flagged Data"
+                            )),
+                            downloadButton("downloadFlagged", "Download Flagged Data"),
+                            br(),
+                            br(),
+                            DT::renderDataTable(flaggedData, width = 300)
+                            
+                        ),
+                        tabPanel(
+                            "Cleaned Data",
+                            div(class = "secondaryHeaders", h3("Artifact 03: Cleaned Data")),
+                            downloadButton("downloadCleaned", "Download Cleaned Data"),
+                            br(),
+                            br(),
+                            DT::renderDataTable(cleanedData, width = 300)
+                            
+                        ),
+                        tabPanel(
+                            "Cleaning Report",
+                            div(class = "secondaryHeaders", h3(
+                                "Report 01: Short Cleaning Summary"
+                            )),
+                            
+                            downloadButton("downloadShortReport", "Download Cleaning Summary"),
+                            br(),
+                            br(),
+                            includeMarkdown("CleaningReports/generateShortReport.md")
+                        ),
+                        tabPanel(
+                            "Detailed Quality Check Report",
+                            div(class = "secondaryHeaders", h3(
+                                "Report 02: Detailed Quality Check Report"
+                            )),
+                            downloadButton("downloadDetailedReport", "Download Detailed Report"),
+                            br(),
+                            br(),
+                            includeMarkdown("CleaningReports/generateDetailedReport.md")
+                            
+                        ),
+                        tabPanel(
+                            "Source Code",
+                            div(class = "secondaryHeaders", h3(
+                                "Environment 01: Workflow Source Code"
+                            )),
+                            downloadButton("downloadCode", "Download Detailed Report"),
+                            br()
+                            
+                        ),
+                        tabPanel(
+                            "R Environment",
+                            div(class = "secondaryHeaders", h3("Environment 02: R Environment")),
+                            downloadButton("downloadDetailedReport", "Download Detailed Report"),
+                            br()
+                            # DT::renderDataTable(inputData, width = 300)
+                            
+                        )
                     ),
-                    tabPanel(
-                        "Flagged Data",
-                        div(class = "secondaryHeaders", h3(
-                            "Artifact 02: Complete Flagged Data"
-                        )),
-                        downloadButton("downloadFlagged", "Download Flagged Data"),
-                        br(),
-                        br(),
-                        DT::renderDataTable(flaggedData, width = 300)
-                        
-                    ),
-                    tabPanel(
-                        "Cleaned Data",
-                        div(class = "secondaryHeaders", h3("Artifact 03: Cleaned Data")),
-                        downloadButton("downloadCleaned", "Download Cleaned Data"),
-                        br(),
-                        br(),
-                        DT::renderDataTable(cleanedData, width = 300)
-                        
-                    ),
-                    tabPanel(
-                        "Cleaning Report",
-                        div(class = "secondaryHeaders", h3(
-                            "Report 01: Short Cleaning Summary"
-                        )),
-                        downloadButton("downloadShortReport", "Download Cleaning Summary"),
-                        br(),
-                        br(),
-                        includeMarkdown("CleaningReports/generateShortReport.md")
-                    ),
-                    tabPanel(
-                        "Detailed Quality Check Report",
-                        div(class = "secondaryHeaders", h3(
-                            "Report 02: Detailed Quality Check Report"
-                        )),
-                        downloadButton("downloadDetailedReport", "Download Detailed Report"),
-                        br(),
-                        br(),
-                        includeMarkdown("CleaningReports/generateDetailedReport.md")
-                        
-                    ),
-                    tabPanel(
-                        "Source Code",
-                        div(class = "secondaryHeaders", h3(
-                            "Environment 01: Workflow Source Code"
-                        )),
-                        downloadButton("downloadCode", "Download Detailed Report"),
-                        br()
-                        
-                    ),
-                    tabPanel(
-                        "R Environment",
-                        div(class = "secondaryHeaders", h3("Environment 02: R Environment")),
-                        downloadButton("downloadDetailedReport", "Download Detailed Report"),
-                        br()
-                        # DT::renderDataTable(inputData, width = 300)
-                        
+                    
+                    div(
+                        class = "progressStep",
+                        taskItem(value = 100, color = "green",
+                                 "Step 6 of 6")
                     )
-                ),
-                
-                div(
-                    class = "progressStep",
-                    taskItem(value = 100, color = "green",
-                             "Step 6 of 6")
+                    
                 )
-                
             )
-        )
+        ))
+        
     })
+    
+    output$downloadShortReport <- downloadHandler(
+        filename = function() {
+            
+            paste('shortReport-', Sys.Date(), switch(
+                input$reportFormat,
+                "pdf_document" = ".pdf",
+                "html_document" = ".html",
+                "word_document" = ".docx",
+                "md_document" = ".md"
+            ), sep = "")
+        },
+        
+        content = function(file) {
+            withProgress(message = "Preparing download...", {
+                create_report_data(inputData,
+                                   cleanedData,
+                                   questionnaire,
+                                   FALSE,
+                                   input$reportFormat)
+            })
+            
+            
+            file.copy(file.path(
+                getwd(),
+                "CleaningReports",
+                paste("generateShortReport", switch(
+                    input$reportFormat,
+                    "pdf_document" = ".pdf",
+                    "html_document" = ".html",
+                    "word_document" = ".docx",
+                    "md_document" = ".md"
+                ), sep = "")
+            ),
+            file)
+        }
+    )
+    
+    output$downloadDetailedReport <- downloadHandler(
+        filename = function() {
+            
+            paste('detailedReport-', Sys.Date(), switch(
+                input$reportFormat,
+                "pdf_document" = ".pdf",
+                "html_document" = ".html",
+                "word_document" = ".word",
+                "md_document" = ".md"
+            ), sep = "")
+        },
+        
+        content = function(file) {
+            withProgress(message = "Preparing download...", {
+                create_report_data(inputData,
+                                   cleanedData,
+                                   questionnaire,
+                                   FALSE,
+                                   input$reportFormat)
+            })
+            
+            
+            file.copy(file.path(
+                getwd(),
+                "CleaningReports",
+                paste("generateDetailedReport", switch(
+                    input$reportFormat,
+                    "pdf_document" = ".pdf",
+                    "html_document" = ".html",
+                    "word_document" = ".word",
+                    "md_document" = ".md"
+                ), sep = "")
+            ),
+            file)
+        }
+    )
+  
     
     output$downloadInput <- downloadHandler(
         filename = function() {
