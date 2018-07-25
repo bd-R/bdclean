@@ -6,7 +6,6 @@
 #'
 #'@importFrom utils menu
 #'
-#'@param quest data.frame containing set of questions to be asked
 #'
 #'@return data frame with the responces, which would be passed on to \code{clean_data}
 #'
@@ -15,10 +14,9 @@
 #'}
 #'
 #'@export
-get_config <- function(quest=NULL){
+get_config <- function(){
   data(quest, envir=environment())
   data(responses, envir=environment())
-  quest1<-(quest)
   res<-vector(mode="character",length = nrow(quest))
   for (i in 1:nrow(quest)){
     if(quest$qlink[i]>0){
@@ -28,20 +26,69 @@ get_config <- function(quest=NULL){
     }
     if(quest$mtype[i]=="m"){
       rval <- menu(responses[[quest[i,1]]]$value,title = quest[i,2] )
-    } else {
+    } else if(quest$rtype[i]=="Numeric"){
       rval <- readline(prompt=quest[i,2])
+         if(!(varhandle::check.numeric(rval,only.integer = TRUE))){
+           message(paste("The spatial resolution should be integer, please enter again"))
+           rval <- readline(prompt=quest[i,2])
+         }else{
+           res[i]=rval
+         }
+         
+         if(!(varhandle::check.numeric(rval,only.integer = TRUE))){
+           message(paste("The spatial resolution should be integer, please enter again"))
+           rval <- readline(prompt=quest[i,2])
+         }else{
+           res[i]=rval
+         }
+      
+         if(!(varhandle::check.numeric(rval,only.integer = TRUE))){
+           message(paste("The spatial resolution should be integer, please enter again"))
+           rval <- readline(prompt=quest[i,2])
+         }else{
+           res[i]=rval
+         }
+             
+         
+         if(!(varhandle::check.numeric(rval,only.integer = TRUE))){
+           message(paste("The spatial resolution entered is not integer, setting default resolution as 10"))
+           rval<-1000
+           res[i]=rval
+         }else{
+           res[i]=rval
+         }
+      
+    } else{
+      rval <- readline(prompt=quest[i,2])
+         if(IsDate(rval)){
+           res[i]=rval
+         }else{
+           message(paste("The entered date format is incorrect, please enter the date in %Y-%m-%d"))
+           rval <- readline(prompt=quest[i,2])
+         }
+         if(IsDate(rval)){
+           res[i]=rval
+         }else{
+           message(paste("The entered date format is incorrect, please enter the date in %Y-%m-%d"))
+           rval <- readline(prompt=quest[i,2])
+         }
+         if(IsDate(rval)){
+           res[i]=rval
+         }else{
+           message(paste("The entered date format is incorrect, please enter the date in %Y-%m-%d"))
+           rval <- readline(prompt=quest[i,2])
+         }
+         if(IsDate(rval)){
+             res[i]=rval
+         }else{
+           message(paste("The entered date format is incorrect, setting default date as 1990-01-01"))
+           rval="1990-01-01"
+           res[i]=rval
+             
+         }
+             
     }
-    if(quest[i,3]=="Numeric"){
-      res[i]=rval
-    }
-    if(quest[i,3]=="Date"){
-      if(IsDate(rval)){
-        res[i]=rval
-      }
-      else{
-        stop(paste("The input in wrong or the date format is not correct"))
-      }
-    }
+    
     if(quest[i,3]=="I_Numeric"){
       if(rval<=quest[i,4] && rval>=1){
         qvar<-quest[i,1]
@@ -65,3 +112,4 @@ IsDate <- function(mydate, date.format = "%Y-%m-%d") {
   tryCatch(!is.na(as.Date(mydate, date.format)),
            error = function(err) {FALSE})
 }
+

@@ -1,7 +1,7 @@
 Package: bdclean
 Type: Package
 Title: Biodiversity Data Cleaning Workflow
-Version: 0.0.6
+Version: 0.0.7
 Date: 2018-02-28
 Author: Tomer Gueta <tomer.gu@gmail.com>, Vijay Barve <vijay.barve@gmail.com>, 
 	Thiloshon Nagarajah <thiloshon@gmail.com>, Ashwin Agrawal <ashwin.agrawal.met14@itbhu.ac.in>,
@@ -10,5 +10,5 @@ Maintainer: Vijay Barve <vijay.barve@gmail.com>
 Description: Provides a set of functions to build a workflow to deal
 	with biodiversity data cleaning protocols. 
 License: GPL-3
-Imports: rmarkdown, knitr
+Imports: rmarkdown, knitr, taxize, varhandle
 RoxygenNote: 6.0.1
