@@ -1,5 +1,11 @@
-cleaning_function <- function(bddata, intensity) {
-    checkColumns <- grep("bdclean", colnames(bddata))
+cleaning_function <- function(bddata) {
+    checkColumns <- which(grepl("bdclean", names(bddata)))
+    
+    if(length(checkColumns) == 0){
+        warning("Dataset has no flag columns! Skipping cleaning")
+        return(flaggedData)
+    }
+    
     checkData <- bddata[, checkColumns]
     
     # ------------- Decision Making of Cleaning -------------
@@ -8,19 +14,25 @@ cleaning_function <- function(bddata, intensity) {
     # Records with cleanliness-score less than 10 in atleast 1 check will fail
     # ------------- Decision Making of Cleaning -------------
     
-    failedData <- which(rowSums(checkData != 10) >= 1)
+    failedData <- rowSums(checkData != TRUE) >= 1
     
     # ------------- End of Decision Making of Cleaning -------------
     
-    return(bddata[!failedData,!checkColumns])
+    return(bddata[!failedData, !grepl("bdclean", names(bddata))])
 }
 
 
 perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
     flagColumns <- which(grepl("bdclean", names(flaggedData)))
+    
+    if(length(flagColumns) == 0){
+        warning("Dataset has no flag columns! Skipping cleaning")
+        return(flaggedData)
+    }
+    
     cleanedData <- flaggedData
     cleanedData$cleanlinessScore <- 0
-    
+
     for (columnIndex in flagColumns) {
         cleanedData$cleanlinessScore <-
             cleanedData$cleanlinessScore + cleanedData[, columnIndex]

@@ -44,7 +44,7 @@ create_default_questionnaire <- function() {
                 "Class"
             ),
             question.type = "Child",
-            quality.checks = c("taxoLevel"),
+            quality.checks = c("DC_taxoLevel"),
             question.id = "taxonLevel",
             ui.type = "select"
         )
@@ -57,6 +57,7 @@ create_default_questionnaire <- function() {
             possible.responses = c("Yes" , "No"),
             question.type = "Router",
             router.condition = c("Yes", "Y", "yes" ,1, TRUE, "TRUE"),
+            quality.checks = c("DC_coordinatePrecisionMismatch", "DC_coordinatesZero", "DC_countryMismatch", "DC_countryNameUnknown"),
             question.id = "spatialMain",
             ui.type = "single-checkbox"
         )
@@ -65,7 +66,7 @@ create_default_questionnaire <- function() {
         BdQuestion(
             question = "What is the spatial resolution required for your data? (in meteres)",
             question.type = "Child",
-            quality.checks = c("spatialResolution"),
+            quality.checks = c("DC_spatialResolution"),
             question.id = "spatialResolution",
             ui.type = "numericInput"
         )
@@ -99,7 +100,7 @@ create_default_questionnaire <- function() {
         BdQuestion(
             question = "What is the range of dates of the observations in this data set? In format (YYYY-mm-dd YYYY-mm-dd)",
             question.type = "Child",
-            quality.checks = c("earliestDate"),
+            quality.checks = c("DC_earliestDate"),
             question.id = "temporalEarliest",
             ui.type = "date-range"
         )
@@ -124,7 +125,7 @@ create_default_questionnaire <- function() {
             question = "What temporal resolution are you interested in?",
             possible.responses = c("Day", "Month", "Year"),
             question.type = "Child",
-            quality.checks = c("temporalResolution"),
+            quality.checks = c("DC_temporalResolution"),
             question.id = "temporalResolution",
             ui.type = "radio"
         )

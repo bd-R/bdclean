@@ -2,7 +2,6 @@ create_report_data <-
     function(inputData,
              cleanedData,
              responses,
-             verbose,
              format) {
         # --------------- Data required for detailed report ---------------
         inputSize <- dim(inputData)
@@ -14,21 +13,25 @@ create_report_data <-
             length(unique(cleanedData$scientificName))
         
         earliestInputDate <-
-            min(suppressWarnings(as.POSIXct(
-                unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S"
-            )))
+            min(as.POSIXct(
+                unique(inputData$eventDate)            ))
+        # latestInputDate <-
+        #     max(suppressWarnings(as.POSIXct(
+        #         unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S", tz="UTC"
+        #     )))
         latestInputDate <-
-            max(suppressWarnings(as.POSIXct(
-                unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S"
-            )))
+            max(as.POSIXct(
+                unique(inputData$eventDate)
+            ))
+        
         earliestOutputDate <-
-            min(suppressWarnings(as.POSIXct(
-                unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S"
-            )))
+            min(as.POSIXct(
+                unique(cleanedData$eventDate)
+            ))
         latestOutputDate <-
-            max(suppressWarnings(as.POSIXct(
-                unique(cleanedData$eventDate), "%Y-%m-%dT%H:%M:%S"
-            )))
+            max(as.POSIXct(
+                unique(cleanedData$eventDate)
+            ))
         
         InputData <-
             c(
@@ -57,8 +60,9 @@ create_report_data <-
         index <- 1
         
         for (question in responses$BdQuestions) {
-            if (question$question.type != "Router" &&
+            if (length(question$quality.checks) > 0 &&
                 length(question$users.answer) > 0) {
+                
                 checks.records[[paste("question", index, sep = "")]] <-
                     list(
                         "question" = question$question,
@@ -130,9 +134,7 @@ create_report_data <-
         
         # ------------ End of data required for short report ---------------
         
-        if (verbose) {
-            print(kable(recordsTable, format = "markdown"))
-        }
+        print(kable(recordsTable, format = "markdown"))
         
         generateShortReport(recordsTable, format)
         generateDetailedReport(data.summary, checks.records, format)

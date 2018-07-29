@@ -109,9 +109,17 @@ BdQuestion <-
                 if (length(.self$quality.checks) > 0) {
                     for (i in 1:length(.self$quality.checks)) {
                         checkName <- .self$quality.checks[i]
-                        flaggedData <-
-                            get(checkName)(flaggedData, .self$users.answer)
+                        # flaggedData <-
+                        #     get(checkName)(flaggedData, .self$users.answer)
                         
+                        checkTemp <-
+                            try(bdchecks::performDataCheck(data = flaggedData, DConly = c(checkName)))
+                        
+                        
+                        if (length(checkTemp@flags) > 0) {
+                            flaggedData[, paste("bdclean", checkName, sep = ".")] <-
+                                checkTemp@flags[[1]]@result
+                        }
                         
                     }
                 }
@@ -120,21 +128,47 @@ BdQuestion <-
             },
             
             addToReport = function(flaggedData,
-                                   CleaningThreshold = 5,
-                                   clean = TRUE) {
+                                   clean = TRUE,
+                                   CleaningThreshold = 5) {
+               
+                
                 packageDocumentation <- tools::Rd_db("bdclean")
+                
                 
                 for (i in 1:length(.self$quality.checks)) {
                     nameOfQualityCheck <- .self$quality.checks[i]
+                    
+                    if (!(paste("bdclean", nameOfQualityCheck, sep = ".") %in% names(flaggedData))) {
+                        warning(
+                            "Required column ",
+                            paste("bdclean", nameOfQualityCheck, sep = "."),
+                            " not found! Probably, quality check is missing from 
+                            environment and check was not performed."
+                        )
+                        return()
+                    }
+                    
                     flag <-
-                        flaggedData[, paste("bdclean", nameOfQualityCheck, sep = ".")]
+                        flaggedData[paste("bdclean", nameOfQualityCheck, sep = ".")]
+                    
+                    # Uncomment if using threshold
+                    # countOfFlaggedData <-
+                    #     sum(flag < CleaningThreshold, na.rm = TRUE)
                     
                     countOfFlaggedData <-
-                        sum(flag < CleaningThreshold, na.rm = TRUE)
+                             sum(flag != TRUE, na.rm = T)
                     
                     # ------ Parsing MetaData for check from .Rd file
                     functionDocumentation <-
                         packageDocumentation[grep(nameOfQualityCheck, names(packageDocumentation))]
+                    
+                    
+                    if(length(functionDocumentation) == 0){
+                        warning("Could not find function documentation for ", 
+                                nameOfQualityCheck, ". Skipping report.")
+                        next
+                    }
+                    
                     description <-
                         lapply(functionDocumentation,
                                tools:::.Rd_get_metadata,

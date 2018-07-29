@@ -31,7 +31,7 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     }
     
     idx <- which(ranks == res)
-    cat(paste("\n Removing records above :", res, "\n"))
+    cat(paste("taxoLevel:", "\n Removing records above :", res, "\n"))
     bddata$bdclean.taxoLevel <- 0
     if (idx > 0) {
         for (i in idx:length(ranks)) {
@@ -61,7 +61,7 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #'@export
 spatialResolution <- function(bddata, res = 100) {
     #print("fxn Spatial Resoultion")
-    cat("spatialResolution")
+    cat(paste("spatialResolution:", "\n Removing records above :", res, "\n"))
     bddata$bdclean.taxoLevel <- 0
     res <- as.numeric(res)
     bddata$bdclean.spatialResolution <- 0
@@ -90,7 +90,7 @@ spatialResolution <- function(bddata, res = 100) {
 #'
 #'@export
 earliestDate <- function(bddata, res = "1700-01-01") {
-    cat("earliestDate")
+    cat(paste("earliestDate:", "\n Removing records above :", res, "\n"))
     dates <- strsplit(res, " ")[[1]]
     bddata <- as.data.frame(bddata)
     ed <- try(as.Date(dates[1], format = "%Y-%m-%d"))
@@ -122,7 +122,7 @@ earliestDate <- function(bddata, res = "1700-01-01") {
 #'
 #'@export
 temporalResolution <- function(bddata, res = "Day") {
-    cat("temporalResolution")
+    cat(paste("temporalResolution:", "\n Removing records above :", res, "\n"))
     bddata <- as.data.frame(bddata)
     bddata$bdclean.temporalResolution <- 0
     if (res == "Day") {

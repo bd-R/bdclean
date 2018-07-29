@@ -140,7 +140,7 @@ shinyServer(function(input, output, session) {
                     spocc::occ(input$scientificName,
                                input$queryDB,
                                limit = input$recordSize)
-                dataStore$inputData <<- data$gbif$data$Puma_concolor
+                dataStore$inputData <<- data$gbif$data$Puma_concolor //
             }
         })
         

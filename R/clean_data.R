@@ -10,7 +10,6 @@
 #'@param data Biodiversity data in a data frame
 #'@param customQuestionnaire Custom User Created Questionnaire Responses if
 #'already available to pypass asking questions each time.
-#'@param verbose Verbose output if TRUE else brief output if FALSE
 #'@param report Whether to print report of cleaning done.
 #'@param format Formats of the cleaning report required. Options are: Markdown, HTML or / and PDF
 #'
@@ -39,9 +38,7 @@
 clean_data <-
     function(data,
              customQuestionnaire,
-             cleaningThreshold = 5,
              clean = TRUE,
-             verbose = FALSE,
              report = TRUE,
              format = c("html_document", "pdf_document")) {
         responses <- list()
@@ -56,34 +53,39 @@ clean_data <-
             responses <- customQuestionnaire
         }
         
-        if (verbose) {
-            cat("\n Initial records ...", dim(inputData)[1], "\n")
-        }
+        message("Initial records: ", paste(dim(inputData), collapse = "x"))
         
         for (question in responses$BdQuestions) {
-            if (question$question.type != "Router" &&
+            if (length(question$quality.checks) > 0 &&
                 length(question$users.answer) > 0) {
                 flaggedData <- question$flagData(flaggedData)
-            }
-            
-            if (verbose) {
-                cat("\n Records remaining...", dim(flaggedData)[1], "\n")
             }
         }
         
         # Decision Making
-        cleanedData <- perform_Cleaning(flaggedData)
+        if (clean){
+            cleanedData <- cleaning_function(flaggedData)
+            message("Records remaining:", paste(dim(cleanedData), collapse = "x"))
+        }
         
         # Report
-        for (question in responses$BdQuestions) {
-            if (question$question.type != "Router" &&
-                length(question$users.answer) > 0) {
-                question$addToReport(flaggedData, cleaningThreshold, clean)
-            }
-        }
-        create_report_data(data, cleanedData, responses, verbose, format)
         
-        return(cleanedData)
+        if(report){
+            for (question in responses$BdQuestions) {
+                if (length(question$quality.checks) > 0 &&
+                    length(question$users.answer) > 0) {
+                    question$addToReport(flaggedData, clean)
+                }
+            }
+            create_report_data(data, cleanedData, responses, format) 
+        }
+      
+        
+        if(clean){
+            return(cleanedData)
+        }
+        
+        return(flaggedData)
     }
 
 
