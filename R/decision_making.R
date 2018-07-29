@@ -4,11 +4,13 @@
 #'
 #'@export
 cleaning_function <- function(bddata) {
+    bddata <- as.data.frame(bddata)
+    
     checkColumns <- which(grepl("bdclean", names(bddata)))
     
     if (length(checkColumns) == 0) {
         warning("Dataset has no flag columns! Skipping cleaning")
-        return(flaggedData)
+        return(bddata)
     }
     
     checkData <- bddata[, checkColumns]
@@ -19,13 +21,13 @@ cleaning_function <- function(bddata) {
     # Records with cleanliness-score less than 10 in atleast 1 check will fail
     # ------------- Decision Making of Cleaning -------------
     
-    failedData <- rowSums(checkData != TRUE) >= 1
+    failedDataLogical <- rowSums(checkData != TRUE) >= 1
     
     # ------------- End of Decision Making of Cleaning -------------
     
-    message("Records remaining:", paste(dim(cleanedData), collapse = "x"))
+    message("Records remaining:", nrow(bddata) - sum(failedDataLogical))
     
-    return(bddata[!failedData,!grepl("bdclean", names(bddata))])
+    return(bddata[!failedDataLogical, !grepl("bdclean", names(bddata))])
 }
 
 #' Data decision function (threshold tuning) required in bdclean internal usage.

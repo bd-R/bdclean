@@ -17,7 +17,9 @@ shinyServer(function(input, output, session) {
             cleaningDone = FALSE,
             
             questionnaire = bdclean::create_default_questionnaire(),
+            # bdclean::
             qualityChecks = bdclean::get_checks_list(),
+            # bdclean::
             
             cleaningThresholdControl = 7
         )
@@ -97,7 +99,7 @@ shinyServer(function(input, output, session) {
             #                      cleaningThreshold = dataStore$cleaningThresholdControl)
             
             dataStore$cleanedData <<-
-                bdclean::cleaning_function(dataStore$flaggedData)
+                bdclean::cleaning_function(dataStore$flaggedData) # bdclean::
             
         })
         dataStore$cleaningDone <<- TRUE
@@ -127,9 +129,7 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$queryDatabase, {
         withProgress(message = paste("Querying", input$queryDB, "..."), {
-            if (length(input$queryDatabase == 1) &&
-                input$queryDatabase == "gbif") {
-                print("in")
+            if (input$queryDB == "gbif") {
                 data <-
                     rgbif::occ_search(
                         scientificName = input$scientificName,
@@ -142,10 +142,25 @@ shinyServer(function(input, output, session) {
                     spocc::occ(input$scientificName,
                                input$queryDB,
                                limit = input$recordSize)
-                dataStore$inputData <<-
-                    data[input$queryDatabase]$data[input$scientificName]
+                
+                tempData <- data[[input$queryDatabase]]$data[[1]]
+                
+                if (length(tempData) == 0) {
+                    showNotification(
+                        "No data returned for the query! Try different scientific name.",
+                        duration = 3
+                    )
+                    print("out")
+                    return()
+                }
+                
+                dataStore$inputData <<- tempData
             }
         })
+        
+        if (length(dataStore$inputData) == 0) {
+            return()
+        }
         
         dataLoadedTask(dataStore$inputData)
     })
@@ -168,7 +183,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
@@ -177,7 +192,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
@@ -197,7 +212,7 @@ shinyServer(function(input, output, session) {
         
         leafletProxy("mymap", data = data) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data
@@ -470,7 +485,7 @@ shinyServer(function(input, output, session) {
     observeEvent(input$flagButton, {
         tempData <- dataStore$inputData
         withProgress(message = "Flagging Data...", {
-            dataStore$flaggedData <-
+            dataStore$flaggedData <<-
                 dataStore$questionnaire$flagData(dataStore$inputData)
             dataStore$flaggingDone <<- TRUE
         })
@@ -480,9 +495,34 @@ shinyServer(function(input, output, session) {
         input$flagButton
         #input$cleanControl
         
+        get_flagging_statistics <-
+            function(flaggedData) {
+                flaggedData <- as.data.frame(flaggedData)
+                
+                if (nrow(flaggedData) == 0) {
+                    return(0)
+                }
+                
+                checkColumns <-
+                    which(grepl("bdclean", names(flaggedData)))
+                
+                if (length(checkColumns) == 0) {
+                    warning("Dataset has no flag columns! Skipping cleaning")
+                    return(flaggedData)
+                }
+                
+                checkData <- flaggedData[, checkColumns]
+                
+                return(nrow(flaggedData) - sum(rowSums(checkData != TRUE, na.rm = TRUE) >= 1))
+            }
+        
+        #Uncomment if threshold
+        # flaggedCount <-
+        #     get_flagging_statistics(dataStore$flaggedData,
+        #                             dataStore$cleaningThresholdControl)
+        
         flaggedCount <-
-            get_flagging_statistics(dataStore$flaggedData,
-                                    dataStore$cleaningThresholdControl)
+            get_flagging_statistics(dataStore$flaggedData)
         
         conditionalPanel(
             "input.flagButton > 0",
@@ -597,6 +637,7 @@ shinyServer(function(input, output, session) {
         withProgress(message = "Generating Artifacts...", {
             # Report
             bdclean::create_report_data(
+                # bdclean::
                 dataStore$inputData,
                 dataStore$flaggedData,
                 dataStore$cleanedData,
@@ -697,6 +738,7 @@ shinyServer(function(input, output, session) {
         content = function(file) {
             withProgress(message = "Preparing download...", {
                 bdclean::create_report_data(
+                    # bdclean::
                     dataStore$inputData,
                     dataStore$cleanedData,
                     dataStore$flaggedData,
@@ -734,6 +776,7 @@ shinyServer(function(input, output, session) {
         content = function(file) {
             withProgress(message = "Preparing download...", {
                 bdclean::create_report_data(
+                    # bdclean::
                     dataStore$inputData,
                     dataStore$cleanedData,
                     dataStore$flaggedData,
@@ -763,8 +806,6 @@ shinyServer(function(input, output, session) {
             paste('inputData-', Sys.Date(), '.csv')
         },
         content = function(con) {
-            print(length(dataStore$inputData))
-            print(dataStore$inputData)
             write.csv(dataStore$inputData, con)
         }
     )

@@ -68,7 +68,7 @@ shinyUI(dashboardPage(
                                         max = 50000,
                                         value = 500
                                     ),
-                                    checkboxGroupInput(
+                                    radioButtons(
                                         "queryDB",
                                         label = h3("Online Database:"),
                                         choices = list(
@@ -183,7 +183,8 @@ shinyUI(dashboardPage(
                                     "Option 01",
                                     div(class = "secondaryHeaders", h3("Option 01: Questionnaire")),
                                     helpText(
-                                        "Note: If you have limited knowledge in Biodiversity data, this option is preferred.",
+                                        "Note: If you have limited knowledge in Biodiversity data, 
+                                        this option is preferred.",
                                         "Answer a few questions and let bdclean take care of the cleaning."
                                     ),
                                     

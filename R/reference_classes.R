@@ -112,9 +112,7 @@ BdQuestion <-
                         # flaggedData <-
                         #     get(checkName)(flaggedData, .self$users.answer)
                         
-                        checkTemp <-
-                            try(bdchecks::performDataCheck(data = flaggedData, DConly = c(checkName)))
-                        
+                        checkTemp <- bdchecks::performDataCheck(data = flaggedData, DConly = c(checkName))
                         
                         if (length(checkTemp@flags) > 0) {
                             flaggedData[, paste("bdclean", checkName, sep = ".")] <-
@@ -266,7 +264,7 @@ BdQuestionContainer <-
                 
                 
                 return(flaggedData)
-            }
+            },
             
             notify = function() {
                 message(paste(

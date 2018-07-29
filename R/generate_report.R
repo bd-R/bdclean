@@ -140,7 +140,7 @@ create_report_data <-
         
         # ------------ End of data required for short report ---------------
         
-        print(kable(recordsTable, format = "markdown"))
+        print(knitr::kable(recordsTable, format = "markdown"))
         
         generateShortReport(recordsTable, format)
         generateDetailedReport(data.summary, checks.records, format)
