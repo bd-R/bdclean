@@ -4,17 +4,14 @@
 \alias{clean_data}
 \title{Data cleaning according to Questionnaire Responses.}
 \usage{
-clean_data(data, customQuestionnaire, cleaningThreshold = 5, clean = TRUE,
-  verbose = FALSE, report = TRUE, format = c("html_document",
-  "pdf_document"))
+clean_data(data, customQuestionnaire, clean = TRUE, report = TRUE,
+  format = c("html_document", "pdf_document"))
 }
 \arguments{
 \item{data}{Biodiversity data in a data frame}
 
 \item{customQuestionnaire}{Custom User Created Questionnaire Responses if
 already available to pypass asking questions each time.}
-
-\item{verbose}{Verbose output if TRUE else brief output if FALSE}
 
 \item{report}{Whether to print report of cleaning done.}
 

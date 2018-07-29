@@ -2,7 +2,7 @@ Package: bdclean
 Type: Package
 Title: Biodiversity Data Cleaning Workflow
 Version: 0.1.0
-Date: 2018-06-17
+Date: 2018-07-29
 Author: Tomer Gueta <tomer.gu@gmail.com>, Vijay Barve <vijay.barve@gmail.com>, 
 	Thiloshon Nagarajah <thiloshon@gmail.com>, Ashwin Agrawal <ashwin.agrawal.met14@itbhu.ac.in>,
 	Carmel Yohay <yohay@cv.technion.ac.il>
