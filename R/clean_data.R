@@ -47,41 +47,33 @@ clean_data <-
         cleanedData <- data
         
         
+        # Questionnaire
         if (is.null(customQuestionnaire)) {
             responses <- run_questionnaire()
         } else {
             responses <- customQuestionnaire
         }
         
-        message("Initial records: ", paste(dim(inputData), collapse = "x"))
-        
-        for (question in responses$BdQuestions) {
-            if (length(question$quality.checks) > 0 &&
-                length(question$users.answer) > 0) {
-                flaggedData <- question$flagData(flaggedData)
-            }
-        }
+        # Flagging
+        flaggedData <- responses$flagData(inputData)
         
         # Decision Making
-        if (clean){
+        if (clean) {
             cleanedData <- cleaning_function(flaggedData)
-            message("Records remaining:", paste(dim(cleanedData), collapse = "x"))
         }
         
         # Report
-        
-        if(report){
-            for (question in responses$BdQuestions) {
-                if (length(question$quality.checks) > 0 &&
-                    length(question$users.answer) > 0) {
-                    question$addToReport(flaggedData, clean)
-                }
-            }
-            create_report_data(data, cleanedData, responses, format) 
+        if (report) {
+            create_report_data(data,
+                               flaggedData,
+                               cleanedData,
+                               responses,
+                               clean,
+                               format)
         }
-      
         
-        if(clean){
+        # Cleaning
+        if (clean) {
             return(cleanedData)
         }
         
@@ -120,7 +112,8 @@ run_questionnaire <- function(customQuestionnaire = NULL) {
     } else {
         if (class(customQuestionnaire) != "BdQuestionContainer") {
             message(
-                "Provided Custom Questionnaire is not of class BdQuestionContainer. Using package default Questionnaire"
+                "Provided Custom Questionnaire is not of class BdQuestionContainer.
+                Using package default Questionnaire"
             )
             responses <- create_default_questionnaire()
             

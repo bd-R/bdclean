@@ -1,7 +1,12 @@
+#' Data decision function (binary decision) required in bdclean internal usage.
+#'
+#' NOTE: This is an package internal function. Do not use for external uses.
+#'
+#'@export
 cleaning_function <- function(bddata) {
     checkColumns <- which(grepl("bdclean", names(bddata)))
     
-    if(length(checkColumns) == 0){
+    if (length(checkColumns) == 0) {
         warning("Dataset has no flag columns! Skipping cleaning")
         return(flaggedData)
     }
@@ -18,21 +23,26 @@ cleaning_function <- function(bddata) {
     
     # ------------- End of Decision Making of Cleaning -------------
     
-    return(bddata[!failedData, !grepl("bdclean", names(bddata))])
+    message("Records remaining:", paste(dim(cleanedData), collapse = "x"))
+    
+    return(bddata[!failedData,!grepl("bdclean", names(bddata))])
 }
 
-
+#' Data decision function (threshold tuning) required in bdclean internal usage.
+#'
+#' NOTE: This is an package internal function. Do not use for external uses.
+#'
 perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
     flagColumns <- which(grepl("bdclean", names(flaggedData)))
     
-    if(length(flagColumns) == 0){
+    if (length(flagColumns) == 0) {
         warning("Dataset has no flag columns! Skipping cleaning")
         return(flaggedData)
     }
     
     cleanedData <- flaggedData
     cleanedData$cleanlinessScore <- 0
-
+    
     for (columnIndex in flagColumns) {
         cleanedData$cleanlinessScore <-
             cleanedData$cleanlinessScore + cleanedData[, columnIndex]
@@ -45,38 +55,23 @@ perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
     return(cleanedData)
 }
 
-get_flagging_statistics <-
-    function(flaggedData, cleaningThreshold = 5) {
-        if (nrow(flaggedData) == 0) {
-            return(0)
-        }
-        
-        flagColumns <- which(grepl("bdclean", names(flaggedData)))
-        cleanedData <- flaggedData
-        cleanedData$cleanlinessScore <- 0
-        
-        for (columnIndex in flagColumns) {
-            cleanedData$cleanlinessScore <-
-                cleanedData$cleanlinessScore + cleanedData[, columnIndex]
-            
-        }
-        cleanedData$cleanlinessScore <-
-            cleanedData$cleanlinessScore / length(flagColumns)
-        
-        return(sum(cleanedData$cleanlinessScore >= cleaningThreshold, na.rm = TRUE))
-    }
-
-get_checks_list <- function(){
+#' Returning checks list, function required in bdclean internal usage.
+#'
+#' NOTE: This is an package internal function. Do not use for external uses.
+#'
+#'@export
+get_checks_list <- function() {
     packageDocumentation <- tools::Rd_db("bdclean")
     qualityChecks <- list()
     
     for (i in 1:length(packageDocumentation)) {
         string <- paste(packageDocumentation[i], collapse = " ")
         
-        if(grepl("checkCategory", string)){
-            nameOfQualityCheck <- gsub(".Rd", "", names(packageDocumentation)[i])
+        if (grepl("checkCategory", string)) {
+            nameOfQualityCheck <-
+                gsub(".Rd", "", names(packageDocumentation)[i])
             
-            functionDocumentation <-packageDocumentation[i]
+            functionDocumentation <- packageDocumentation[i]
             description <-
                 lapply(functionDocumentation,
                        tools:::.Rd_get_metadata,

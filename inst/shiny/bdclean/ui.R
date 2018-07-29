@@ -40,7 +40,6 @@ shinyUI(dashboardPage(
         ),
         useShinyjs(),
         tabItems(
-            
             # ------------- Add Data Module -------------------
             tabItem("add",
                     fluidRow(column(
@@ -168,10 +167,10 @@ shinyUI(dashboardPage(
                         # ------------- End of Map/Table Module -------------------
                     ))),
             
-   # -------------  End of Add Data Module -------------------
-   
-   # ------------- Cleaning Configuration Module -------------------
-   
+            # -------------  End of Add Data Module -------------------
+            
+            # ------------- Cleaning Configuration Module -------------------
+            
             tabItem("configure",
                     fluidRow(column(
                         12,
@@ -183,9 +182,11 @@ shinyUI(dashboardPage(
                                 tabPanel(
                                     "Option 01",
                                     div(class = "secondaryHeaders", h3("Option 01: Questionnaire")),
-                                    helpText("Note: If you have limited knowledge in Biodiversity data, this option is preferred.",
-                                             "Answer a few questions and let bdclean take care of the cleaning."),
-                                   
+                                    helpText(
+                                        "Note: If you have limited knowledge in Biodiversity data, this option is preferred.",
+                                        "Answer a few questions and let bdclean take care of the cleaning."
+                                    ),
+                                    
                                     
                                     # -------------------------------
                                     
@@ -196,20 +197,24 @@ shinyUI(dashboardPage(
                                 tabPanel(
                                     "Option 02",
                                     div(class = "secondaryHeaders", h3("Option 02: Customized Checks")),
-                                    helpText("Note: Select the quality checks you prefer and 
-                                             continue cleaning with just those checks"),
-                                   
+                                    helpText(
+                                        "Note: Select the quality checks you prefer and
+                                        continue cleaning with just those checks"
+                                    ),
+                                    
                                     # -------------------------------
                                     
                                     uiOutput("qualityChecks")
                                     
                                     # -------------------------------
                                     
-                                ),
+                                    ),
                                 tabPanel(
                                     "Option 03",
                                     div(class = "secondaryHeaders", h3("Option 03: Cleaning Templates")),
-                                    helpText("Note: Choose the cleaning, customized for special domains and needs"),
+                                    helpText(
+                                        "Note: Choose the cleaning, customized for special domains and needs"
+                                    ),
                                     
                                     # -------------------------------
                                     
@@ -226,11 +231,11 @@ shinyUI(dashboardPage(
                         )
                     ))),
             
-   # ------------- End of Cleaning Configuration Module -------------------
-   
-   
-   # ------------- Flagging Module -------------------
-   
+            # ------------- End of Cleaning Configuration Module -------------------
+            
+            
+            # ------------- Flagging Module -------------------
+            
             tabItem("flag",
                     fluidRow(column(
                         12,
@@ -274,11 +279,11 @@ shinyUI(dashboardPage(
                             # -------------------------------
                         )
                     ))),
-   
-   # ------------- End of Flagging Module -------------------
-   
-   # ------------- Documentation Module -------------------
-   
+            
+            # ------------- End of Flagging Module -------------------
+            
+            # ------------- Documentation Module -------------------
+            
             tabItem("document",
                     fluidRow(column(
                         12,
@@ -306,8 +311,8 @@ shinyUI(dashboardPage(
                         )
                     )))
         )
-   
-   # ------------- End of Documentation Module -------------------
-   
+        
+        # ------------- End of Documentation Module -------------------
+        
     )
 ))

@@ -1,7 +1,5 @@
 library(bdclean)
 library(data.table)
-source("functions/decision_making.R")
-source("functions/generate_report.R")
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 
 shinyServer(function(input, output, session) {
@@ -19,7 +17,7 @@ shinyServer(function(input, output, session) {
             cleaningDone = FALSE,
             
             questionnaire = bdclean::create_default_questionnaire(),
-            qualityChecks = get_checks_list(),
+            qualityChecks = bdclean::get_checks_list(),
             
             cleaningThresholdControl = 7
         )
@@ -93,9 +91,13 @@ shinyServer(function(input, output, session) {
         }
         
         withProgress(message = "Cleaning Data...", {
+            # For threshold uncomment this
+            # dataStore$cleanedData <<-
+            #     perform_Cleaning(dataStore$flaggedData,
+            #                      cleaningThreshold = dataStore$cleaningThresholdControl)
+            
             dataStore$cleanedData <<-
-                perform_Cleaning(dataStore$flaggedData,
-                                 cleaningThreshold = dataStore$cleaningThresholdControl)
+                bdclean::cleaning_function(dataStore$flaggedData)
             
         })
         dataStore$cleaningDone <<- TRUE
@@ -140,7 +142,8 @@ shinyServer(function(input, output, session) {
                     spocc::occ(input$scientificName,
                                input$queryDB,
                                limit = input$recordSize)
-                dataStore$inputData <<- data$gbif$data$Puma_concolor //
+                dataStore$inputData <<-
+                    data[input$queryDatabase]$data[input$scientificName]
             }
         })
         
@@ -165,7 +168,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles(~ longitude, ~ latitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
@@ -174,7 +177,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles(~ longitude, ~ latitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
@@ -194,7 +197,7 @@ shinyServer(function(input, output, session) {
         
         leafletProxy("mymap", data = data) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles(~ longitude, ~ latitude, color = input$mapColor)
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data
@@ -447,77 +450,6 @@ shinyServer(function(input, output, session) {
             br()
             )
         
-        components[[2]] <- tagList(
-            HTML(
-                paste("<input type=radio
-                      name=domainInput value=",
-                      "as",
-                      ">")
-            ),
-            div(
-                class = "checksListContent",
-                h4("Climate Research"),
-                
-                div(class = "checksListTopic col-sm-3", p("Description: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "Researches focused on climate changes and affects on species"
-                    )
-                ),
-                
-                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
-                        , center_of_the_country_coordinates_flag
-                        , coordinate_negated_flag"
-                    )
-                    ),
-                
-                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
-                div(class = "checksListTitle", p("coordinates"))
-                    ),
-            br(),
-            br()
-            )
-        
-        components[[3]] <- tagList(
-            HTML(
-                paste("<input type=radio
-                      name=domainInput value=",
-                      "as",
-                      ">")
-            ),
-            div(
-                class = "checksListContent",
-                h4("Genetics Research"),
-                
-                div(class = "checksListTopic col-sm-3", p("Description: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "Researches focused on genetics and bioinformnatics of species"
-                    )
-                ),
-                div(class = "checksListTopic col-sm-3", p("Quality checks performed: ")),
-                div(
-                    class = "checksListTitle",
-                    p(
-                        "depth_out_of_range_flag, country_coordinate_mismatch_flag, precision_uncertainty_mismatch_flag
-                        , center_of_the_country_coordinates_flag
-                        , coordinate_negated_flag"
-                    )
-                    ),
-                
-                div(class = "checksListTopic col-sm-3", p("DWC Fields Targetted by Checks: ")),
-                div(class = "checksListTitle", p("coordinates"))
-                    ),
-            br(),
-            br()
-            )
-        
         return(
             div(
                 id = 'domainInput',
@@ -538,27 +470,15 @@ shinyServer(function(input, output, session) {
     observeEvent(input$flagButton, {
         tempData <- dataStore$inputData
         withProgress(message = "Flagging Data...", {
-            for (question in dataStore$questionnaire$BdQuestions) {
-                if (question$question.type != "Router" &&
-                    length(question$users.answer) > 0) {
-                    temp <- try({
-                        question$flagData(tempData)
-                    })
-                    
-                    if (!is(temp, "try-error")) {
-                        tempData <- temp
-                    }
-                }
-            }
-            
-            dataStore$flaggedData <<- tempData
+            dataStore$flaggedData <-
+                dataStore$questionnaire$flagData(dataStore$inputData)
             dataStore$flaggingDone <<- TRUE
         })
     })
     
     output$flaggedContentUI <- renderUI({
         input$flagButton
-        input$cleanControl
+        #input$cleanControl
         
         flaggedCount <-
             get_flagging_statistics(dataStore$flaggedData,
@@ -569,21 +489,22 @@ shinyServer(function(input, output, session) {
             tagList(
                 h3("Flagged Data"),
                 
-                sliderInput(
-                    "cleanControl",
-                    label = h4("Cleanliness Treshold:"),
-                    min = 0,
-                    max = 10,
-                    value = dataStore$cleaningThresholdControl
-                ),
-                
-                helpText(
-                    "Note: Cleanliness Score determines how clean your data has to be.",
-                    "Score of 10 will return only the perfect records, while scores less
-                    than 3 will also return somewhat okay records.",
-                    "Tweak the score value and check the remaining records in statistics
-                    boxes below to determine the score you require."
-                ),
+                # Uncomment if threshold needed
+                # sliderInput(
+                #     "cleanControl",
+                #     label = h4("Cleanliness Treshold:"),
+                #     min = 0,
+                #     max = 10,
+                #     value = dataStore$cleaningThresholdControl
+                # ),
+                #
+                # helpText(
+                #     "Note: Cleanliness Score determines how clean your data has to be.",
+                #     "Score of 10 will return only the perfect records, while scores less
+                #     than 3 will also return somewhat okay records.",
+                #     "Tweak the score value and check the remaining records in statistics
+                #     boxes below to determine the score you require."
+                # ),
                 br(),
                 
                 tabsetPanel(
@@ -634,7 +555,7 @@ shinyServer(function(input, output, session) {
                     value = 60, color = "red",
                     "Step 4 of 6"
                 ))
-                )
+            )
         )
     })
     
@@ -663,9 +584,9 @@ shinyServer(function(input, output, session) {
                          ))
     })
     
-    observeEvent(input$cleanControl, {
-        dataStore$cleaningThresholdControl <<- input$cleanControl
-    })
+    # observeEvent(input$cleanControl, {
+    #     dataStore$cleaningThresholdControl <<- input$cleanControl
+    # })
     
     # ------------- End of Cleaning Module ------------------------
     
@@ -675,21 +596,9 @@ shinyServer(function(input, output, session) {
     output$documentContentUI <- renderUI({
         withProgress(message = "Generating Artifacts...", {
             # Report
-            for (question in dataStore$questionnaire$BdQuestions) {
-                if (question$question.type != "Router" &&
-                    length(question$users.answer) > 0) {
-                    try({
-                        question$addToReport(
-                            dataStore$flaggedData,
-                            dataStore$cleaningThresholdControl,
-                            dataStore$cleaningDone
-                        )
-                    })
-                }
-            }
-            
-            create_report_data(
+            bdclean::create_report_data(
                 dataStore$inputData,
+                dataStore$flaggedData,
                 dataStore$cleanedData,
                 dataStore$questionnaire,
                 dataStore$cleaningDone,
@@ -787,9 +696,10 @@ shinyServer(function(input, output, session) {
         },
         content = function(file) {
             withProgress(message = "Preparing download...", {
-                create_report_data(
+                bdclean::create_report_data(
                     dataStore$inputData,
                     dataStore$cleanedData,
+                    dataStore$flaggedData,
                     dataStore$questionnaire,
                     dataStore$cleaningDone,
                     input$reportFormat
@@ -823,9 +733,10 @@ shinyServer(function(input, output, session) {
         },
         content = function(file) {
             withProgress(message = "Preparing download...", {
-                create_report_data(
+                bdclean::create_report_data(
                     dataStore$inputData,
                     dataStore$cleanedData,
+                    dataStore$flaggedData,
                     dataStore$questionnaire,
                     dataStore$cleaningDone,
                     input$reportFormat

@@ -1,8 +1,22 @@
+#' Genrate data required to create report, function required in bdclean internal usage.
+#'
+#' NOTE: This is an package internal function. Do not use for external uses.
+#'
+#'@export
 create_report_data <-
     function(inputData,
+             flaggedData,
              cleanedData,
              responses,
+             cleaningTrue,
              format) {
+        for (question in responses$BdQuestions) {
+            if (length(question$quality.checks) > 0 &&
+                length(question$users.answer) > 0) {
+                question$addToReport(flaggedData, cleaningTrue)
+            }
+        }
+        
         # --------------- Data required for detailed report ---------------
         inputSize <- dim(inputData)
         outputSize <- dim(cleanedData)
@@ -13,25 +27,18 @@ create_report_data <-
             length(unique(cleanedData$scientificName))
         
         earliestInputDate <-
-            min(as.POSIXct(
-                unique(inputData$eventDate)            ))
+            min(as.POSIXct(unique(inputData$eventDate)))
         # latestInputDate <-
         #     max(suppressWarnings(as.POSIXct(
         #         unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S", tz="UTC"
         #     )))
         latestInputDate <-
-            max(as.POSIXct(
-                unique(inputData$eventDate)
-            ))
+            max(as.POSIXct(unique(inputData$eventDate)))
         
         earliestOutputDate <-
-            min(as.POSIXct(
-                unique(cleanedData$eventDate)
-            ))
+            min(as.POSIXct(unique(cleanedData$eventDate)))
         latestOutputDate <-
-            max(as.POSIXct(
-                unique(cleanedData$eventDate)
-            ))
+            max(as.POSIXct(unique(cleanedData$eventDate)))
         
         InputData <-
             c(
@@ -62,7 +69,6 @@ create_report_data <-
         for (question in responses$BdQuestions) {
             if (length(question$quality.checks) > 0 &&
                 length(question$users.answer) > 0) {
-                
                 checks.records[[paste("question", index, sep = "")]] <-
                     list(
                         "question" = question$question,
@@ -166,5 +172,10 @@ generateDetailedReport <-
             output_dir = "CleaningReports"
         ))
         
-        message(paste("Saved generated reports to '", getwd() ,"/CleaningReports'", sep = ""))
+        message(paste(
+            "Saved generated reports to '",
+            getwd() ,
+            "/CleaningReports'",
+            sep = ""
+        ))
     }

@@ -130,8 +130,6 @@ BdQuestion <-
             addToReport = function(flaggedData,
                                    clean = TRUE,
                                    CleaningThreshold = 5) {
-               
-                
                 packageDocumentation <- tools::Rd_db("bdclean")
                 
                 
@@ -142,7 +140,7 @@ BdQuestion <-
                         warning(
                             "Required column ",
                             paste("bdclean", nameOfQualityCheck, sep = "."),
-                            " not found! Probably, quality check is missing from 
+                            " not found! Probably, quality check is missing from
                             environment and check was not performed."
                         )
                         return()
@@ -156,16 +154,19 @@ BdQuestion <-
                     #     sum(flag < CleaningThreshold, na.rm = TRUE)
                     
                     countOfFlaggedData <-
-                             sum(flag != TRUE, na.rm = T)
+                        sum(flag != TRUE, na.rm = T)
                     
                     # ------ Parsing MetaData for check from .Rd file
                     functionDocumentation <-
                         packageDocumentation[grep(nameOfQualityCheck, names(packageDocumentation))]
                     
                     
-                    if(length(functionDocumentation) == 0){
-                        warning("Could not find function documentation for ", 
-                                nameOfQualityCheck, ". Skipping report.")
+                    if (length(functionDocumentation) == 0) {
+                        warning(
+                            "Could not find function documentation for ",
+                            nameOfQualityCheck,
+                            ". Skipping report."
+                        )
                         next
                     }
                     
@@ -209,7 +210,7 @@ BdQuestion <-
                     .self$cleaning.details[nameOfQualityCheck] <-
                         list(temp)
                 }
-            },
+                },
             
             notify = function() {
                 cat("New Question object created.")
@@ -244,6 +245,28 @@ BdQuestionContainer <-
                 .self$BdQuestions <- BdQuestions
                 .self$notify()
             },
+            
+            flagData = function(inputData) {
+                message("Initial records: ", paste(dim(inputData), collapse = "x"))
+                flaggedData <- inputData
+                for (question in responses$BdQuestions) {
+                    if (length(question$quality.checks) > 0 &&
+                        length(question$users.answer) > 0) {
+                        flaggedData <- question$flagData(flaggedData)
+                    }
+                    
+                    # temp <- try({
+                    #     question$flagData(tempData)
+                    # })
+                    #
+                    # if (!is(temp, "try-error")) {
+                    #     tempData <- temp
+                    # }
+                }
+                
+                
+                return(flaggedData)
+            }
             
             notify = function() {
                 message(paste(

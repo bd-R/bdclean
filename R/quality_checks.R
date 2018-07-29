@@ -61,7 +61,12 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #'@export
 spatialResolution <- function(bddata, res = 100) {
     #print("fxn Spatial Resoultion")
-    cat(paste("spatialResolution:", "\n Removing records above :", res, "\n"))
+    cat(paste(
+        "spatialResolution:",
+        "\n Removing records above :",
+        res,
+        "\n"
+    ))
     bddata$bdclean.taxoLevel <- 0
     res <- as.numeric(res)
     bddata$bdclean.spatialResolution <- 0
@@ -122,7 +127,12 @@ earliestDate <- function(bddata, res = "1700-01-01") {
 #'
 #'@export
 temporalResolution <- function(bddata, res = "Day") {
-    cat(paste("temporalResolution:", "\n Removing records above :", res, "\n"))
+    cat(paste(
+        "temporalResolution:",
+        "\n Removing records above :",
+        res,
+        "\n"
+    ))
     bddata <- as.data.frame(bddata)
     bddata$bdclean.temporalResolution <- 0
     if (res == "Day") {
@@ -158,7 +168,7 @@ temporalResolution <- function(bddata, res = "Day") {
 #' @examples
 #' dat <- rgbif::occ_data(scientificName = 'Ursus americanus')
 #' flagged_dat <- repeating_digits(dat$data)
-#' 
+#'
 #' @section samplePassData:
 #' lat - 19.5518, long 113.8497.
 #'
@@ -251,7 +261,7 @@ repeating_digits <- function(gbif_data) {
 #' @examples
 #' dat <- rgbif::occ_data(scientificName = 'Ursus americanus')
 #' flagged_dat <- coordinates_decimal_mismatch(dat$data)
-#' 
+#'
 #' @section samplePassData:
 #' lat - 19.5518, long 113.8497.
 #'
@@ -319,7 +329,7 @@ coordinates_decimal_mismatch <- function(gbif_dataFrame) {
 #' @examples
 #' dat <- rgbif::occ_data(scientificName = 'Ursus americanus')
 #' flagged_dat <- georeference_post_occurrence_flag(dat$data)
-#' 
+#'
 #' @section samplePassData:
 #' If the record was georeferenced on the day it was occurred
 #'
@@ -337,12 +347,15 @@ georeference_post_occurrence_flag <- function(gbif_data) {
     gbif_data <- format_checking(gbif_data,
                                  c("georeferencedDate", "eventDate"))
     
-    logical <- gbif_data$georeferencedDate != "" & !is.na(gbif_data$georeferencedDate)
-    subset <- gbif_data[logical, ]
+    logical <-
+        gbif_data$georeferencedDate != "" &
+        !is.na(gbif_data$georeferencedDate)
+    subset <- gbif_data[logical,]
     
     
     eventDate <- parsedate::parse_date(subset$eventDate)
-    referencedDate <- parsedate::parse_date(subset$georeferencedDate)
+    referencedDate <-
+        parsedate::parse_date(subset$georeferencedDate)
     
     diffInYears <- as.numeric(referencedDate - eventDate) / 365.242
     diffInYears <- as.integer(diffInYears)
@@ -370,7 +383,7 @@ georeference_post_occurrence_flag <- function(gbif_data) {
 #' @examples
 #' dat <- finch::dwca_read("sources/GBIF Downloaded Files/DwC/0090371-160910150852091.zip", read=TRUE)
 #' flagged_dat <- coordinate_precision_outofrange_flag(dat$data$occurrence.txt)
-#' 
+#'
 #' @section samplePassData:
 #' 0 <= coordinatePrecision <= 1
 #'
@@ -411,7 +424,7 @@ coordinate_precision_outofrange_flag <- function(gbif_data) {
 #' @examples
 #' dat <- rgbif::occ_data(scientificName = 'Ursus americanus')
 #' flagged_dat <- center_of_the_country_coordinates_flag(dat$data)
-#' 
+#'
 #' @section samplePassData:
 #' decimalLatitude/decimalLongitude=spatial buffered centre of country
 #'
@@ -467,7 +480,7 @@ center_of_the_country_coordinates_flag <- function(gbif_data) {
 #' @examples
 #' dat <- rgbif::occ_data(scientificName = 'Ursus americanus')
 #' flagged_dat <- country_coordinate_mismatch_flag(dat$data)
-#' 
+#'
 #' @section samplePassData:
 #' doordinates mismatching country
 #'
@@ -490,13 +503,13 @@ country_coordinate_mismatch_flag <- function(gbif_data) {
     
     logical <- !is.na(gbif_data$decimalLatitude)
     
-    gbif_data[logical, ]$generatedCountries <-
+    gbif_data[logical,]$generatedCountries <-
         maps::map.where(database = "world",
-                        gbif_data[logical, ]$decimalLongitude,
-                        gbif_data[logical, ]$decimalLatitude)
+                        gbif_data[logical,]$decimalLongitude,
+                        gbif_data[logical,]$decimalLatitude)
     
-    gbif_data[logical, ]$countryCoordinateMismatchFlag <-
-        !grepl("Australia", gbif_data[logical, ]$generatedCountries)
+    gbif_data[logical,]$countryCoordinateMismatchFlag <-
+        !grepl("Australia", gbif_data[logical,]$generatedCountries)
     
     message(paste("Time difference of " , Sys.time() - t, " seconds", sep = ""))
     return(gbif_data)

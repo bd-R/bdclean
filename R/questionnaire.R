@@ -27,7 +27,7 @@ create_default_questionnaire <- function() {
             question = "Do you worry about taxonomical aspect of the data?",
             possible.responses = c("Yes" , "No"),
             question.type = "Router",
-            router.condition = c("Yes", "Y", "yes" ,1, TRUE, "TRUE"),
+            router.condition = c("Yes", "Y", "yes" , 1, TRUE, "TRUE"),
             question.id = "taxonMain",
             ui.type = "single-checkbox"
         )
@@ -56,8 +56,13 @@ create_default_questionnaire <- function() {
             question = "Do you worry about spatial aspect of the data?",
             possible.responses = c("Yes" , "No"),
             question.type = "Router",
-            router.condition = c("Yes", "Y", "yes" ,1, TRUE, "TRUE"),
-            quality.checks = c("DC_coordinatePrecisionMismatch", "DC_coordinatesZero", "DC_countryMismatch", "DC_countryNameUnknown"),
+            router.condition = c("Yes", "Y", "yes" , 1, TRUE, "TRUE"),
+            quality.checks = c(
+                "DC_coordinatePrecisionMismatch",
+                "DC_coordinatesZero",
+                "DC_countryMismatch",
+                "DC_countryNameUnknown"
+            ),
             question.id = "spatialMain",
             ui.type = "single-checkbox"
         )
@@ -91,7 +96,7 @@ create_default_questionnaire <- function() {
             question = "Do you worry about temporal aspect of your data?",
             possible.responses = c("Yes" , "No"),
             question.type = "Router",
-            router.condition = c("Yes", "Y", "yes" ,1, TRUE, "TRUE"),
+            router.condition = c("Yes", "Y", "yes" , 1, TRUE, "TRUE"),
             question.id = "temporalMain",
             ui.type = "single-checkbox"
         )
@@ -134,17 +139,15 @@ create_default_questionnaire <- function() {
     question5$addChildQuestion(c(question6, question7))
     
     allQuestions <-
-        BdQuestionContainer(
-            c(
-                question1,
-                question2,
-                question3,
-                question4,
-                question5,
-                question6,
-                question7
-            )
-        )
+        BdQuestionContainer(c(
+            question1,
+            question2,
+            question3,
+            question4,
+            question5,
+            question6,
+            question7
+        ))
     
     return(allQuestions)
 }
