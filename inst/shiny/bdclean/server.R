@@ -1,9 +1,12 @@
 library(bdclean)
 library(data.table)
 library(finch)
+library(shinydashboard)
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 
 shinyServer(function(input, output, session) {
+    
+    # ------------- Local Data store ------------------------
     dataStore <-
         list(
             inputData = data.frame(),
@@ -22,8 +25,37 @@ shinyServer(function(input, output, session) {
             qualityChecks = bdclean::get_checks_list(),
             # bdclean::
             
+            warningData =
+                data.frame(
+                    from = c("Startup"),
+                    message = c("bdclean Started"),
+                    time = format(Sys.time(), "%H:%M"),
+                    icon = "rocket"
+                ),
+            
             cleaningThresholdControl = 7
         )
+    
+    # ------------- End of Local Data store ------------------------
+    
+    # ------------- Warning Menu Notifiation ------------------------
+    options(warn = 1)
+    
+    addWarnings <- function(from, warnings, icon = "avatar") {
+        if (length(warnings) == 0) {
+            return()
+        }
+        temp <-
+            data.frame(
+                from = from,
+                message = warnings,
+                time = format(Sys.time(), "%H:%M"),
+                icon = icon
+            )
+        dataStore$warningData <<- rbind(temp, dataStore$warningData)
+    }
+    
+    # ------------- End of Warning Menu Notifiation ------------------------
     
     # ------------- Information Modal ------------------------
     
@@ -60,7 +92,6 @@ shinyServer(function(input, output, session) {
         } else {
             showNotification("Please add data first!", duration = 2)
         }
-        
     })
     
     observeEvent(input$configureToFlag, {
@@ -99,10 +130,16 @@ shinyServer(function(input, output, session) {
             #     perform_Cleaning(dataStore$flaggedData,
             #                      cleaningThreshold = dataStore$cleaningThresholdControl)
             
-            dataStore$cleanedData <<-
-                bdclean::cleaning_function(dataStore$flaggedData) # bdclean::
+            warnings <- capture.output(
+                dataStore$cleanedData <<-
+                    bdclean::cleaning_function(dataStore$flaggedData) # bdclean::
+                ,
+                type = "message"
+            )
             
+            addWarnings("Warning while Cleaning", warnings, "trash")
         })
+        
         dataStore$cleaningDone <<- TRUE
     })
     
@@ -112,13 +149,48 @@ shinyServer(function(input, output, session) {
             return()
         }
         
+        updateTabItems(session, "sideBar", "document")
+        
+        withProgress(message = "Generating Artifacts...", {
+            warnings <- capture.output(
+                bdclean::create_report_data(
+                    # bdclean::
+                    dataStore$inputData,
+                    dataStore$flaggedData,
+                    dataStore$cleanedData,
+                    dataStore$questionnaire,
+                    dataStore$cleaningDone,
+                    c("md_document")
+                ),
+                type = "message"
+            )
+            
+            addWarnings("Warning in Report Generation", warnings, "file")
+        })
+        
         dataStore$cleaningDone <- FALSE
         dataStore$cleanedData <-   dataStore$flaggedData
-        updateTabItems(session, "sideBar", "document")
     })
     
     observeEvent(input$cleanToDocument, {
         updateTabItems(session, "sideBar", "document")
+        
+        withProgress(message = "Generating Artifacts...", {
+            warnings <- capture.output(
+                bdclean::create_report_data(
+                    # bdclean::
+                    dataStore$inputData,
+                    dataStore$flaggedData,
+                    dataStore$cleanedData,
+                    dataStore$questionnaire,
+                    dataStore$cleaningDone,
+                    c("md_document")
+                ),
+                type = "message"
+            )
+            
+            addWarnings("Warning in Report Generation", warnings, "file")
+        })
     })
     
     # ------------- End of Next Buttons Navigation Control -------------------
@@ -157,16 +229,16 @@ shinyServer(function(input, output, session) {
             if (is.null(input$inputFile))
                 return("No data to view")
             
-            if(grepl("zip", tolower(input$inputFile$type))){
+            if (grepl("zip", tolower(input$inputFile$type))) {
                 message("Reading DWCA ZIP...")
-                finchRead <- finch::dwca_read(input$inputFile$datapath, read = T)
+                finchRead <-
+                    finch::dwca_read(input$inputFile$datapath, read = T)
                 dataStore$inputData <<- finchRead$data[[1]]
+                
             } else {
                 dataStore$inputData <<-
                     data.table::fread(input$inputFile$datapath)
             }
-            
-            
         })
         
         dataLoadedTask(dataStore$inputData)
@@ -178,7 +250,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles(~ longitude, ~ latitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
@@ -187,19 +259,15 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles(~ longitude, ~ latitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
         if (length(data) == 0) {
-            showNotification(
-                "Empty data returned! Try different setting.",
-                duration = 3
-            )
+            showNotification("Empty data returned! Try different setting.",
+                             duration = 3)
             return()
         }
-        
-        print(dim(data))
         
         if ("decimallatitude" %in% names(data)) {
             colnames(data)[colnames(data) == "decimallatitude"] <- "latitude"
@@ -217,7 +285,7 @@ shinyServer(function(input, output, session) {
         
         try(leafletProxy("mymap", data = data) %>%
                 clearShapes() %>%
-                addCircles( ~ longitude, ~ latitude, color = input$mapColor))
+                addCircles(~ longitude, ~ latitude, color = input$mapColor))
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data
@@ -490,11 +558,33 @@ shinyServer(function(input, output, session) {
     observeEvent(input$flagButton, {
         tempData <- dataStore$inputData
         withProgress(message = "Flagging Data...", {
-            dataStore$flaggedData <<-
-                dataStore$questionnaire$flagData(dataStore$inputData)
+            warnings <- capture.output(
+                dataStore$flaggedData <<-
+                    dataStore$questionnaire$flagData(dataStore$inputData),
+                type = "message"
+            )
             dataStore$flaggingDone <<- TRUE
+            
+            addWarnings("Warning while Flagging", warnings, "flag")
         })
     })
+    
+    output$messageMenu <- renderMenu({
+        msgs <- apply(as.data.frame(dataStore$warningData), 1, function(row) {
+            messageItem(from = row[["from"]],
+                        message = row[["message"]],
+                        time = row[["time"]],
+                        icon = icon(row[["icon"]]))
+        })
+        
+        input$flagToClean
+        input$flagButton
+        input$flagToDocument
+        input$cleanToDocument
+        
+        dropdownMenu(type = "messages", .list = msgs)
+    })
+    
     
     output$flaggedContentUI <- renderUI({
         input$flagButton
@@ -512,8 +602,8 @@ shinyServer(function(input, output, session) {
                     which(grepl("bdclean", names(flaggedData)))
                 
                 if (length(checkColumns) == 0) {
-                    warning("Dataset has no flag columns! Skipping cleaning")
-                    return(flaggedData)
+                    warning("Dataset has no flag columns!")
+                    return(nrow(flaggedData))
                 }
                 
                 checkData <- flaggedData[, checkColumns]
@@ -526,8 +616,11 @@ shinyServer(function(input, output, session) {
         #     get_flagging_statistics(dataStore$flaggedData,
         #                             dataStore$cleaningThresholdControl)
         
-        flaggedCount <-
-            get_flagging_statistics(dataStore$flaggedData)
+        warnings <- capture.output(flaggedCount <-
+                                       get_flagging_statistics(dataStore$flaggedData) ,
+                                   type = "message")
+        addWarnings("Message while Flagging", warnings, "question")
+        
         
         conditionalPanel(
             "input.flagButton > 0",
@@ -639,20 +732,7 @@ shinyServer(function(input, output, session) {
     # ------------- Documentation Module ------------------------
     
     output$documentContentUI <- renderUI({
-        withProgress(message = "Generating Artifacts...", {
-            # Report
-            bdclean::create_report_data(
-                # bdclean::
-                dataStore$inputData,
-                dataStore$flaggedData,
-                dataStore$cleanedData,
-                dataStore$questionnaire,
-                dataStore$cleaningDone,
-                c("md_document")
-            )
-        })
-        
-        return(tagList(
+        tagList(
             conditionalPanel(
                 "input.flagToDocument > 0 || input.cleanToDocument > 0",
                 tagList(
@@ -727,7 +807,7 @@ shinyServer(function(input, output, session) {
                     )
                 )
             )
-        ))
+        )
     })
     
     output$downloadShortReport <- downloadHandler(

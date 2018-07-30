@@ -5,7 +5,7 @@ library(shinyjs)
 
 shinyUI(dashboardPage(
     #Header Title
-    dashboardHeader(title = "bdclean"),
+    dashboardHeader(title = "bdclean", dropdownMenuOutput("messageMenu")),
     
     # ------------- Sidebar  -------------------
     dashboardSidebar(

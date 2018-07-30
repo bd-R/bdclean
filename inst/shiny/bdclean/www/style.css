@@ -79,3 +79,36 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
 .modal-header {
     color: orange;
 }
+
+.navbar-nav>.messages-menu>.dropdown-menu, .navbar-nav>.notifications-menu>.dropdown-menu, .navbar-nav>.tasks-menu>.dropdown-menu{
+    width: 1000px;
+}
+
+.navbar-nav>.messages-menu>.dropdown-menu>li .menu, .navbar-nav>.notifications-menu>.dropdown-menu>li .menu, .navbar-nav>.tasks-menu>.dropdown-menu>li .menu{
+    max-height: 500px;
+}
+
+#messageMenu{
+     background-color: #3c8dbc;
+  animation-name: color;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes color {
+  0% {
+    background-color: #3c8dbc;
+  }
+  50% {
+    background-color: #f39c12;
+  }
+  100 {
+    background-color: #222;
+  }
+}
+
+.dropdown-menu{
+    /** background-color: #222d32; **/
+        box-shadow: aqua;
+    border-color: #3c8dbc;
+}
