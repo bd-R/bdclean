@@ -1,5 +1,6 @@
 library(bdclean)
 library(data.table)
+library(finch)
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 
 shinyServer(function(input, output, session) {
@@ -144,34 +145,28 @@ shinyServer(function(input, output, session) {
                                limit = input$recordSize)
                 
                 tempData <- data[[input$queryDatabase]]$data[[1]]
-                
-                if (length(tempData) == 0) {
-                    showNotification(
-                        "No data returned for the query! Try different scientific name.",
-                        duration = 3
-                    )
-                    print("out")
-                    return()
-                }
-                
                 dataStore$inputData <<- tempData
             }
         })
-        
-        if (length(dataStore$inputData) == 0) {
-            return()
-        }
         
         dataLoadedTask(dataStore$inputData)
     })
     
     observeEvent(input$inputFile, {
-        withProgress(message = paste("Reading", input$inputFile, "..."), {
+        withProgress(message = paste("Reading", input$inputFile$name, "..."), {
             if (is.null(input$inputFile))
                 return("No data to view")
             
-            dataStore$inputData <<-
-                data.table::fread(input$inputFile$datapath)
+            if(grepl("zip", tolower(input$inputFile$type))){
+                message("Reading DWCA ZIP...")
+                finchRead <- finch::dwca_read(input$inputFile$datapath, read = T)
+                dataStore$inputData <<- finchRead$data[[1]]
+            } else {
+                dataStore$inputData <<-
+                    data.table::fread(input$inputFile$datapath)
+            }
+            
+            
         })
         
         dataLoadedTask(dataStore$inputData)
@@ -196,6 +191,16 @@ shinyServer(function(input, output, session) {
     })
     
     dataLoadedTask <- function(data) {
+        if (length(data) == 0) {
+            showNotification(
+                "Empty data returned! Try different setting.",
+                duration = 3
+            )
+            return()
+        }
+        
+        print(dim(data))
+        
         if ("decimallatitude" %in% names(data)) {
             colnames(data)[colnames(data) == "decimallatitude"] <- "latitude"
             colnames(data)[colnames(data) == "decimallongitude"] <-
@@ -210,9 +215,9 @@ shinyServer(function(input, output, session) {
             dataStore$inputData <<- data
         }
         
-        leafletProxy("mymap", data = data) %>%
-            clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+        try(leafletProxy("mymap", data = data) %>%
+                clearShapes() %>%
+                addCircles( ~ longitude, ~ latitude, color = input$mapColor))
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data

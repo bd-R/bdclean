@@ -101,10 +101,13 @@ shinyUI(dashboardPage(
                                         class = "activeButton",
                                         fileInput(
                                             "inputFile",
-                                            label = h3("CSV file input"),
+                                            label = h3("CSV / DWCA ZIP file input"),
                                             accept = c("text/csv",
                                                        "text/comma-separated-values,text/plain",
-                                                       ".csv")
+                                                       ".csv",
+                                                       ".zip",
+                                                       "application/zip"
+                                                       )
                                         )
                                     )
                                 ),
