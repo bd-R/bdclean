@@ -12,5 +12,5 @@ suppressPackageStartupMessages(library(knitr))
 ## Data cleaning summary table
 
 ```{r echo=FALSE}
-print(kable(recordsTable))
+kable(recordsTable)
 ```

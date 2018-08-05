@@ -67,8 +67,8 @@ create_report_data <-
         index <- 1
         
         for (question in responses$BdQuestions) {
-            if (length(question$quality.checks) > 0 &&
-                length(question$users.answer) > 0) {
+            # length(question$quality.checks) > 0 &&
+            if (                length(question$users.answer) > 0) {
                 checks.records[[paste("question", index, sep = "")]] <-
                     list(
                         "question" = question$question,
@@ -78,6 +78,8 @@ create_report_data <-
                 index = index + 1
             }
         }
+        
+  
         
         # ------------------- End of data required for detailed report ---------------
         
@@ -89,16 +91,17 @@ create_report_data <-
             Action = ""
         )
         
-        checkIndex <- 1
+        
         for (question in checks.records) {
+            checkIndex <- 1
             for (check in question$checks) {
                 recordsTable <-
                     rbind(
                         recordsTable,
                         data.frame(
-                            DataCleaningProcedure = names(question$checks[checkIndex]),
+                            DataCleaningProcedure = names(question$checks)[checkIndex],
                             NoOfRecords = check$affectedData,
-                            Action = "Removal"
+                            Action = ifelse(cleaningTrue, "Removal", "Flagging")
                         )
                     )
                 checkIndex <- checkIndex + 1
@@ -124,7 +127,7 @@ create_report_data <-
                         sep = ""
                     ),
                     Action = paste (
-                        "Removal of ",
+                        ifelse(cleaningTrue, "Removal of ", "Flagging of"),
                         removedRecords,
                         " Records (",
                         (removedRecords / recordsTable[1, 2]) * 100,
