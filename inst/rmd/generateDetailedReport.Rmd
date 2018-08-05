@@ -1,0 +1,115 @@
+---
+title: 'Detailed Data Cleaning Report of package bdclean'
+author: "`r Sys.info()[['user']]`"
+date: "`r date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(tools))
+```
+
+## Data Summary
+
+```{r echo=FALSE}
+kable(data.summary)
+```
+
+## Quality Checks Summary
+
+```{r echo=FALSE}
+spatialChecks <- 0
+temporalChecks <- 0
+taxonChecks <- 0
+otherChecks <- 0
+
+for (question in checks.records) {
+    for (check in question$checks) {
+        if (check$checkCategory == 'spatial') {
+            spatialChecks = spatialChecks + 1
+        } else if (check$checkCategory == 'temporal') {
+            temporalChecks = temporalChecks + 1
+        } else if (check$checkCategory == 'taxonomic') {
+            taxonChecks = taxonChecks + 1
+        } else {
+            otherChecks = otherChecks + 1
+        }
+    }
+}
+
+Checks <-
+    c(
+        'Taxonomical quality Checks',
+        'Spatial quality Checks',
+        'Temporal quality Checks',
+        'Total quality Checks'
+    )
+Count <-
+    c(
+        taxonChecks,
+        spatialChecks,
+        temporalChecks,
+        (taxonChecks + spatialChecks + temporalChecks + otherChecks)
+    )
+check.summary <- data.frame(Checks, Count)
+kable(check.summary)
+```
+
+## Quality Checks
+
+```{r echo=FALSE, results='asis'}
+index <- 1
+checkCount <- 1
+for (question in checks.records) {
+    cat(paste('###', index, '. ', question$question, '\n',  sep = ''))
+    cat('\n')
+    
+    cat(paste('Received Response: ', question$answer, '\n', sep = ''))
+    cat('\n')
+    
+    checkIndex <- 1
+    for (check in question$checks) {
+        cat(paste(
+            '####',
+            'Quality Check ',
+            checkCount,
+            ': ',
+            names(question$checks[checkIndex]),
+            sep = ''
+        ))
+        
+        Type <-
+            c('Description',
+              'Sample Pass Data',
+              'Sample Fail Data',
+              'Target DwC Field',
+              'Check Category',
+              'Flagged Records')
+        
+        Value <-
+            c(
+                check$description,
+                check$samplePassData,
+                check$sampleFailData,
+                check$targetDWCField,
+                toTitleCase(check$checkCategory),
+                check$affectedData
+            )
+        
+        check.data.summary <- data.frame(Type, Value)
+        print(kable(check.data.summary))
+        cat('\n')
+        checkIndex <- checkIndex + 1
+        checkCount <- checkCount + 1
+    }
+    index <- index + 1
+}
+```
+
+## References
+
+Tomer Gueta, Vijay Barve, Thiloshon Nagarajah, Ashwin Agrawal and Carmel Yohay (2018). bdclean: Biodiversity Data
+  Cleaning Workflow. R package version 0.0.6.
+  
+R Core Team (2012). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0, URL http://www.R-project.org/
