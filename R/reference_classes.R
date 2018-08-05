@@ -272,7 +272,7 @@ BdQuestionContainer <-
             flagData = function(inputData, missing) {
                 message("Initial records: ", paste(dim(inputData), collapse = "x"))
                 flaggedData <- inputData
-                for (question in responses$BdQuestions) {
+                for (question in .self$BdQuestions) {
                     if (length(question$quality.checks) > 0 &&
                         length(question$users.answer) > 0) {
                         if (question$question.type == "Router" &&
