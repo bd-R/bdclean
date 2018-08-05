@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 suppressPackageStartupMessages(library(knitr))
 ```
 
-## Data cleaning summary table
+## Data Cleaning Summary Table
 
 ```{r echo=FALSE}
 kable(recordsTable)

@@ -131,10 +131,6 @@ create_report_data <-
                         removedRecords,
                         " Records (",
                         (removedRecords / recordsTable[1, 2]) * 100,
-                        "%) and Repair of ",
-                        repairedRecords,
-                        " Records (",
-                        (repairedRecords / recordsTable[1, 2]) * 100,
                         "%)",
                         sep = ""
                     )
