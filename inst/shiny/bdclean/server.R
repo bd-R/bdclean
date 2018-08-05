@@ -412,7 +412,7 @@ shinyServer(function(input, output, session) {
         }
         
         for (question in dataStore$questionnaire$BdQuestions) {
-            if (question$question.type != "Child") {
+            if (question$question.type != "Child" && question$question.type != "ChildRouter") {
                 createUIContainer(question)
             }
         }
@@ -556,7 +556,7 @@ shinyServer(function(input, output, session) {
         withProgress(message = "Flagging Data...", {
             warnings <- capture.output(
                 dataStore$flaggedData <<-
-                    dataStore$questionnaire$flagData(dataStore$inputData),
+                    dataStore$questionnaire$flagData(dataStore$inputData, missing=FALSE),
                 type = "message"
             )
             dataStore$flaggingDone <<- TRUE

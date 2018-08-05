@@ -4,8 +4,8 @@
 \alias{clean_data}
 \title{Data cleaning according to Questionnaire Responses.}
 \usage{
-clean_data(data, customQuestionnaire, clean = TRUE, report = TRUE,
-  format = c("html_document", "pdf_document"))
+clean_data(data, customQuestionnaire, clean = TRUE, missing = FALSE,
+  report = TRUE, format = c("html_document", "pdf_document"))
 }
 \arguments{
 \item{data}{Biodiversity data in a data frame}
