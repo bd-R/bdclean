@@ -103,22 +103,40 @@ BdQuestion <-
                 .self$quality.checks <- newChecks
             },
             
-            flagData = function(data) {
+            flagData = function(data, missing = FALSE) {
                 flaggedData <- data
                 
                 if (length(.self$quality.checks) > 0) {
                     for (i in 1:length(.self$quality.checks)) {
                         checkName <- .self$quality.checks[i]
-                        # flaggedData <-
-                        #     get(checkName)(flaggedData, .self$users.answer)
                         
-                        checkTemp <- bdchecks::performDataCheck(data = flaggedData, DConly = c(checkName))
-                        
-                        if (length(checkTemp@flags) > 0) {
-                            flaggedData[, paste("bdclean", checkName, sep = ".")] <-
-                                checkTemp@flags[[1]]@result
+                        if (grepl("DC_", checkName)) {
+                            # bdchecks quality checks
+                            checkTemp <-
+                                bdchecks::performDataCheck(data = flaggedData,
+                                                           DConly = c(checkName))
+                            
+                            if (length(checkTemp@flags) > 0 &&
+                                length(checkTemp@flags[[1]]@result) > 0) {
+                                checkTemp <- checkTemp@flags[[1]]@result
+                                
+                                if (missing) {
+                                    checkTemp[is.na(checkTemp)] <-
+                                        FALSE # Treating mising values as fails
+                                } else {
+                                    checkTemp[is.na(checkTemp)] <-
+                                        TRUE
+                                }
+                                
+                                flaggedData[, paste("bdclean", checkName, sep = ".")] <-
+                                    checkTemp
+                            }
+                            
+                        } else {
+                            # bdclean quality checks
+                            flaggedData <-
+                                get(checkName)(flaggedData, .self$users.answer)
                         }
-                        
                     }
                 }
                 
@@ -141,7 +159,7 @@ BdQuestion <-
                             " not found! Probably, quality check is missing from
                             environment and check was not performed."
                         )
-                        return()
+                        next
                     }
                     
                     flag <-
@@ -154,9 +172,16 @@ BdQuestion <-
                     countOfFlaggedData <-
                         sum(flag != TRUE, na.rm = T)
                     
+                    
                     # ------ Parsing MetaData for check from .Rd file
                     functionDocumentation <-
                         packageDocumentation[grep(nameOfQualityCheck, names(packageDocumentation))]
+                    
+                    # Delete this
+                    if (length(functionDocumentation) == 0) {
+                        functionDocumentation <-
+                            packageDocumentation[grep("taxoLevel", names(packageDocumentation))]
+                    }
                     
                     
                     if (length(functionDocumentation) == 0) {
@@ -165,7 +190,7 @@ BdQuestion <-
                             nameOfQualityCheck,
                             ". Skipping report."
                         )
-                        next
+                        # next
                     }
                     
                     description <-
@@ -244,13 +269,24 @@ BdQuestionContainer <-
                 .self$notify()
             },
             
-            flagData = function(inputData) {
+            flagData = function(inputData, missing) {
                 message("Initial records: ", paste(dim(inputData), collapse = "x"))
                 flaggedData <- inputData
                 for (question in responses$BdQuestions) {
                     if (length(question$quality.checks) > 0 &&
                         length(question$users.answer) > 0) {
-                        flaggedData <- question$flagData(flaggedData)
+                        if (question$question.type == "Router" &&
+                            !(question$users.answer %in% question$router.condition)) {
+                            # If its router and condition fails
+                            next
+                        } else if (question$question.type == "ChildRouter" &&
+                                   !(question$users.answer %in% question$router.condition)) {
+                            # If its ChildRouter and condition fails
+                            next
+                        }
+                        
+                        flaggedData <-
+                            question$flagData(flaggedData, missing)
                     }
                     
                     # temp <- try({
@@ -261,8 +297,6 @@ BdQuestionContainer <-
                     #     tempData <- temp
                     # }
                 }
-                
-                
                 return(flaggedData)
             },
             

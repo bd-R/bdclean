@@ -2,6 +2,10 @@ library(shiny)
 library(shinydashboard)
 library(leaflet)
 library(shinyjs)
+library(bdclean)
+library(data.table)
+library(finch)
+library(bdchecks)
 
 shinyUI(dashboardPage(
     #Header Title
@@ -213,19 +217,20 @@ shinyUI(dashboardPage(
                                     # -------------------------------
                                     
                                     ),
-                                tabPanel(
-                                    "Option 03",
-                                    div(class = "secondaryHeaders", h3("Option 03: Cleaning Templates")),
-                                    helpText(
-                                        "Note: Choose the cleaning, customized for special domains and needs"
-                                    ),
-                                    
-                                    # -------------------------------
-                                    
-                                    uiOutput("domainCleaning")
-                                    
-                                    # -------------------------------
-                                ),
+                                # Uncomment if domain specifc cleaning is needed
+                                # tabPanel(
+                                #     "Option 03",
+                                #     div(class = "secondaryHeaders", h3("Option 03: Cleaning Templates")),
+                                #     helpText(
+                                #         "Note: Choose the cleaning, customized for special domains and needs"
+                                #     ),
+                                #     
+                                #     # -------------------------------
+                                #     
+                                #     uiOutput("domainCleaning")
+                                #     
+                                #     # -------------------------------
+                                # ),
                                 div(class = "progressStep", taskItem(
                                     value = 30, color = "green",
                                     "Step 2 of 6"

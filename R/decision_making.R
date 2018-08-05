@@ -21,7 +21,7 @@ cleaning_function <- function(bddata) {
     # Records with cleanliness-score less than 10 in atleast 1 check will fail
     # ------------- Decision Making of Cleaning -------------
     
-    failedDataLogical <- rowSums(checkData != TRUE) >= 1
+    failedDataLogical <- rowSums(checkData != TRUE, na.rm = T) >= 1
     
     # ------------- End of Decision Making of Cleaning -------------
     

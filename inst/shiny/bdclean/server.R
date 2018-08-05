@@ -1,7 +1,3 @@
-library(bdclean)
-library(data.table)
-library(finch)
-library(shinydashboard)
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 
 shinyServer(function(input, output, session) {
@@ -29,7 +25,7 @@ shinyServer(function(input, output, session) {
                 data.frame(
                     from = c("Startup"),
                     message = c("bdclean Started"),
-                    time = format(Sys.time(), "%H:%M"),
+                    time = format(Sys.time(), "%I:%M %p"),
                     icon = "rocket"
                 ),
             
@@ -49,7 +45,7 @@ shinyServer(function(input, output, session) {
             data.frame(
                 from = from,
                 message = warnings,
-                time = format(Sys.time(), "%H:%M"),
+                time = format(Sys.time(), "%I:%M %p"),
                 icon = icon
             )
         dataStore$warningData <<- rbind(temp, dataStore$warningData)
