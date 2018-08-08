@@ -1,7 +1,6 @@
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 
 shinyServer(function(input, output, session) {
-    
     # ------------- Local Data store ------------------------
     dataStore <-
         list(
@@ -9,6 +8,8 @@ shinyServer(function(input, output, session) {
             inputReceived = FALSE,
             
             configuredCleaning = FALSE,
+            customizedChecks = c(),
+            customizedCheck = FALSE,
             
             flaggedData = data.frame(),
             flaggingDone = FALSE,
@@ -91,22 +92,47 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$configureToFlag, {
-        getResponse <- function(bdQuestion) {
-            # set response
-            bdQuestion$setResponse(input[[bdQuestion$question.id]])
+        if (length(input$typeInput) > 0) {
+            showNotification("Response to customized cleaning detected",
+                             duration = 2)
             
-            if (bdQuestion$question.type == "Router") {
-                if (bdQuestion$users.answer %in% bdQuestion$router.condition) {
-                    for (question in bdQuestion$child.questions) {
-                        getResponse(question)
+            dummyQuestion <-
+                bdclean::BdQuestion(
+                    question = "Customized Quality Checks",
+                    possible.responses = c("Yes" , "No"),
+                    question.type = "ChildRouter",
+                    router.condition = c("Yes"),
+                    quality.checks = input$typeInput,
+                    question.id = "dummy",
+                    ui.type = "single-checkbox"
+                    
+                )
+            dummyQuestion$users.answer <- "Yes"
+            
+            dataStore$customizedChecks <<-
+                BdQuestionContainer(c(dummyQuestion))
+            dataStore$customizedCheck <<- TRUE
+            
+        } else {
+            getResponse <- function(bdQuestion) {
+                showNotification("Response to questionnaire detected",
+                                 duration = 2)
+                # set response
+                bdQuestion$setResponse(input[[bdQuestion$question.id]])
+                
+                if (bdQuestion$question.type == "Router") {
+                    if (bdQuestion$users.answer %in% bdQuestion$router.condition) {
+                        for (question in bdQuestion$child.questions) {
+                            getResponse(question)
+                        }
                     }
                 }
             }
-        }
-        
-        for (question in dataStore$questionnaire$BdQuestions) {
-            if (question$question.type != "Child") {
-                getResponse(question)
+            
+            for (question in dataStore$questionnaire$BdQuestions) {
+                if (question$question.type != "Child") {
+                    getResponse(question)
+                }
             }
         }
         
@@ -125,6 +151,7 @@ shinyServer(function(input, output, session) {
             # dataStore$cleanedData <<-
             #     perform_Cleaning(dataStore$flaggedData,
             #                      cleaningThreshold = dataStore$cleaningThresholdControl)
+            
             
             warnings <- capture.output(
                 dataStore$cleanedData <<-
@@ -147,6 +174,11 @@ shinyServer(function(input, output, session) {
         
         updateTabItems(session, "sideBar", "document")
         
+        checks <-
+            ifelse(dataStore$customizedCheck,
+                   "customizedChecks",
+                   "questionnaire")
+        
         withProgress(message = "Generating Artifacts...", {
             warnings <- capture.output(
                 bdclean::create_report_data(
@@ -154,7 +186,7 @@ shinyServer(function(input, output, session) {
                     dataStore$inputData,
                     dataStore$flaggedData,
                     dataStore$cleanedData,
-                    dataStore$questionnaire,
+                    dataStore[[checks]],
                     dataStore$cleaningDone,
                     c("md_document")
                 ),
@@ -172,13 +204,18 @@ shinyServer(function(input, output, session) {
         updateTabItems(session, "sideBar", "document")
         
         withProgress(message = "Generating Artifacts...", {
+            checks <-
+                ifelse(dataStore$customizedCheck,
+                       "customizedChecks",
+                       "questionnaire")
+            
             warnings <- capture.output(
                 bdclean::create_report_data(
                     # bdclean::
                     dataStore$inputData,
                     dataStore$flaggedData,
                     dataStore$cleanedData,
-                    dataStore$questionnaire,
+                    dataStore[[checks]],
                     dataStore$cleaningDone,
                     c("md_document")
                 ),
@@ -246,7 +283,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
@@ -255,7 +292,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles(~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
@@ -281,7 +318,7 @@ shinyServer(function(input, output, session) {
         
         try(leafletProxy("mymap", data = data) %>%
                 clearShapes() %>%
-                addCircles(~ longitude, ~ latitude, color = input$mapColor))
+                addCircles( ~ longitude, ~ latitude, color = input$mapColor))
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data
@@ -412,7 +449,8 @@ shinyServer(function(input, output, session) {
         }
         
         for (question in dataStore$questionnaire$BdQuestions) {
-            if (question$question.type != "Child" && question$question.type != "ChildRouter") {
+            if (question$question.type != "Child" &&
+                question$question.type != "ChildRouter") {
                 createUIContainer(question)
             }
         }
@@ -553,10 +591,19 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$flagButton, {
         tempData <- dataStore$inputData
+        dataStore$flaggedData <<- data.frame()
+        dataStore$cleanedData <<- data.frame()
+        
         withProgress(message = "Flagging Data...", {
+            checks <-
+                ifelse(dataStore$customizedCheck,
+                       "customizedChecks",
+                       "questionnaire")
+            
             warnings <- capture.output(
                 dataStore$flaggedData <<-
-                    dataStore$questionnaire$flagData(dataStore$inputData, missing=FALSE),
+                    dataStore[[checks]]$flagData(dataStore$inputData, missing =
+                                                     input$missingCase),
                 type = "message"
             )
             dataStore$flaggingDone <<- TRUE
@@ -566,12 +613,15 @@ shinyServer(function(input, output, session) {
     })
     
     output$messageMenu <- renderMenu({
-        msgs <- apply(as.data.frame(dataStore$warningData), 1, function(row) {
-            messageItem(from = row[["from"]],
-                        message = row[["message"]],
-                        time = row[["time"]],
-                        icon = icon(row[["icon"]]))
-        })
+        msgs <-
+            apply(as.data.frame(dataStore$warningData), 1, function(row) {
+                messageItem(
+                    from = row[["from"]],
+                    message = row[["message"]],
+                    time = row[["time"]],
+                    icon = icon(row[["icon"]])
+                )
+            })
         
         input$flagToClean
         input$flagButton
@@ -728,6 +778,7 @@ shinyServer(function(input, output, session) {
     # ------------- Documentation Module ------------------------
     
     output$documentContentUI <- renderUI({
+        input$flagButton
         tagList(
             conditionalPanel(
                 "input.flagToDocument > 0 || input.cleanToDocument > 0",
@@ -818,12 +869,17 @@ shinyServer(function(input, output, session) {
         },
         content = function(file) {
             withProgress(message = "Preparing download...", {
+                checks <-
+                    ifelse(dataStore$customizedCheck,
+                           "customizedChecks",
+                           "questionnaire")
+                
                 bdclean::create_report_data(
                     # bdclean::
                     dataStore$inputData,
                     dataStore$cleanedData,
                     dataStore$flaggedData,
-                    dataStore$questionnaire,
+                    dataStore[[checks]],
                     dataStore$cleaningDone,
                     input$reportFormat
                 )
@@ -856,12 +912,16 @@ shinyServer(function(input, output, session) {
         },
         content = function(file) {
             withProgress(message = "Preparing download...", {
+                checks <-
+                    ifelse(dataStore$customizedCheck,
+                           "customizedChecks",
+                           "questionnaire")
                 bdclean::create_report_data(
                     # bdclean::
                     dataStore$inputData,
                     dataStore$cleanedData,
                     dataStore$flaggedData,
-                    dataStore$questionnaire,
+                    dataStore[[checks]],
                     dataStore$cleaningDone,
                     input$reportFormat
                 )

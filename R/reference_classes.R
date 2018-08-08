@@ -147,6 +147,7 @@ BdQuestion <-
                                    clean = TRUE,
                                    CleaningThreshold = 5) {
                 packageDocumentation <- tools::Rd_db("bdclean")
+                flaggedData <- as.data.frame(flaggedData)
                 
                 
                 for (i in 1:length(.self$quality.checks)) {

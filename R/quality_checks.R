@@ -35,7 +35,8 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     bddata$bdclean.taxoLevel <- FALSE
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            bddata[which(bddata$taxonRank == ranks[i]), 'bdclean.taxoLevel'] <- TRUE
+            bddata[which(bddata$taxonRank == ranks[i]), 'bdclean.taxoLevel'] <-
+                TRUE
         }
     }
     

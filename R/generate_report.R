@@ -17,6 +17,10 @@ create_report_data <-
             }
         }
         
+        if (!cleaningTrue) {
+            cleanedData <- flaggedData
+        }
+        
         # --------------- Data required for detailed report ---------------
         inputSize <- dim(inputData)
         outputSize <- dim(cleanedData)
@@ -68,7 +72,7 @@ create_report_data <-
         
         for (question in responses$BdQuestions) {
             # length(question$quality.checks) > 0 &&
-            if (                length(question$users.answer) > 0) {
+            if (length(question$users.answer) > 0) {
                 checks.records[[paste("question", index, sep = "")]] <-
                     list(
                         "question" = question$question,
@@ -79,7 +83,7 @@ create_report_data <-
             }
         }
         
-  
+        
         
         # ------------------- End of data required for detailed report ---------------
         

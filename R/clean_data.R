@@ -57,7 +57,7 @@ clean_data <-
         
         # Flagging
         flaggedData <- responses$flagData(inputData, missing)
-    
+        
         
         # Decision Making
         if (clean) {
@@ -128,7 +128,8 @@ run_questionnaire <- function(customQuestionnaire = NULL) {
     message("Please answer the following questions to initiate cleaning process.")
     
     for (question in responses$BdQuestions) {
-        if (question$question.type != "Child" && question$question.type != "ChildRouter") { 
+        if (question$question.type != "Child" &&
+            question$question.type != "ChildRouter") {
             getUserResponse(question)
         }
     }
@@ -140,11 +141,13 @@ run_questionnaire <- function(customQuestionnaire = NULL) {
 getUserResponse <- function(bdQuestion) {
     # Child & ChildRouter already filtered in first loop above
     
-    if (bdQuestion$question.type == "Atomic") { # Atomic is filtered
+    if (bdQuestion$question.type == "Atomic") {
+        # Atomic is filtered
         bdQuestion$printQuestion()
         bdQuestion$getResponse()
         
-    } else { # Router , Child as child & ChildRouter as child is filtered
+    } else {
+        # Router , Child as child & ChildRouter as child is filtered
         bdQuestion$printQuestion()
         bdQuestion$getResponse()
         if (bdQuestion$users.answer %in% bdQuestion$router.condition) {

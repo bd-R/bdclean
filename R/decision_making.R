@@ -25,9 +25,10 @@ cleaning_function <- function(bddata) {
     
     # ------------- End of Decision Making of Cleaning -------------
     
-    message("Records remaining:", nrow(bddata) - sum(failedDataLogical))
+    message("Records remaining:",
+            nrow(bddata) - sum(failedDataLogical))
     
-    return(bddata[!failedDataLogical, !grepl("bdclean", names(bddata))])
+    return(bddata[!failedDataLogical,!grepl("bdclean", names(bddata))])
 }
 
 #' Data decision function (threshold tuning) required in bdclean internal usage.

@@ -106,12 +106,13 @@ shinyUI(dashboardPage(
                                         fileInput(
                                             "inputFile",
                                             label = h3("CSV / DWCA ZIP file input"),
-                                            accept = c("text/csv",
-                                                       "text/comma-separated-values,text/plain",
-                                                       ".csv",
-                                                       ".zip",
-                                                       "application/zip"
-                                                       )
+                                            accept = c(
+                                                "text/csv",
+                                                "text/comma-separated-values,text/plain",
+                                                ".csv",
+                                                ".zip",
+                                                "application/zip"
+                                            )
                                         )
                                     )
                                 ),
@@ -153,7 +154,7 @@ shinyUI(dashboardPage(
                                                    "Esri.WorldImagery" = "Esri.WorldImagery",
                                                    "Esri.WorldTerrain" = "Esri.WorldTerrain"
                                                ),
-                                               selected = "Stamen.Watercolor"
+                                               selected = "CartoDB.Positron"
                                            ),
                                            selectInput(
                                                "mapColor",
@@ -190,7 +191,7 @@ shinyUI(dashboardPage(
                                     "Option 01",
                                     div(class = "secondaryHeaders", h3("Option 01: Questionnaire")),
                                     helpText(
-                                        "Note: If you have limited knowledge in Biodiversity data, 
+                                        "Note: If you have limited knowledge in Biodiversity data,
                                         this option is preferred.",
                                         "Answer a few questions and let bdclean take care of the cleaning."
                                     ),
@@ -224,18 +225,18 @@ shinyUI(dashboardPage(
                                 #     helpText(
                                 #         "Note: Choose the cleaning, customized for special domains and needs"
                                 #     ),
-                                #     
+                                #
                                 #     # -------------------------------
-                                #     
+                                #
                                 #     uiOutput("domainCleaning")
-                                #     
+                                #
                                 #     # -------------------------------
                                 # ),
                                 div(class = "progressStep", taskItem(
                                     value = 30, color = "green",
                                     "Step 2 of 6"
                                 ))
-                            ),
+                                ),
                             div(class = "activeButton", actionButton("configureToFlag", "Next: Flagging"))
                         )
                     ))),
@@ -270,12 +271,15 @@ shinyUI(dashboardPage(
                                         color = "yellow"
                                     )
                                 ),
+                                
+                                h4("Flag Settings"),
+                                checkboxInput("missingCase", label = "Mark missing values as Fail", value = FALSE),
+                                fluidRow(actionButton("flagButton", label = "Flag Data")),
+                                
                                 div(class = "progressStep", taskItem(
                                     value = 45, color = "yellow",
                                     "Step 3 of 6"
-                                ))                                ,
-                                
-                                fluidRow(actionButton("flagButton", label = "Flag Data"))
+                                ))
                             ),
                             br(),
                             
