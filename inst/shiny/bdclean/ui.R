@@ -91,7 +91,8 @@ shinyUI(dashboardPage(
                                         id = "queryDatabaseDiv",
                                         class = "activeButton",
                                         actionButton("queryDatabase", "Query Database", icon("download"))
-                                    )
+                                    ),
+                                    br()
                                 ),
                                 
                                 # ------------- End of DB Module -------------------
@@ -116,6 +117,13 @@ shinyUI(dashboardPage(
                                         )
                                     )
                                 ),
+                                
+                                checkboxInput(
+                                    "darwinizerControl",
+                                    label = "Perform Header Cleaning",
+                                    value = TRUE
+                                ),
+                                
                                 # ------------- End of Local Disk Module -------------------
                                 
                                 div(class = "progressStep", taskItem(

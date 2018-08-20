@@ -1,18 +1,18 @@
 /* Base for label styling */
-#shiny-tab-configure [type="checkbox"]:not(:checked), #shiny-tab-configure [type="checkbox"]:checked {
+ [type="checkbox"]:not(:checked),  [type="checkbox"]:checked {
   position: absolute;
   height: 0;
   width: 0;
 }
 
-#shiny-tab-configure [type="checkbox"]:not(:checked), #shiny-tab-configure [type="checkbox"]:checked {
+ [type="checkbox"]:not(:checked),  [type="checkbox"]:checked {
   position: relative;
   padding-left: 1.95em;
   cursor: pointer;
 }
 
 /* checkbox aspect */
-#shiny-tab-configure [type="checkbox"]:not(:checked):before, #shiny-tab-configure [type="checkbox"]:checked:before {
+ [type="checkbox"]:not(:checked):before,  [type="checkbox"]:checked:before {
   content: '';
   position: absolute;
   left: 0; top: 0;
@@ -24,7 +24,7 @@
 }
 
 /* checked mark aspect */
-#shiny-tab-configure [type="checkbox"]:not(:checked):after, #shiny-tab-configure [type="checkbox"]:checked:after {
+ [type="checkbox"]:not(:checked):after,  [type="checkbox"]:checked:after {
   content: '✔';
   position: absolute;
   font-size: 2.5em;
@@ -34,24 +34,25 @@
   font-family: Helvetica, Arial, sans-serif;
 }
 /* checked mark aspect changes */
-#shiny-tab-configure [type="checkbox"]:not(:checked):after {
+ [type="checkbox"]:not(:checked):after {
   opacity: 0;
   transform: scale(0);
 }
 
-#shiny-tab-configure [type="checkbox"]:checked:after {
+ [type="checkbox"]:checked:after {
   opacity: 1;
   transform: scale(1);
 }
 
 
 /* hover style just for information */
-#shiny-tab-configure label:hover:before {
+ label:hover:before {
   border: 2px solid #4778d9!important;
 }
 
-#shiny-tab-configure .checkbox span {
-    margin-left: 100%
+ .checkbox span {
+    margin-left: 10%;
+    position: absolute;
 }
 
 /* -------------------- */

@@ -303,12 +303,32 @@ shinyServer(function(input, output, session) {
         }
         
         # ------------ Darwinizing Data -------------
-        dictionaryPath <- system.file("data/customDwCdictionary.txt", package = "bdclean")
-        customDictionary <- data.table::fread(file = dictionaryPath)
         
-        darwinizer <- bdDwC::darwinizeNames(myData, customDictionary)
-        tidyData <- bdDwC::renameUserData(myData, darwinizer)
-        dataStore$inputData <<- data
+        if (input$darwinizerControl) {
+            showNotification("Cleaning Headers", duration = 2)
+            dictionaryPath <-
+                system.file("data/customDwCdictionary.txt", package = "bdclean")
+            customDictionary <-
+                data.table::fread(file = dictionaryPath)
+            
+            darwinizer <-
+                bdDwC::darwinizeNames(myData, customDictionary)
+            
+            fixed <-
+                darwinizer[darwinizer$matchType == "Darwinized", ]
+            
+            if (nrow(fixed) > 0) {
+                tidyData <- bdDwC::renameUserData(myData, darwinizer)
+                dataStore$inputData <<- data
+                
+                showNotification(paste("Converted Columns:", paste(
+                    paste(fixed[, 1], collapse = ", "),
+                    paste(fixed[, 2], collapse = ", "),
+                    sep = " -> "
+                )), duration = 7)
+            }
+        }
+        
         
         # ------------ End of Darwinizing Data -------------
         
