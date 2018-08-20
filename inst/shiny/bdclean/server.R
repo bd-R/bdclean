@@ -283,7 +283,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ decimalLongitude, ~ decimalLatitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
@@ -292,7 +292,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles( ~ longitude, ~ latitude, color = input$mapColor)
+            addCircles( ~ decimalLongitude, ~ decimalLtitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
@@ -302,23 +302,19 @@ shinyServer(function(input, output, session) {
             return()
         }
         
-        if ("decimallatitude" %in% names(data)) {
-            colnames(data)[colnames(data) == "decimallatitude"] <- "latitude"
-            colnames(data)[colnames(data) == "decimallongitude"] <-
-                "longitude"
-            
-            dataStore$inputData <<- data
-        } else if ("decimalLatitude" %in% names(data)) {
-            colnames(data)[colnames(data) == "decimalLatitude"] <- "latitude"
-            colnames(data)[colnames(data) == "decimalLongitude"] <-
-                "longitude"
-            
-            dataStore$inputData <<- data
-        }
+        # ------------ Darwinizing Data -------------
+        dictionaryPath <- system.file("data/customDwCdictionary.txt", package = "bdclean")
+        customDictionary <- data.table::fread(file = dictionaryPath)
+        
+        darwinizer <- bdDwC::darwinizeNames(myData, customDictionary)
+        tidyData <- bdDwC::renameUserData(myData, darwinizer)
+        dataStore$inputData <<- data
+        
+        # ------------ End of Darwinizing Data -------------
         
         try(leafletProxy("mymap", data = data) %>%
                 clearShapes() %>%
-                addCircles( ~ longitude, ~ latitude, color = input$mapColor))
+                addCircles( ~ decimalLongitude, ~ decimalLatitude, color = input$mapColor))
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
             data
