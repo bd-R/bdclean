@@ -319,13 +319,13 @@ shinyServer(function(input, output, session) {
                 data.table::fread(file = dictionaryPath)
             
             darwinizer <-
-                bdDwC::darwinizeNames(myData, customDictionary)
+                bdDwC::darwinizeNames(dataStore$inputData, customDictionary)
             
             fixed <-
                 darwinizer[darwinizer$matchType == "Darwinized", ]
             
             if (nrow(fixed) > 0) {
-                tidyData <- bdDwC::renameUserData(myData, darwinizer)
+                tidyData <- bdDwC::renameUserData(dataStore$inputData, darwinizer)
                 dataStore$inputData <<- data
                 
                 showNotification(paste("Converted Columns:", paste(
