@@ -57,7 +57,7 @@ shinyUI(dashboardPage(
                                 # ------------- DB Module -------------------
                                 
                                 tabPanel(
-                                    "Option 01",
+                                    "Option 01: Online DB",
                                     div(class = "secondaryHeaders", h3("Option 01: From Online Database")),
                                     textInput(
                                         "scientificName",
@@ -99,7 +99,7 @@ shinyUI(dashboardPage(
                                 
                                 # ------------- Local Disk Module -------------------
                                 tabPanel(
-                                    "Option 02",
+                                    "Option 02: Local Disk",
                                     div(class = "secondaryHeaders", h3("Option 02: From Local Disk")),
                                     div(
                                         id = "inputFileDiv",
@@ -118,11 +118,16 @@ shinyUI(dashboardPage(
                                     )
                                 ),
                                 
-                                checkboxInput(
-                                    "darwinizerControl",
-                                    label = "Perform Header Cleaning",
-                                    value = TRUE
+                                checkboxInput("darwinizerControl",
+                                              label = "Perform Header Cleaning",
+                                              value = TRUE),
+                                
+                                helpText(
+                                    "To manually edit or clean headers, use ",
+                                    a("bdDwC", href = "https://github.com/bd-R/bdDwC"),
+                                    " package."
                                 ),
+                                
                                 
                                 # ------------- End of Local Disk Module -------------------
                                 
@@ -196,7 +201,7 @@ shinyUI(dashboardPage(
                             tabsetPanel(
                                 type = "tabs",
                                 tabPanel(
-                                    "Option 01",
+                                    "Option 01: Questionnaire ",
                                     div(class = "secondaryHeaders", h3("Option 01: Questionnaire")),
                                     helpText(
                                         "Note: If you have limited knowledge in Biodiversity data,
@@ -212,7 +217,7 @@ shinyUI(dashboardPage(
                                     # -------------------------------
                                 ),
                                 tabPanel(
-                                    "Option 02",
+                                    "Option 02: Customized Checks",
                                     div(class = "secondaryHeaders", h3("Option 02: Customized Checks")),
                                     helpText(
                                         "Note: Select the quality checks you prefer and

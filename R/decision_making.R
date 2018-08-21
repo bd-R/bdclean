@@ -64,7 +64,10 @@ perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
 #'
 #'@export
 get_checks_list <- function() {
-    packageDocumentation <- tools::Rd_db("bdclean")
+    bdcleanDocumentation <- tools::Rd_db("bdclean")
+    bdchecksDocumentation <- tools::Rd_db("bdchecks")
+    packageDocumentation <- c(bdcleanDocumentation, bdchecksDocumentation)
+    
     qualityChecks <- list()
     
     for (i in 1:length(packageDocumentation)) {

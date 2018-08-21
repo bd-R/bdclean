@@ -1,6 +1,13 @@
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 
 shinyServer(function(input, output, session) {
+    # End session with browser close
+    # session$onSessionEnded(function() {
+    #     stopApp()
+    # })
+    
+    # jscode <- "shinyjs.closeWindow = function() { window.close(); }"
+    
     # ------------- Local Data store ------------------------
     dataStore <-
         list(
@@ -458,7 +465,8 @@ shinyServer(function(input, output, session) {
                         " == true",
                         sep = ""
                     ),
-                    createQuestionsUI(question, val)
+                    div(class="subSpan", createQuestionsUI(question, val))
+                    
                 )
                 val <<- val + 1
             }

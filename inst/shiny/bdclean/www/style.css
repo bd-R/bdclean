@@ -112,3 +112,7 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
         box-shadow: aqua;
     border-color: #3c8dbc;
 }
+
+.subSpan{
+    margin-left: 5%;
+}
