@@ -64,9 +64,14 @@ perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
 #'
 #'@export
 get_checks_list <- function() {
-    bdcleanDocumentation <- tools::Rd_db("bdclean")
+    # Uncomment if both suppoprted in customized checks. Right now,
+    # only bdcecks supported as it doenst require user input.
+    # bdcleanDocumentation <- tools::Rd_db("bdclean")
+    # bdchecksDocumentation <- tools::Rd_db("bdchecks")
+    # packageDocumentation <- c(bdcleanDocumentation, bdchecksDocumentation)
+    
     bdchecksDocumentation <- tools::Rd_db("bdchecks")
-    packageDocumentation <- c(bdcleanDocumentation, bdchecksDocumentation)
+    packageDocumentation <- bdchecksDocumentation
     
     qualityChecks <- list()
     
@@ -114,7 +119,7 @@ get_checks_list <- function() {
             temp$checkCategory <- checkCategory
             temp$targetDWCField <- targetDWCField
             
-            qualityChecks[nameOfQualityCheck] <-
+            qualityChecks[paste("DC_", nameOfQualityCheck, sep = "")] <-
                 list(temp)
         }
     }
