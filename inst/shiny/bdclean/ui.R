@@ -58,7 +58,7 @@ shinyUI(dashboardPage(
                                 # ------------- DB Module -------------------
                                 
                                 tabPanel(
-                                    "Option 01: Online DB",
+                                    "Download Data",
                                     div(class = "secondaryHeaders", h3("Option 01: From Online Database")),
                                     textInput(
                                         "scientificName",
@@ -113,7 +113,7 @@ shinyUI(dashboardPage(
                                 
                                 # ------------- Local Disk Module -------------------
                                 tabPanel(
-                                    "Option 02: Local Disk",
+                                    "Upload Data",
                                     div(class = "secondaryHeaders", h3("Option 02: From Local Disk")),
                                     div(
                                         id = "inputFileDiv",
@@ -264,7 +264,7 @@ shinyUI(dashboardPage(
                                     "Step 2 of 6"
                                 ))
                                 ),
-                            div(class = "activeButton", actionButton("configureToFlag", "Next: Flagging"))
+                            div(class = "completedButton", actionButton("configureToFlag", "Next: Flagging"))
                         )
                     ))),
             
@@ -301,13 +301,24 @@ shinyUI(dashboardPage(
                                 
                                 h4("Flag Settings"),
                                 checkboxInput("missingCase", label = "Mark missing values as Fail", value = FALSE),
-                                fluidRow(actionButton("flagButton", label = "Flag Data")),
+                                helpText(
+                                    "Quality checks in bdclean check the validity of each records of the column it targets. If ticked, records with missing values will be considered as invalid record and will be removed. If not ticked, missing records will not be considered in the quality check, so, will remain in the cleaned data.
+                                    "
+                                ),
+                                fluidRow(
+                                    div(
+                                        id = "flagButtonDiv",
+                                        class = "completedButton",
+                                        actionButton("flagButton", label = "Flag Data")
+                                    )
+                                    
+                                    ),
                                 
                                 div(class = "progressStep", taskItem(
                                     value = 45, color = "yellow",
                                     "Step 3 of 6"
                                 ))
-                            ),
+                                ),
                             br(),
                             
                             # -------------------------------
@@ -350,9 +361,9 @@ shinyUI(dashboardPage(
                             # -------------------------------
                         )
                     )))
-        )
-        
-        # ------------- End of Documentation Module -------------------
-        
+)
+
+# ------------- End of Documentation Module -------------------
+
     )
 ))

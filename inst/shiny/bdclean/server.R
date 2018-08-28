@@ -104,7 +104,7 @@ shinyServer(function(input, output, session) {
                              duration = 2)
             
             dummyQuestion <-
-                bdclean::BdQuestion(
+                bdclean::BdQuestion( # bdclean::
                     question = "Customized Quality Checks",
                     possible.responses = c("Yes" , "No"),
                     question.type = "ChildRouter",
@@ -169,6 +169,11 @@ shinyServer(function(input, output, session) {
             
             addWarnings("Warning while Cleaning", warnings, "trash")
         })
+        
+        shinyjs::addClass(id = 'flagToCleanDiv',
+                          class = 'readyButton')
+        shinyjs::removeClass(id = 'flagToCleanDiv',
+                             class = 'completedButton')
         
         dataStore$cleaningDone <<- TRUE
     })
@@ -257,18 +262,27 @@ shinyServer(function(input, output, session) {
                 dataStore$inputData <<- data$data
                 
             } else {
-                data <-
-                    spocc::occ(
-                        query = input$scientificName,
-                        from = input$queryDB,
-                        limit = input$recordSize,
-                        has_coords = switch(
-                            input$hasCoords,
-                            "1" = TRUE,
-                            "2" = FALSE,
-                            "3" = NULL
-                        )
-                    )
+                warnings <- capture.output(
+                    data <-
+                        spocc::occ(
+                            query = input$scientificName,
+                            from = input$queryDB,
+                            limit = input$recordSize,
+                            has_coords = switch(
+                                input$hasCoords,
+                                "1" = TRUE,
+                                "2" = FALSE,
+                                "3" = NULL
+                            )
+                        ),
+                    type = "message"
+                )
+                
+                if (length(warnings) > 0 ){
+                    showNotification(paste(warnings, collapse = " "),
+                                     duration = 6)
+                }
+                
                 tempData <- data[[input$queryDB]]$data[[1]]
                 dataStore$inputData <<- tempData
             }
@@ -318,7 +332,7 @@ shinyServer(function(input, output, session) {
     dataLoadedTask <- function(data) {
         if (length(data) == 0) {
             showNotification("Empty data returned! Try different setting.",
-                             duration = 3)
+                             duration = 2)
             return()
         }
         
@@ -384,7 +398,7 @@ shinyServer(function(input, output, session) {
         shinyjs::addClass(id = 'dataToConfigureDiv',
                           class = 'completedButton')
         shinyjs::removeClass(id = 'queryDatabaseDiv',
-                             class = 'readyButton')
+                             class = 'activeButton')
         
         showNotification("Read Data Successfully", duration = 2)
         
@@ -659,6 +673,17 @@ shinyServer(function(input, output, session) {
             
             addWarnings("Warning while Flagging", warnings, "flag")
         })
+        
+        shinyjs::addClass(id = 'flagButtonDiv',
+                          class = 'readyButton')
+        
+        shinyjs::removeClass(id = 'flagButtonDiv',
+                             class = 'completedButton')
+        
+        shinyjs::addClass(id = 'flagToCleanDiv',
+                          class = 'completedButton')
+        shinyjs::removeClass(id = 'flagToCleanDiv',
+                             class = 'activeButton')
     })
     
     output$messageMenu <- renderMenu({
@@ -703,6 +728,11 @@ shinyServer(function(input, output, session) {
                 
                 checkData <- flaggedData[, checkColumns]
                 
+                
+                if (class(checkData) == "logical"){
+                    return(nrow(flaggedData) - length(checkData[checkData != TRUE]))
+                }
+                
                 return(nrow(flaggedData) - sum(rowSums(checkData != TRUE, na.rm = TRUE) >= 1))
             }
         
@@ -746,14 +776,6 @@ shinyServer(function(input, output, session) {
                         "Statistics View",
                         div(class = "secondaryHeaders", h3("View 01: Statistics Boxes")),
                         fluidRow(
-                            infoBox(
-                                "Clean Data",
-                                paste(((
-                                    flaggedCount / nrow(dataStore$inputData)
-                                ) * 100), "%", sep = ""),
-                                icon = icon("flag"),
-                                color = "red"
-                            ),
                             infoBox("# of Clean Records",
                                     flaggedCount,
                                     icon = icon("list-ol")),
@@ -770,9 +792,16 @@ shinyServer(function(input, output, session) {
                                 )),
                                 icon = icon("paw"),
                                 color = "yellow"
+                            ),
+                            infoBox(
+                                "Clean Data",
+                                paste(((
+                                    flaggedCount / nrow(dataStore$inputData)
+                                ) * 100), "%", sep = ""),
+                                icon = icon("flag"),
+                                color = "red"
                             )
                         )
-                        
                     ),
                     tabPanel(
                         "Table View",
@@ -781,7 +810,12 @@ shinyServer(function(input, output, session) {
                     )
                 ),
                 
-                actionButton("flagToClean", label = "Next: Perform Cleaning"),
+                div(
+                    id = "flagToCleanDiv",
+                    class = "completedButton",
+                    actionButton("flagToClean", label = "Next: Perform Cleaning")
+                ),
+                
                 actionButton("flagToDocument", label = "Next: Continue with Just Flagging"),
                 
                 div(class = "progressStep",  taskItem(
@@ -808,7 +842,13 @@ shinyServer(function(input, output, session) {
                              )),
                              p(paste("Cleaning is succesfully done.")),
                              
-                             actionButton("cleanToDocument", label = "Next: Manage Artifacts and Reports"),
+                             div(
+                                 id = "cleanToDocumentDiv",
+                                 class = "completedButton",
+                                 actionButton("cleanToDocument", label = "Next: Manage Artifacts and Reports")
+                             ),
+                             
+                             
                              
                              div(class = "progressStep",  taskItem(
                                  value = 80, color = "red",

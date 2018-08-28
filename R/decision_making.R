@@ -21,7 +21,11 @@ cleaning_function <- function(bddata) {
     # Records with cleanliness-score less than 10 in atleast 1 check will fail
     # ------------- Decision Making of Cleaning -------------
     
-    failedDataLogical <- rowSums(checkData != TRUE, na.rm = T) >= 1
+    if (class(checkData) == "logical"){
+        failedDataLogical <- checkData != TRUE
+    } else {
+        failedDataLogical <- rowSums(checkData != TRUE, na.rm = T) >= 1
+    }
     
     # ------------- End of Decision Making of Cleaning -------------
     
@@ -111,7 +115,7 @@ get_checks_list <- function() {
             
             temp <- list()
             
-            temp$nameOfQualityCheck <- nameOfQualityCheck
+            temp$nameOfQualityCheck <- paste("DC_", nameOfQualityCheck, sep = "")
             temp$description <-
                 paste(description, collapse = " ")
             temp$samplePassData <- samplePassData
@@ -119,7 +123,7 @@ get_checks_list <- function() {
             temp$checkCategory <- checkCategory
             temp$targetDWCField <- targetDWCField
             
-            qualityChecks[paste("DC_", nameOfQualityCheck, sep = "")] <-
+            qualityChecks[nameOfQualityCheck] <-
                 list(temp)
         }
     }
