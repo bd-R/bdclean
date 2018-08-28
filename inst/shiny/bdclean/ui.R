@@ -6,6 +6,7 @@ library(bdclean)
 library(data.table)
 library(finch)
 library(bdchecks)
+source("functions.R")
 
 shinyUI(dashboardPage(
     #Header Title
@@ -65,27 +66,40 @@ shinyUI(dashboardPage(
                                         value = "Puma concolor"
                                     ),
                                     
-                                    sliderInput(
+                                    numericInput(
                                         "recordSize",
                                         label = h3("Record Size:"),
-                                        min = 0,
-                                        max = 50000,
                                         value = 500
                                     ),
+                                    
+                                    selectInput(
+                                        "hasCoords",
+                                        label = h3("Records Filter:"),
+                                        choices = list(
+                                            "With Coordinates" = "1",
+                                            "Without Coordinates" = "2",
+                                            "No Filter" = "3"
+                                        ),
+                                        selected = 3
+                                    ),
+                                    
                                     radioButtons(
                                         "queryDB",
                                         label = h3("Online Database:"),
                                         choices = list(
-                                            "GBIF" = 'gbif',
-                                            "Vertnet" = 'vertnet',
-                                            "Bison" = 'bison',
-                                            "Inat" = 'inat',
-                                            "eBird" = 'ebird',
-                                            "Ecoengine" = 'ecoengine',
-                                            "Vertnet" = 'vertnet'
+                                            "GBIF (Global Biodiversity Information Facility)" = 'gbif',
+                                            "iDigBio (Integrated Digitized Biocollections)" = 'idigbio',
+                                            "EcoEngine (Berkeley Ecoinformatics Engine)" = 'ecoengine',
+                                            "Vertnet (Vertebrate Network)" = 'vertnet',
+                                            "BISON (Biodiversity Information Serving Our Nation)" = 'bison',
+                                            "iNaturalist" = 'inat',
+                                            "ALA (Atlas of Living Australia)" = 'ala',
+                                            "OBIS (Ocean Biogeographic Information System)" = 'obis',
+                                            "AntWeb" = 'antweb'
                                         ),
                                         selected = 'gbif'
                                     ),
+                                    
                                     br(),
                                     div(
                                         id = "queryDatabaseDiv",

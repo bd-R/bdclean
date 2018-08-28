@@ -246,17 +246,30 @@ shinyServer(function(input, output, session) {
                 data <-
                     rgbif::occ_search(
                         scientificName = input$scientificName,
-                        limit = input$recordSize
+                        limit = input$recordSize,
+                        hasCoordinate = switch(
+                            input$hasCoords,
+                            "1" = TRUE,
+                            "2" = FALSE,
+                            "3" = NULL
+                        )
                     )
                 dataStore$inputData <<- data$data
                 
             } else {
                 data <-
-                    spocc::occ(input$scientificName,
-                               input$queryDB,
-                               limit = input$recordSize)
-                
-                tempData <- data[[input$queryDatabase]]$data[[1]]
+                    spocc::occ(
+                        query = input$scientificName,
+                        from = input$queryDB,
+                        limit = input$recordSize,
+                        has_coords = switch(
+                            input$hasCoords,
+                            "1" = TRUE,
+                            "2" = FALSE,
+                            "3" = NULL
+                        )
+                    )
+                tempData <- data[[input$queryDB]]$data[[1]]
                 dataStore$inputData <<- tempData
             }
         })
@@ -290,7 +303,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles( ~ decimalLongitude, ~ decimalLatitude, color = input$mapColor)
+            addCircles(~ decimalLongitude, ~ decimalLatitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
@@ -299,7 +312,7 @@ shinyServer(function(input, output, session) {
         }
         leafletProxy("mymap", data = dataStore$inputData) %>%
             clearShapes() %>%
-            addCircles( ~ decimalLongitude, ~ decimalLtitude, color = input$mapColor)
+            addCircles(~ decimalLongitude, ~ decimalLtitude, color = input$mapColor)
     })
     
     dataLoadedTask <- function(data) {
@@ -322,29 +335,40 @@ shinyServer(function(input, output, session) {
                 bdDwC::darwinizeNames(dataStore$inputData, customDictionary)
             
             fixed <-
-                darwinizer[darwinizer$matchType == "Darwinized", ]
+                darwinizer[darwinizer$matchType == "Darwinized",]
             
             if (nrow(fixed) > 0) {
                 tidyData <- bdDwC::renameUserData(dataStore$inputData, darwinizer)
-                dataStore$inputData <<- data
+                dataStore$inputData <<- tidyData
                 
-                showNotification(paste("Converted Columns:", paste(
-                    paste(fixed[, 1], collapse = ", "),
-                    paste(fixed[, 2], collapse = ", "),
-                    sep = " -> "
-                )), duration = 7)
+                showNotification(paste(
+                    "Converted Columns:",
+                    paste(
+                        paste(fixed[, 1], collapse = ", "),
+                        paste(fixed[, 2], collapse = ", "),
+                        sep = " -> "
+                    )
+                ),
+                duration = 7)
             }
         }
         
+        if ("decimalLatitude" %in% colnames(dataStore$inputData))
+        {
+            dataStore$inputData$decimalLatitude <<-
+                as.numeric(dataStore$inputData$decimalLatitude)
+            dataStore$inputData$decimalLongitude <<-
+                as.numeric(dataStore$inputData$decimalLongitude)
+        }
         
         # ------------ End of Darwinizing Data -------------
         
-        try(leafletProxy("mymap", data = data) %>%
+        try(leafletProxy("mymap", data = dataStore$inputData) %>%
                 clearShapes() %>%
-                addCircles( ~ decimalLongitude, ~ decimalLatitude, color = input$mapColor))
+                addCircles(~ decimalLongitude, ~ decimalLatitude, color = input$mapColor))
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
-            data
+            summarizeDataframe(dataStore$inputData)
         }, options = list(scrollX = TRUE)))
         
         shinyjs::addClass(id = 'queryDatabaseDiv',
@@ -362,10 +386,11 @@ shinyServer(function(input, output, session) {
         shinyjs::removeClass(id = 'queryDatabaseDiv',
                              class = 'readyButton')
         
-        showNotification("Read Data Succesfully", duration = 2)
+        showNotification("Read Data Successfully", duration = 2)
         
         dataStore$inputReceived <<- TRUE
         
+        # --------- Setting flag tab statistic boxes -------
         output$inputDataRows <- renderText(nrow(data))
         output$inputDataColumns <- renderText(length(data))
         output$inputDataSpecies <-
@@ -465,7 +490,7 @@ shinyServer(function(input, output, session) {
                         " == true",
                         sep = ""
                     ),
-                    div(class="subSpan", createQuestionsUI(question, val))
+                    div(class = "subSpan", createQuestionsUI(question, val))
                     
                 )
                 val <<- val + 1
@@ -752,7 +777,7 @@ shinyServer(function(input, output, session) {
                     tabPanel(
                         "Table View",
                         div(class = "secondaryHeaders", h3("View 02: Summarized Table")),
-                        DT::renderDataTable(dataStore$flaggedData, width = 300)
+                        DT::renderDataTable(summarizeDataframe(dataStore$flaggedData), width = 300)
                     )
                 ),
                 
@@ -768,7 +793,7 @@ shinyServer(function(input, output, session) {
     })
     
     output$flaggedDataTable <-
-        reactive(DT::renderDT(dataStore$flaggedData))
+        reactive(DT::renderDT(summarizeDataframe(dataStore$flaggedData)))
     
     # ------------- End of Flagging Module -------------------
     
@@ -815,7 +840,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadInput", "Download Input Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(dataStore$inputData, width = 300)
+                            DT::renderDataTable(summarizeDataframe(dataStore$inputData), width = 300)
                         ),
                         tabPanel(
                             "Flagged Data",
@@ -825,7 +850,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadFlagged", "Download Flagged Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(dataStore$flaggedData, width = 300)
+                            DT::renderDataTable(summarizeDataframe(dataStore$flaggedData), width = 300)
                         ),
                         tabPanel(
                             "Cleaned Data",
@@ -833,7 +858,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadCleaned", "Download Cleaned Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(dataStore$cleanedData, width = 300)
+                            DT::renderDataTable(summarizeDataframe(dataStore$cleanedData), width = 300)
                         ),
                         tabPanel(
                             "Cleaning Report",
@@ -855,21 +880,22 @@ shinyServer(function(input, output, session) {
                             br(),
                             br(),
                             includeMarkdown("CleaningReports/generateDetailedReport.md")
-                        ),
-                        tabPanel(
-                            "Source Code",
-                            div(class = "secondaryHeaders", h3(
-                                "Environment 01: Workflow Source Code"
-                            )),
-                            downloadButton("downloadCode", "Download Detailed Report"),
-                            br()
-                        ),
-                        tabPanel(
-                            "R Environment",
-                            div(class = "secondaryHeaders", h3("Environment 02: R Environment")),
-                            downloadButton("downloadDetailedReport", "Download Detailed Report"),
-                            br()
                         )
+                        # Uncomment after implmenting source code and R environment
+                        # tabPanel(
+                        #     "Source Code",
+                        #     div(class = "secondaryHeaders", h3(
+                        #         "Environment 01: Workflow Source Code"
+                        #     )),
+                        #     downloadButton("downloadCode", "Download Detailed Report"),
+                        #     br()
+                        # ),
+                        # tabPanel(
+                        #     "R Environment",
+                        #     div(class = "secondaryHeaders", h3("Environment 02: R Environment")),
+                        #     downloadButton("downloadDetailedReport", "Download Detailed Report"),
+                        #     br()
+                        # )
                     ),
                     div(
                         class = "progressStep",
