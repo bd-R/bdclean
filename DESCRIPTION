@@ -10,6 +10,6 @@ Maintainer: Vijay Barve <vijay.barve@gmail.com>
 Description: Provides a set of functions to build a workflow to deal
 	with biodiversity data cleaning protocols. 
 License: GPL-3
-Imports: rmarkdown, knitr, DT, leaflet, shiny, shinydashboard, shinyjs, bdDwC
+Imports: rmarkdown, knitr, DT, leaflet, shiny, shinydashboard, shinyjs, bdDwC, bdchecks
 Remotes: github::bd-R/bdchecks
 RoxygenNote: 6.0.1
