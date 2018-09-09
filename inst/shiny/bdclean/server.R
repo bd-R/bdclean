@@ -1,4 +1,5 @@
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
+library(bdchecks)
 
 shinyServer(function(input, output, session) {
     # End session with browser close
