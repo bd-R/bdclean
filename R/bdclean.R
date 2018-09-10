@@ -1,4 +1,4 @@
-#' bdclean: Biodiversity Data Cleaning Workflows
+#' bdclean: Biodiversity Data Cleaning Workflows.
 #'
 #' Biodiversity Data Cleaning Workflows using R would be helpful
 #' to clean biodiversity occurrence data typically downloaded from
