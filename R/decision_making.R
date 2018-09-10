@@ -21,7 +21,7 @@ cleaning_function <- function(bddata) {
     # Records with cleanliness-score less than 10 in atleast 1 check will fail
     # ------------- Decision Making of Cleaning -------------
     
-    if (class(checkData) == "logical"){
+    if (class(checkData) == "logical") {
         failedDataLogical <- checkData != TRUE
     } else {
         failedDataLogical <- rowSums(checkData != TRUE, na.rm = T) >= 1
@@ -32,7 +32,7 @@ cleaning_function <- function(bddata) {
     message("Records remaining:",
             nrow(bddata) - sum(failedDataLogical))
     
-    return(bddata[!failedDataLogical,!grepl("bdclean", names(bddata))])
+    return(bddata[!failedDataLogical, !grepl("bdclean", names(bddata))])
 }
 
 #' Data decision function (threshold tuning) required in bdclean internal usage.
@@ -115,7 +115,8 @@ get_checks_list <- function() {
             
             temp <- list()
             
-            temp$nameOfQualityCheck <- paste("DC_", nameOfQualityCheck, sep = "")
+            temp$nameOfQualityCheck <-
+                paste("DC_", nameOfQualityCheck, sep = "")
             temp$description <-
                 paste(description, collapse = " ")
             temp$samplePassData <- samplePassData

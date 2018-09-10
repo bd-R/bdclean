@@ -1,11 +1,12 @@
-library(shiny)
-library(shinydashboard)
-library(leaflet)
-library(shinyjs)
-library(bdclean)
 library(data.table)
+library(leaflet)
 library(finch)
+library(shiny)
+library(shinyjs)
+library(shinydashboard)
+library(bdclean)
 library(bdchecks)
+
 source("functions.R")
 
 shinyUI(dashboardPage(

@@ -2,7 +2,7 @@ Package: bdclean
 Type: Package
 Title: Biodiversity Data Cleaning Workflow
 Version: 1.0.0
-Date: 2018-08-28
+Date: 2018-09-10
 Author: Tomer Gueta <tomer.gu@gmail.com>, Vijay Barve <vijay.barve@gmail.com>, 
 	Thiloshon Nagarajah <thiloshon@gmail.com>, Ashwin Agrawal <ashwin.agrawal.met14@itbhu.ac.in>,
 	Carmel Yohay <yohay@cv.technion.ac.il>
@@ -10,6 +10,9 @@ Maintainer: Vijay Barve <vijay.barve@gmail.com>
 Description: Provides a set of functions to build a workflow to deal
 	with biodiversity data cleaning protocols. 
 License: GPL-3
-Imports: rmarkdown, knitr, DT, leaflet, shiny, shinydashboard, shinyjs, bdDwC, bdchecks
+Imports: rmarkdown, knitr, shiny, shinydashboard, shinyjs, leaflet, DT, data.table, rgbif, spocc, finch, bdDwC, bdchecks
 Remotes: github::bd-R/bdchecks
 RoxygenNote: 6.0.1
+Suggests: 
+    testthat
+LazyData: true
