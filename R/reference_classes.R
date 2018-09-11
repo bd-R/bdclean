@@ -116,7 +116,8 @@ BdQuestion <-
                                 bdchecks::performDataCheck(data = flaggedData,
                                                            DConly = c(checkName))
                             
-                            if (length(checkTemp@flags) > 0 &&
+                            if (!is.null(checkTemp) &&
+                                length(checkTemp@flags) > 0 &&
                                 length(checkTemp@flags[[1]]@result) > 0) {
                                 checkTemp <- checkTemp@flags[[1]]@result
                                 
@@ -147,6 +148,7 @@ BdQuestion <-
                                    clean = TRUE,
                                    CleaningThreshold = 5) {
                 packageDocumentation <- tools::Rd_db("bdclean")
+                flaggedData <- as.data.frame(flaggedData)
                 
                 
                 for (i in 1:length(.self$quality.checks)) {
@@ -190,7 +192,7 @@ BdQuestion <-
                             nameOfQualityCheck,
                             ". Skipping report."
                         )
-                        # next
+                        next
                     }
                     
                     description <-

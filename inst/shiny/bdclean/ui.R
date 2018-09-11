@@ -1,11 +1,13 @@
-library(shiny)
-library(shinydashboard)
-library(leaflet)
-library(shinyjs)
-library(bdclean)
-library(data.table)
-library(finch)
-library(bdchecks)
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(shiny))
+suppressPackageStartupMessages(library(shinyjs))
+suppressPackageStartupMessages(library(shinydashboard))
+suppressPackageStartupMessages(library(bdclean))
+suppressPackageStartupMessages(library(bdchecks))
+suppressPackageStartupMessages(library(finch))
+suppressPackageStartupMessages(library(leaflet))
+
+source("functions.R")
 
 shinyUI(dashboardPage(
     #Header Title
@@ -57,7 +59,7 @@ shinyUI(dashboardPage(
                                 # ------------- DB Module -------------------
                                 
                                 tabPanel(
-                                    "Option 01",
+                                    "Download Data",
                                     div(class = "secondaryHeaders", h3("Option 01: From Online Database")),
                                     textInput(
                                         "scientificName",
@@ -65,40 +67,54 @@ shinyUI(dashboardPage(
                                         value = "Puma concolor"
                                     ),
                                     
-                                    sliderInput(
+                                    numericInput(
                                         "recordSize",
                                         label = h3("Record Size:"),
-                                        min = 0,
-                                        max = 50000,
                                         value = 500
                                     ),
+                                    
+                                    selectInput(
+                                        "hasCoords",
+                                        label = h3("Records Filter:"),
+                                        choices = list(
+                                            "With Coordinates" = "1",
+                                            "Without Coordinates" = "2",
+                                            "No Filter" = "3"
+                                        ),
+                                        selected = 3
+                                    ),
+                                    
                                     radioButtons(
                                         "queryDB",
                                         label = h3("Online Database:"),
                                         choices = list(
-                                            "GBIF" = 'gbif',
-                                            "Vertnet" = 'vertnet',
-                                            "Bison" = 'bison',
-                                            "Inat" = 'inat',
-                                            "eBird" = 'ebird',
-                                            "Ecoengine" = 'ecoengine',
-                                            "Vertnet" = 'vertnet'
+                                            "GBIF (Global Biodiversity Information Facility)" = 'gbif',
+                                            "iDigBio (Integrated Digitized Biocollections)" = 'idigbio',
+                                            "EcoEngine (Berkeley Ecoinformatics Engine)" = 'ecoengine',
+                                            "Vertnet (Vertebrate Network)" = 'vertnet',
+                                            "BISON (Biodiversity Information Serving Our Nation)" = 'bison',
+                                            "iNaturalist" = 'inat',
+                                            "ALA (Atlas of Living Australia)" = 'ala',
+                                            "OBIS (Ocean Biogeographic Information System)" = 'obis',
+                                            "AntWeb" = 'antweb'
                                         ),
                                         selected = 'gbif'
                                     ),
+                                    
                                     br(),
                                     div(
                                         id = "queryDatabaseDiv",
                                         class = "activeButton",
                                         actionButton("queryDatabase", "Query Database", icon("download"))
-                                    )
+                                    ),
+                                    br()
                                 ),
                                 
                                 # ------------- End of DB Module -------------------
                                 
                                 # ------------- Local Disk Module -------------------
                                 tabPanel(
-                                    "Option 02",
+                                    "Upload Data",
                                     div(class = "secondaryHeaders", h3("Option 02: From Local Disk")),
                                     div(
                                         id = "inputFileDiv",
@@ -106,15 +122,28 @@ shinyUI(dashboardPage(
                                         fileInput(
                                             "inputFile",
                                             label = h3("CSV / DWCA ZIP file input"),
-                                            accept = c("text/csv",
-                                                       "text/comma-separated-values,text/plain",
-                                                       ".csv",
-                                                       ".zip",
-                                                       "application/zip"
-                                                       )
+                                            accept = c(
+                                                "text/csv",
+                                                "text/comma-separated-values,text/plain",
+                                                ".csv",
+                                                ".zip",
+                                                "application/zip"
+                                            )
                                         )
                                     )
                                 ),
+                                
+                                checkboxInput("darwinizerControl",
+                                              label = "Perform Header Cleaning",
+                                              value = TRUE),
+                                
+                                helpText(
+                                    "To manually edit or clean headers, use ",
+                                    a("bdDwC", href = "https://github.com/bd-R/bdDwC"),
+                                    " package."
+                                ),
+                                
+                                
                                 # ------------- End of Local Disk Module -------------------
                                 
                                 div(class = "progressStep", taskItem(
@@ -153,7 +182,7 @@ shinyUI(dashboardPage(
                                                    "Esri.WorldImagery" = "Esri.WorldImagery",
                                                    "Esri.WorldTerrain" = "Esri.WorldTerrain"
                                                ),
-                                               selected = "Stamen.Watercolor"
+                                               selected = "CartoDB.Positron"
                                            ),
                                            selectInput(
                                                "mapColor",
@@ -187,10 +216,10 @@ shinyUI(dashboardPage(
                             tabsetPanel(
                                 type = "tabs",
                                 tabPanel(
-                                    "Option 01",
+                                    "Option 01: Questionnaire ",
                                     div(class = "secondaryHeaders", h3("Option 01: Questionnaire")),
                                     helpText(
-                                        "Note: If you have limited knowledge in Biodiversity data, 
+                                        "Note: If you have limited knowledge in Biodiversity data,
                                         this option is preferred.",
                                         "Answer a few questions and let bdclean take care of the cleaning."
                                     ),
@@ -203,7 +232,7 @@ shinyUI(dashboardPage(
                                     # -------------------------------
                                 ),
                                 tabPanel(
-                                    "Option 02",
+                                    "Option 02: Customized Checks",
                                     div(class = "secondaryHeaders", h3("Option 02: Customized Checks")),
                                     helpText(
                                         "Note: Select the quality checks you prefer and
@@ -224,19 +253,19 @@ shinyUI(dashboardPage(
                                 #     helpText(
                                 #         "Note: Choose the cleaning, customized for special domains and needs"
                                 #     ),
-                                #     
+                                #
                                 #     # -------------------------------
-                                #     
+                                #
                                 #     uiOutput("domainCleaning")
-                                #     
+                                #
                                 #     # -------------------------------
                                 # ),
                                 div(class = "progressStep", taskItem(
                                     value = 30, color = "green",
                                     "Step 2 of 6"
                                 ))
-                            ),
-                            div(class = "activeButton", actionButton("configureToFlag", "Next: Flagging"))
+                                ),
+                            div(class = "completedButton", actionButton("configureToFlag", "Next: Flagging"))
                         )
                     ))),
             
@@ -270,13 +299,27 @@ shinyUI(dashboardPage(
                                         color = "yellow"
                                     )
                                 ),
+                                
+                                h4("Flag Settings"),
+                                checkboxInput("missingCase", label = "Mark missing values as Fail", value = FALSE),
+                                helpText(
+                                    "Quality checks in bdclean check the validity of each records of the column it targets. If ticked, records with missing values will be considered as invalid record and will be removed. If not ticked, missing records will not be considered in the quality check, so, will remain in the cleaned data.
+                                    "
+                                ),
+                                fluidRow(
+                                    div(
+                                        id = "flagButtonDiv",
+                                        class = "completedButton",
+                                        actionButton("flagButton", label = "Flag Data")
+                                    )
+                                    
+                                    ),
+                                
                                 div(class = "progressStep", taskItem(
                                     value = 45, color = "yellow",
                                     "Step 3 of 6"
-                                ))                                ,
-                                
-                                fluidRow(actionButton("flagButton", label = "Flag Data"))
-                            ),
+                                ))
+                                ),
                             br(),
                             
                             # -------------------------------
@@ -319,9 +362,9 @@ shinyUI(dashboardPage(
                             # -------------------------------
                         )
                     )))
-        )
-        
-        # ------------- End of Documentation Module -------------------
-        
+)
+
+# ------------- End of Documentation Module -------------------
+
     )
 ))

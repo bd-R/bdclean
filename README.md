@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/thiloshon/bdclean.svg?branch=master)](https://travis-ci.org/thiloshon/bdclean)
+[![codecov](https://codecov.io/gh/thiloshon/bdclean/branch/master/graph/badge.svg)](https://codecov.io/gh/thiloshon/bdclean)
+
 # bdclean
 ### User-friendly biodiversity data cleaning pipeline
 

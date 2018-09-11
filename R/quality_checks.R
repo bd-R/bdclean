@@ -35,11 +35,11 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     bddata$bdclean.taxoLevel <- FALSE
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            bddata[which(bddata$taxonRank == ranks[i]), 'bdclean.taxoLevel'] <- TRUE
+            bddata[which(bddata$taxonRank == ranks[i]), 'bdclean.taxoLevel'] <-
+                TRUE
         }
     }
     
-    print(bddata$bdclean.taxoLevel)
     return(bddata)
 }
 
@@ -61,7 +61,6 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #'
 #'@export
 spatialResolution <- function(bddata, res = 100) {
-    #print("fxn Spatial Resoultion")
     cat(paste(
         "spatialResolution:",
         "\n Removing records above :",

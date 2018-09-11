@@ -21,11 +21,16 @@ cleaning_function <- function(bddata) {
     # Records with cleanliness-score less than 10 in atleast 1 check will fail
     # ------------- Decision Making of Cleaning -------------
     
-    failedDataLogical <- rowSums(checkData != TRUE, na.rm = T) >= 1
+    if (class(checkData) == "logical") {
+        failedDataLogical <- checkData != TRUE
+    } else {
+        failedDataLogical <- rowSums(checkData != TRUE, na.rm = T) >= 1
+    }
     
     # ------------- End of Decision Making of Cleaning -------------
     
-    message("Records remaining:", nrow(bddata) - sum(failedDataLogical))
+    message("Records remaining:",
+            nrow(bddata) - sum(failedDataLogical))
     
     return(bddata[!failedDataLogical, !grepl("bdclean", names(bddata))])
 }
@@ -63,7 +68,15 @@ perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
 #'
 #'@export
 get_checks_list <- function() {
-    packageDocumentation <- tools::Rd_db("bdclean")
+    # Uncomment if both suppoprted in customized checks. Right now,
+    # only bdcecks supported as it doenst require user input.
+    # bdcleanDocumentation <- tools::Rd_db("bdclean")
+    # bdchecksDocumentation <- tools::Rd_db("bdchecks")
+    # packageDocumentation <- c(bdcleanDocumentation, bdchecksDocumentation)
+    
+    bdchecksDocumentation <- tools::Rd_db("bdchecks")
+    packageDocumentation <- bdchecksDocumentation
+    
     qualityChecks <- list()
     
     for (i in 1:length(packageDocumentation)) {
@@ -102,7 +115,8 @@ get_checks_list <- function() {
             
             temp <- list()
             
-            temp$nameOfQualityCheck <- nameOfQualityCheck
+            temp$nameOfQualityCheck <-
+                paste("DC_", nameOfQualityCheck, sep = "")
             temp$description <-
                 paste(description, collapse = " ")
             temp$samplePassData <- samplePassData

@@ -4,14 +4,18 @@
 \alias{clean_data}
 \title{Data cleaning according to Questionnaire Responses.}
 \usage{
-clean_data(data, customQuestionnaire, clean = TRUE, missing = FALSE,
-  report = TRUE, format = c("html_document", "pdf_document"))
+clean_data(data, customQuestionnaire = NULL, clean = TRUE,
+  missing = FALSE, report = TRUE, format = c("html_document",
+  "pdf_document"))
 }
 \arguments{
 \item{data}{Biodiversity data in a data frame}
 
-\item{customQuestionnaire}{Custom User Created Questionnaire Responses if
-already available to pypass asking questions each time.}
+\item{customQuestionnaire}{Custom user created questionnaire responses if to pypass answering questions each time.}
+
+\item{clean}{Whether to clean after flagging. If false only flagging will be done.}
+
+\item{missing}{How to treat data with missing values. Default: false - will be treated as bad data.}
 
 \item{report}{Whether to print report of cleaning done.}
 
@@ -21,32 +25,32 @@ already available to pypass asking questions each time.}
 data frame with clean data
 }
 \description{
-Use \code{run_questionnaire} to create Questionnaire Responses and pass it to this
+Use \code{run_questionnaire} to add Questionnaire Responses and pass it to this
 function to process the data faster.
 }
 \details{
-Use \code{create_default_questionnaire} to create default Questionnaire object.
-You can add your custom questions and then pass it to this
+Use \code{create_default_questionnaire} to create default questionnaire object.
+You can add your custom questions to this questionnaire and then pass it to this
 function to process the data.
 }
 \examples{
 \dontrun{
 library(rgbif)
-occdat1 <- occ_data(
+occdat <- occ_data(
  country = "AU",     # Country code for australia
  classKey= 359,      # Class code for mammalia
- limit=5000,         # Get only 5000 records
+ limit=5000          # Get only 5000 records
  )
- myData<-occdat1$data
+ myData<-occdat$data
 
- cleanedData <- clean_data_new(myData)
+ cleanedData <- clean_data(myData)
 
  responses <- run_questionnaire()
  cleanedData <- clean_data(myData, responses)
 
  customQuestionnaire <- create_default_questionnaire()
  customResponses <- run_questionnaire(customQuestionnaire)
- cleanedData <- clean_data_new(myData, customResponses)
+ cleanedData <- clean_data(myData, customResponses)
  }
 
 }

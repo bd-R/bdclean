@@ -1,14 +1,46 @@
 Package: bdclean
 Type: Package
-Title: Biodiversity Data Cleaning Workflow
-Version: 1.0.0
-Date: 2018-08-05
-Author: Tomer Gueta <tomer.gu@gmail.com>, Vijay Barve <vijay.barve@gmail.com>, 
-	Thiloshon Nagarajah <thiloshon@gmail.com>, Ashwin Agrawal <ashwin.agrawal.met14@itbhu.ac.in>,
-	Carmel Yohay <yohay@cv.technion.ac.il>
-Maintainer: Vijay Barve <vijay.barve@gmail.com>
-Description: Provides a set of functions to build a workflow to deal
-	with biodiversity data cleaning protocols. 
+Title: A user-friendly data cleaning app for the inexperienced R user.
+Description: bdclean provides features to manage complete workflow for biodiversity data cleaning, from uploading the data; gathering input from the user, in order to adjust cleaning procedures; perform the cleaning; and finally, generating various reports and several versions of the data. 'bdclean' facilitates user-level data cleaning, designed for the inexperienced R user.
+Version: 0.1.900
+Date: 2018-09-10
 License: GPL-3
-Imports: rmarkdown, knitr
+URL: https://github.com/bd-R/bdclean
+BugReports: https://github.com/bd-R/bdclean/issues
+Authors@R: c(
+    person(
+        "Tomer", "Gueta", 
+        email = "tomer.gu@gmail.com",
+        role = c("aut"),
+        comment = c(ORCID = '0000-0003-1557-8596')),
+    person(
+        "Thiloshon", "Nagarajah",
+        email = "thiloshon@gmail.com",
+        role = c("aut","cre")),
+    person(
+        "Vijay", "Barve", ,
+        email = "vijay.barve@gmail.com", 
+        role = c("aut"),
+        comment = c(ORCID = '0000-0002-4852-2567')),
+    person(
+        "Ashwin", "Agrawal",
+        email = "ashwin.agrawal.met14@itbhu.ac.in",
+        role = c("aut")),
+    person(
+        "Povilas", "Gibas",
+        email = "povilasgibas@gmail.com",
+        role = c("aut"),
+        comment = c(ORCID = '0000-0001-5311-6021')),
+    person(
+        "Yohay", "Carmel",
+        email = "yohay@cv.technion.ac.il",
+        role = c("aut"),
+        comment = c(ORCID = '0000-0002-5883-0184'))
+    )
+Maintainer: Thiloshon Nagarajah <thiloshon@gmail.com>
+Imports: rmarkdown, knitr, shiny, shinydashboard, shinyjs, leaflet, DT, data.table, rgbif, spocc, finch, bdDwC, bdchecks
+Remotes: github::bd-R/bdchecks
 RoxygenNote: 6.0.1
+Suggests: 
+    testthat
+LazyData: true
