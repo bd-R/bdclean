@@ -40,7 +40,6 @@ taxoLevel <- function(bddata, res = "SPECIES") {
         }
     }
     
-    print(bddata$bdclean.taxoLevel)
     return(bddata)
 }
 
@@ -62,7 +61,6 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #'
 #'@export
 spatialResolution <- function(bddata, res = 100) {
-    #print("fxn Spatial Resoultion")
     cat(paste(
         "spatialResolution:",
         "\n Removing records above :",

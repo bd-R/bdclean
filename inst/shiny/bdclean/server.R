@@ -50,6 +50,22 @@ shinyServer(function(input, output, session) {
         if (length(warnings) == 0) {
             return()
         }
+        
+        # Fix for broken warning message lines
+        # for (stringIndex in length(warnings):1) {
+        #     print("--------")
+        #     print(warnings[stringIndex])
+        #     
+        #     
+        #     if(grepl('[,:-]$', warnings[stringIndex])){
+        #         print("in")
+        #         warnings[stringIndex - 1] <- paste(warnings[stringIndex - 1], warnings[stringIndex])
+        #         warnings <- warnings[c(-1 * stringIndex)]
+        #         print(warnings)
+        #     }
+        #     print("--------")
+        # }
+        
         temp <-
             data.frame(
                 from = from,

@@ -116,7 +116,8 @@ BdQuestion <-
                                 bdchecks::performDataCheck(data = flaggedData,
                                                            DConly = c(checkName))
                             
-                            if (length(checkTemp@flags) > 0 &&
+                            if (!is.null(checkTemp) &&
+                                length(checkTemp@flags) > 0 &&
                                 length(checkTemp@flags[[1]]@result) > 0) {
                                 checkTemp <- checkTemp@flags[[1]]@result
                                 
@@ -191,7 +192,7 @@ BdQuestion <-
                             nameOfQualityCheck,
                             ". Skipping report."
                         )
-                        # next
+                        next
                     }
                     
                     description <-
