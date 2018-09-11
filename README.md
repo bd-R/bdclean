@@ -49,14 +49,14 @@ myData <- occdat$data
 
 ## Using bdclean
 
-Getting your input: generating input questions and saving your answers 
+### Getting your input: generating input questions and saving your answers 
 
 ```r
 myConfig <- get_config()
 ```
 
 
-Cleaning your data based on your answers
+### Cleaning your data based on your answers
 
 ```r
 cleanData <- clean_data(myData, myConfig)
@@ -67,13 +67,12 @@ Cleaning reports should be created in `Your-Working-Directory\CleaningReports`
 ## Package release
  
 
-`bdclean` **is still under development**, first version will be released shortly.
+`bdclean` **is still under development**, a CRAN release with many package upgrades is expected in July 2018.
 
 
 
-## bd-R organization motto
-```{r}
-diff.type.of.audience <-  diff.solution
-```
+## We need your feedback :innocent:
+
+Please submit your feedback useing this **[link](https://github.com/bd-R/Feedback-bdclean/issues/new)**
 
    :deciduous_tree: :mushroom: :shell: :fish: :frog: :honeybee: :turtle: :rooster: :whale2: :monkey: :octocat: 
