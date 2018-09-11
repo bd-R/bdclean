@@ -90,8 +90,8 @@ shinyServer(function(input, output, session) {
         ),
         img(src = 'bdverse.png', align = "center"),
         helpText(
-            "MIT License ©Tomer Gueta, Vijay Barve, Thiloshon Nagarajah, Ashwin Agrawal and Carmel Yohay (2018).
-            bdclean: Biodiversity Data Cleaning Workflow. R package version 1.0.0."
+            "GPL-3 ©Tomer Gueta, Vijay Barve, Thiloshon Nagarajah, Ashwin Agrawal and Carmel Yohay (2018).
+            bdclean: Biodiversity Data Cleaning Workflow. R package version 0.1.900"
         ),
         helpText(
             "Contribute: ",
