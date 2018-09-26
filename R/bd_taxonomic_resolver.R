@@ -30,22 +30,16 @@
 
 bd_taxonomic_resolver<-function(df=NULL){
   
+  choice<-c("KINGDOM","PHYLUM","CLASS","ORDER","FAMILY","GENUS","SPECIES","SUBSPECIES")
+  index <- menu(choice,title = "Choose the lowest taxonomic rank for resolving the data")
   
-  tax_rank<- readline(prompt="Choose the lowest taxonomic rank for resolving the data 
-                      1) kingdom
-                      2) phylum
-                      3) class
-                      4) order
-                      5) family
-                      6) genus 
-                      7) species
-                      8) subspecies  ")
+  tax_rank<-choice[index]
   
   df<-as.data.frame(df)
   if(nrow(df)==0){
     stop(paste("The data frame is empty."))
   }
-  tax_rank<-toupper(tax_rank)
+  #tax_rank<-toupper(tax_rank)
   res_index<-readline(prompt="Do you want to resolve the missing ranks in the data (y/n)")
   
   if(res_index=='n'){
