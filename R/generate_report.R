@@ -30,19 +30,30 @@ create_report_data <-
         outputUniqueSpecies <-
             length(unique(cleanedData$scientificName))
         
+        # Sys.setenv( TZ="Etc/GMT+5" )
         earliestInputDate <-
-            min(as.POSIXct(unique(inputData$eventDate)))
-        # latestInputDate <-
-        #     max(suppressWarnings(as.POSIXct(
-        #         unique(inputData$eventDate), "%Y-%m-%dT%H:%M:%S", tz="UTC"
-        #     )))
-        latestInputDate <-
-            max(as.POSIXct(unique(inputData$eventDate)))
+            try(as.POSIXct(unique(inputData$eventDate), tz="UTC"), silent = T)
         
+        if(class(earliestInputDate)!="try-error"){
+            earliestInputDate <- min(earliestInputDate)
+            latestInputDate <-
+                max(as.POSIXct(unique(inputData$eventDate), tz="UTC"))
+        } else {
+            earliestInputDate <- "Not Available"
+            latestInputDate <- "Not Available"
+        }
+            
         earliestOutputDate <-
-            min(as.POSIXct(unique(cleanedData$eventDate)))
-        latestOutputDate <-
-            max(as.POSIXct(unique(cleanedData$eventDate)))
+            try(as.POSIXct(unique(cleanedData$eventDate), tz="UTC"), silent = T)
+        
+        if(class(earliestOutputDate)!="try-error"){
+            earliestOutputDate <- min(earliestInputDate)
+            latestOutputDate <-
+                max(as.POSIXct(unique(cleanedData$eventDate), tz="UTC"))
+        } else {
+            earliestOutputDate <- "Not Available"
+            latestOutputDate <- "Not Available"
+        }
         
         InputData <-
             c(
