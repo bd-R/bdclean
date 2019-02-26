@@ -2,6 +2,8 @@
 #'
 #' NOTE: This is an package internal function. Do not use for external uses.
 #'
+#' @param bddata The dataframe to clean
+#' 
 #'@export
 cleaning_function <- function(bddata) {
     bddata <- as.data.frame(bddata)

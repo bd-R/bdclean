@@ -1,6 +1,13 @@
 #' Genrate data required to create report, function required in bdclean internal usage.
 #'
 #' NOTE: This is an package internal function. Do not use for external uses.
+#' 
+#' @param inputData The input dataframe before cleaning
+#' @param flaggedData The flagged data for cleaning
+#' @param cleanedData The data with flagged records removed
+#' @param responses The BDQuestions object with user responses
+#' @param cleaningTrue Flag specifying if the cleaning should be done, or just flagging
+#' @param format The format of the report to be generated
 #'
 #'@export
 create_report_data <-

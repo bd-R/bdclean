@@ -6,6 +6,11 @@
 \usage{
 temporalResolution(bddata, res = "Day")
 }
+\arguments{
+\item{bddata}{Bio diversity data in a data frame}
+
+\item{res}{restriction of records with/without data, month, year fields}
+}
 \description{
 Clean data based on temporal resolution
 }

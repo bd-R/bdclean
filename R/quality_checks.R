@@ -13,6 +13,9 @@
 #'
 #' @section checkCategory:
 #' taxonomic
+#' 
+#'@param bddata Bio diversity data in a data frame
+#'@param res The low rank of species required 
 #'
 #' @export
 taxoLevel <- function(bddata, res = "SPECIES") {
@@ -58,6 +61,9 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #'
 #' @section checkCategory:
 #' spatial
+#' 
+#'@param bddata Bio diversity data in a data frame
+#'@param res The highest coordinate uncertainty required
 #'
 #'@export
 spatialResolution <- function(bddata, res = 100) {
@@ -91,6 +97,9 @@ spatialResolution <- function(bddata, res = 100) {
 #'
 #' @section checkCategory:
 #' temporal
+#' 
+#'@param bddata Bio diversity data in a data frame
+#'@param res The earliest data required 
 #'
 #'@export
 earliestDate <- function(bddata, res = "1700-01-01") {
@@ -123,6 +132,9 @@ earliestDate <- function(bddata, res = "1700-01-01") {
 #'
 #' @section checkCategory:
 #' temporal
+#' 
+#'@param bddata Bio diversity data in a data frame
+#'@param res restriction of records with/without data, month, year fields
 #'
 #'@export
 temporalResolution <- function(bddata, res = "Day") {

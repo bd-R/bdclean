@@ -6,6 +6,9 @@
 \usage{
 cleaning_function(bddata)
 }
+\arguments{
+\item{bddata}{The dataframe to clean}
+}
 \description{
 NOTE: This is an package internal function. Do not use for external uses.
 }

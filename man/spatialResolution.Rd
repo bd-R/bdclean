@@ -6,6 +6,11 @@
 \usage{
 spatialResolution(bddata, res = 100)
 }
+\arguments{
+\item{bddata}{Bio diversity data in a data frame}
+
+\item{res}{The highest coordinate uncertainty required}
+}
 \description{
 Clean data based on spatial resolution
 }
