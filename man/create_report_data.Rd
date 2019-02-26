@@ -7,6 +7,19 @@
 create_report_data(inputData, flaggedData, cleanedData, responses, cleaningTrue,
   format)
 }
+\arguments{
+\item{inputData}{The input dataframe before cleaning}
+
+\item{flaggedData}{The flagged data for cleaning}
+
+\item{cleanedData}{The data with flagged records removed}
+
+\item{responses}{The BDQuestions object with user responses}
+
+\item{cleaningTrue}{Flag specifying if the cleaning should be done, or just flagging}
+
+\item{format}{The format of the report to be generated}
+}
 \description{
 NOTE: This is an package internal function. Do not use for external uses.
 }

@@ -6,6 +6,11 @@
 \usage{
 earliestDate(bddata, res = "1700-01-01")
 }
+\arguments{
+\item{bddata}{Bio diversity data in a data frame}
+
+\item{res}{The earliest data required}
+}
 \description{
 Clean data based on earliest date.
 }

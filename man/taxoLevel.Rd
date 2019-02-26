@@ -6,6 +6,11 @@
 \usage{
 taxoLevel(bddata, res = "SPECIES")
 }
+\arguments{
+\item{bddata}{Bio diversity data in a data frame}
+
+\item{res}{The low rank of species required}
+}
 \description{
 Clean data based on lower taxon level
 }
