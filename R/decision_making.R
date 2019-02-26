@@ -41,6 +41,9 @@ cleaning_function <- function(bddata) {
 #'
 #' NOTE: This is an package internal function. Do not use for external uses.
 #'
+#'@param flaggedData The dataset with flags to be cleaned.
+#'@param cleaningThreshold The Cleaning tolerance. Not used in current version.
+#'
 perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
     flagColumns <- which(grepl("bdclean", names(flaggedData)))
     
@@ -89,31 +92,44 @@ get_checks_list <- function() {
                 gsub(".Rd", "", names(packageDocumentation)[i])
             
             functionDocumentation <- packageDocumentation[i]
+            
+            brokenDocumentation <-
+                unlist(strsplit(
+                    paste(functionDocumentation[[1]], collapse = " "),
+                    split = '\\',
+                    fixed = TRUE
+                ))
+            
+            brokenDocumentation <- gsub("\\n", "",
+                                        gsub(
+                                            "[{}]", "", brokenDocumentation
+                                        )
+            )
+            
             description <-
-                lapply(functionDocumentation,
-                       tools:::.Rd_get_metadata,
-                       "description")[[1]]
-            
-            sectionsString <-
-                as.character(lapply(
-                    functionDocumentation,
-                    tools:::.Rd_get_metadata,
-                    "section"
-                )[[1]])
-            
-            sectionsVector <-
-                gsub(", ,", "", gsub("\\\\n", "", gsub(
-                    "[()\"]", "", substr(sectionsString, 5, nchar(sectionsString))
-                )))
+                brokenDocumentation[grep("title", brokenDocumentation)]
+            description <-
+                gsub("title  Data check", "", description, fixed = T)
             
             samplePassData <-
-                sectionsVector[match('samplePassData', sectionsVector) + 1]
+                brokenDocumentation[grep("samplePassData", brokenDocumentation)]
+            samplePassData <-
+                gsub("section   samplePassData", "", samplePassData, fixed = T)
+            
             sampleFailData <-
-                sectionsVector[match('sampleFailData', sectionsVector) + 1]
+                brokenDocumentation[grep("sampleFailData", brokenDocumentation)]
+            sampleFailData <-
+                gsub("section   sampleFailData", "", sampleFailData, fixed = T)
+            
             checkCategory <-
-                gsub(" ", "", sectionsVector[match('checkCategory', sectionsVector) + 1])
+                brokenDocumentation[grep("checkCategory", brokenDocumentation)]
+            checkCategory <-
+                gsub("section   checkCategory", "", checkCategory, fixed = T)
+            
             targetDWCField <-
-                sectionsVector[match('targetDWCField', sectionsVector) + 1]
+                brokenDocumentation[grep("targetDWCField", brokenDocumentation)]
+            targetDWCField <-
+                gsub("section   targetDWCField", "", targetDWCField, fixed = T)
             
             temp <- list()
             

@@ -6,6 +6,11 @@
 \usage{
 perform_Cleaning(flaggedData, cleaningThreshold = 5)
 }
+\arguments{
+\item{flaggedData}{The dataset with flags to be cleaned.}
+
+\item{cleaningThreshold}{The Cleaning tolerance. Not used in current version.}
+}
 \description{
 NOTE: This is an package internal function. Do not use for external uses.
 }

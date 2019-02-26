@@ -139,6 +139,9 @@ run_questionnaire <- function(customQuestionnaire = NULL) {
 }
 
 #' Internal function for getting user response
+#' 
+#'@param bdQuestion The BDQuestion object to get users responses.
+#' 
 getUserResponse <- function(bdQuestion) {
     # Child & ChildRouter already filtered in first loop above
     

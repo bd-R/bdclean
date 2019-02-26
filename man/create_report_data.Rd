@@ -2,10 +2,10 @@
 % Please edit documentation in R/generate_report.R
 \name{create_report_data}
 \alias{create_report_data}
-\title{Genrate data required to create report, function required in bdclean internal usage.}
+\title{Generate data required to create report, function required in bdclean internal usage.}
 \usage{
-create_report_data(inputData, flaggedData, cleanedData, responses, cleaningTrue,
-  format)
+create_report_data(inputData, flaggedData, cleanedData, responses,
+  cleaningTrue, format)
 }
 \arguments{
 \item{inputData}{The input dataframe before cleaning}
