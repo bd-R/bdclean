@@ -1,4 +1,4 @@
-#' Genrate data required to create report, function required in bdclean internal usage.
+#' Generate data required to create report, function required in bdclean internal usage.
 #'
 #' NOTE: This is an package internal function. Do not use for external uses.
 #' 

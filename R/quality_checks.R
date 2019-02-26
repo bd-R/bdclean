@@ -51,10 +51,10 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #' Clean data based on spatial resolution
 #'
 #' @section samplePassData:
-#' When resolution is 100 meters, Coordinate Uncertainities below 100 meteres will pass.
+#' When resolution is 100 meters, Coordinate Uncertainties below 100 meters will pass.
 #'
 #' @section sampleFailData:
-#' When resolution is 100 meters, Coordinate Uncertainities above 100 meteres will fail.
+#' When resolution is 100 meters, Coordinate Uncertainties above 100 meters will fail.
 #'
 #' @section targetDWCField:
 #' coordinateUncertaintyInMeters

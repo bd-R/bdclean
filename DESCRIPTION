@@ -40,7 +40,6 @@ Authors@R: c(
 Maintainer: Thiloshon Nagarajah <thiloshon@gmail.com>
 Imports: rmarkdown, knitr, shiny, shinydashboard, shinyjs, leaflet, DT, data.table, rgbif, spocc, finch, bdDwC, bdchecks
 Depends: R (>= 2.10)
-Remotes: github::bd-R/bdchecks
 RoxygenNote: 6.0.1
 Suggests: 
     testthat
