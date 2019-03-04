@@ -1,6 +1,7 @@
 #' Launch bdclean Shiny Application
 #'
-#'@import shiny shinydashboard shinyjs leaflet DT data.table rgbif spocc finch bdDwC bdchecks
+#'@import shinydashboard shinyjs leaflet data.table rgbif spocc finch bdDwC bdchecks tools
+#'@importFrom shiny runApp 
 #'
 #'@export
 run_bdclean <- function() {

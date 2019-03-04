@@ -6,6 +6,9 @@
 \usage{
 getUserResponse(bdQuestion)
 }
+\arguments{
+\item{bdQuestion}{The BDQuestion object to get users responses.}
+}
 \description{
 Internal function for getting user response
 }

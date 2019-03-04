@@ -2,6 +2,7 @@
 #'
 #' @export BdQuestion
 #' @importFrom tools Rd_db
+#' @importFrom methods new
 BdQuestion <-
     setRefClass(
         "BdQuestion",
@@ -116,6 +117,7 @@ BdQuestion <-
                                 bdchecks::performDataCheck(data = flaggedData,
                                                            DConly = c(checkName))
                             
+                            
                             if (!is.null(checkTemp) &&
                                 length(checkTemp@flags) > 0 &&
                                 length(checkTemp@flags[[1]]@result) > 0) {
@@ -147,14 +149,14 @@ BdQuestion <-
             addToReport = function(flaggedData,
                                    clean = TRUE,
                                    CleaningThreshold = 5) {
-                packageDocumentation <- tools::Rd_db("bdclean")
+                packageDocumentation <- tools::Rd_db("bdchecks")
                 flaggedData <- as.data.frame(flaggedData)
-                
                 
                 for (i in 1:length(.self$quality.checks)) {
                     nameOfQualityCheck <- .self$quality.checks[i]
                     
-                    if (!(paste("bdclean", nameOfQualityCheck, sep = ".") %in% names(flaggedData))) {
+                    if (!(paste("bdclean", nameOfQualityCheck, sep = ".") %in% names(flaggedData))) { 
+                        # both bdchecks and bdclean columns have bdcelan prefix
                         warning(
                             "Required column ",
                             paste("bdclean", nameOfQualityCheck, sep = "."),
@@ -165,7 +167,7 @@ BdQuestion <-
                     }
                     
                     flag <-
-                        flaggedData[paste("bdclean", nameOfQualityCheck, sep = ".")]
+                        flaggedData[,paste("bdclean", nameOfQualityCheck, sep = ".")]
                     
                     # Uncomment if using threshold
                     # countOfFlaggedData <-
@@ -179,13 +181,6 @@ BdQuestion <-
                     functionDocumentation <-
                         packageDocumentation[grep(nameOfQualityCheck, names(packageDocumentation))]
                     
-                    # Delete this
-                    if (length(functionDocumentation) == 0) {
-                        functionDocumentation <-
-                            packageDocumentation[grep("taxoLevel", names(packageDocumentation))]
-                    }
-                    
-                    
                     if (length(functionDocumentation) == 0) {
                         warning(
                             "Could not find function documentation for ",
@@ -195,31 +190,45 @@ BdQuestion <-
                         next
                     }
                     
+                    
+                    brokenDocumentation <-
+                        unlist(strsplit(
+                            paste(functionDocumentation[[1]], collapse = " "),
+                            split = '\\',
+                            fixed = TRUE
+                        ))
+                    
+                    brokenDocumentation <- gsub("\\n", "",
+                                                gsub(
+                                                    "[{}]", "", brokenDocumentation
+                                                )
+                    )
+                    
                     description <-
-                        lapply(functionDocumentation,
-                               tools:::.Rd_get_metadata,
-                               "description")[[1]]
-                    
-                    sectionsString <-
-                        as.character(lapply(
-                            functionDocumentation,
-                            tools:::.Rd_get_metadata,
-                            "section"
-                        )[[1]])
-                    
-                    sectionsVector <-
-                        gsub(", ,", "", gsub("\\\\n", "", gsub(
-                            "[()\"]", "", substr(sectionsString, 5, nchar(sectionsString))
-                        )))
+                        brokenDocumentation[grep("title", brokenDocumentation)]
+                    description <-
+                        gsub("title  Data check", "", description, fixed = T)
                     
                     samplePassData <-
-                        sectionsVector[match('samplePassData', sectionsVector) + 1]
+                        brokenDocumentation[grep("samplePassData", brokenDocumentation)]
+                    samplePassData <-
+                        gsub("section   samplePassData", "", samplePassData, fixed = T)
+                    
                     sampleFailData <-
-                        sectionsVector[match('sampleFailData', sectionsVector) + 1]
+                        brokenDocumentation[grep("sampleFailData", brokenDocumentation)]
+                    sampleFailData <-
+                        gsub("section   sampleFailData", "", sampleFailData, fixed = T)
+                    
                     checkCategory <-
-                        gsub(" ", "", sectionsVector[match('checkCategory', sectionsVector) + 1])
+                        brokenDocumentation[grep("checkCategory", brokenDocumentation)]
+                    checkCategory <-
+                        gsub("section   checkCategory", "", checkCategory, fixed = T)
+                    
                     targetDWCField <-
-                        sectionsVector[match('targetDWCField', sectionsVector) + 1]
+                        brokenDocumentation[grep("targetDWCField", brokenDocumentation)]
+                    targetDWCField <-
+                        gsub("section   targetDWCField", "", targetDWCField, fixed = T)
+                    
                     # ------ End of Parsing MetaData for check from .Rd file
                     
                     temp <- list()
