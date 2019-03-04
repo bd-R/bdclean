@@ -39,7 +39,6 @@ Authors@R: c(
     )
 Maintainer: Thiloshon Nagarajah <thiloshon@gmail.com>
 Imports: rmarkdown, knitr, shiny, shinydashboard, shinyjs, leaflet, DT, data.table, rgbif, spocc, finch, bdDwC, bdchecks, methods, tools
-importFrom: methods, new
 Depends: R (>= 2.10)
 RoxygenNote: 6.1.1
 Suggests: 
