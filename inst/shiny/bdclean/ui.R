@@ -88,17 +88,17 @@ shinyUI(dashboardPage(
                                         "queryDB",
                                         label = h3("Online Database:"),
                                         choices = list(
-                                            "GBIF (Global Biodiversity Information Facility)" = 'gbif',
-                                            "iDigBio (Integrated Digitized Biocollections)" = 'idigbio',
-                                            "EcoEngine (Berkeley Ecoinformatics Engine)" = 'ecoengine',
-                                            "Vertnet (Vertebrate Network)" = 'vertnet',
-                                            "BISON (Biodiversity Information Serving Our Nation)" = 'bison',
-                                            "iNaturalist" = 'inat',
-                                            "ALA (Atlas of Living Australia)" = 'ala',
-                                            "OBIS (Ocean Biogeographic Information System)" = 'obis',
-                                            "AntWeb" = 'antweb'
+                                            "GBIF (Global Biodiversity Information Facility)" = "gbif",
+                                            "iDigBio (Integrated Digitized Biocollections)" = "idigbio",
+                                            "EcoEngine (Berkeley Ecoinformatics Engine)" = "ecoengine",
+                                            "Vertnet (Vertebrate Network)" = "vertnet",
+                                            "BISON (Biodiversity Information Serving Our Nation)" = "bison",
+                                            "iNaturalist" = "inat",
+                                            "ALA (Atlas of Living Australia)" = "ala",
+                                            "OBIS (Ocean Biogeographic Information System)" = "obis",
+                                            "AntWeb" = "antweb"
                                         ),
-                                        selected = 'gbif'
+                                        selected = "gbif"
                                     ),
                                     
                                     br(),
@@ -246,20 +246,7 @@ shinyUI(dashboardPage(
                                     # -------------------------------
                                     
                                     ),
-                                # Uncomment if domain specifc cleaning is needed
-                                # tabPanel(
-                                #     "Option 03",
-                                #     div(class = "secondaryHeaders", h3("Option 03: Cleaning Templates")),
-                                #     helpText(
-                                #         "Note: Choose the cleaning, customized for special domains and needs"
-                                #     ),
-                                #
-                                #     # -------------------------------
-                                #
-                                #     uiOutput("domainCleaning")
-                                #
-                                #     # -------------------------------
-                                # ),
+                                
                                 div(class = "progressStep", taskItem(
                                     value = 30, color = "green",
                                     "Step 2 of 6"
@@ -313,7 +300,7 @@ shinyUI(dashboardPage(
                                         actionButton("flagButton", label = "Flag Data")
                                     )
                                     
-                                    ),
+                                ),
                                 
                                 div(class = "progressStep", taskItem(
                                     value = 45, color = "yellow",
@@ -329,13 +316,12 @@ shinyUI(dashboardPage(
                             uiOutput("cleanedResultsUI")
                             
                             # -------------------------------
-                        )
+                    )
                     ))),
             
             # ------------- End of Flagging Module -------------------
             
             # ------------- Documentation Module -------------------
-            
             tabItem("document",
                     fluidRow(column(
                         12,
@@ -347,7 +333,7 @@ shinyUI(dashboardPage(
                                 "reportFormat",
                                 "Report Type",
                                 choices = list(
-                                    "PDF" = 'pdf_document',
+                                    "PDF" = "pdf_document",
                                     "HTML" = "html_document",
                                     "Word" = "word_document",
                                     "Markdown" = "md_document"
@@ -358,13 +344,11 @@ shinyUI(dashboardPage(
                             # -------------------------------
                             
                             uiOutput("documentContentUI")
-                            
-                            # -------------------------------
                         )
                     )))
-)
-
-# ------------- End of Documentation Module -------------------
-
+        )
+        
+        # ------------- End of Documentation Module -------------------
+        
     )
 ))

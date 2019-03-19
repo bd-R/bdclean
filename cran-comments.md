@@ -1,11 +1,14 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Removed importsFrom from Description
+* Addded small executables (outside of \dontrun{}). As the package has mainly a shiny app, most examples are in interactive mode.
 
-* Added DOI references and URLs
+* Removed functions writting to disk by default. Using a temp folder instead.
 
--- R CMD check results -------------------------------------------------------------------- bdclean 0.1.12 ----
-Duration: 1m 33.8s
+
+
+
+-- R CMD check results ----------------------------------------------------------------------------------------------- bdclean 0.1.13 ----
+Duration: 1m 26.6s
 
 0 errors √ | 0 warnings √ | 0 notes √

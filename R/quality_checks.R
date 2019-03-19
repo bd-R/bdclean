@@ -13,12 +13,26 @@
 #'
 #' @section checkCategory:
 #' taxonomic
+#'
+#' @param bddata Bio diversity data in a data frame
+#' @param res The low rank of species required
 #' 
-#'@param bddata Bio diversity data in a data frame
-#'@param res The low rank of species required 
+#' @examples
+#' 
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' 
+#' responses <- taxo_level(myData, 'SPECIES')
+#' 
 #'
 #' @export
-taxoLevel <- function(bddata, res = "SPECIES") {
+taxo_level <- function(bddata, res = "SPECIES") {
     ranks <-
         c("CLASS",
           "ORDER",
@@ -29,16 +43,16 @@ taxoLevel <- function(bddata, res = "SPECIES") {
     res <- toupper(res)
     
     if (!(res %in% ranks)) {
-        print("Rank Value unknown. It should be FAMILY, GENUS, SPECIES or SUBSPECIES")
+        warning("Rank Value unknown. It should be FAMILY, GENUS, SPECIES or SUBSPECIES")
         return(bddata)
     }
     
     idx <- which(ranks == res)
-    cat(paste("taxoLevel:", "\n Removing records above :", res, "\n"))
-    bddata$bdclean.taxoLevel <- FALSE
+    message(paste("taxoLevel:", "\n Removing records above :", res, "\n"))
+    bddata[, "bdclean.taxoLevel"] <- FALSE
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            bddata[which(bddata$taxonRank == ranks[i]), 'bdclean.taxoLevel'] <-
+            bddata[which(bddata[, "taxonRank"] == ranks[i]), "bdclean.taxoLevel"] <-
                 TRUE
         }
     }
@@ -61,22 +75,22 @@ taxoLevel <- function(bddata, res = "SPECIES") {
 #'
 #' @section checkCategory:
 #' spatial
-#' 
-#'@param bddata Bio diversity data in a data frame
-#'@param res The highest coordinate uncertainty required
 #'
-#'@export
-spatialResolution <- function(bddata, res = 100) {
-    cat(paste(
+#' @param bddata Bio diversity data in a data frame
+#' @param res The highest coordinate uncertainty required
+#'
+#' @export
+spatial_resolution <- function(bddata, res = 100) {
+    message(paste(
         "spatialResolution:",
         "\n Removing records above :",
         res,
         "\n"
     ))
     res <- as.numeric(res)
-    bddata$bdclean.spatialResolution <- FALSE
+    bddata[, "bdclean.spatialResolution"] <- FALSE
     if (res > 0) {
-        bddata[which(bddata$coordinateUncertaintyInMeters < res), 'bdclean.spatialResolution'] <-
+        bddata[which(bddata[, "coordinateUncertaintyInMeters"] < res), "bdclean.spatialResolution"] <-
             TRUE
     }
     return(bddata)
@@ -97,22 +111,22 @@ spatialResolution <- function(bddata, res = 100) {
 #'
 #' @section checkCategory:
 #' temporal
-#' 
-#'@param bddata Bio diversity data in a data frame
-#'@param res The earliest data required 
 #'
-#'@export
-earliestDate <- function(bddata, res = "1700-01-01") {
-    cat(paste("earliestDate:", "\n Removing records above :", res, "\n"))
+#' @param bddata Bio diversity data in a data frame
+#' @param res The earliest data required
+#'
+#' @export
+earliest_date <- function(bddata, res = "1700-01-01") {
+    message(paste("earliestDate:", "\n Removing records above :", res, "\n"))
     dates <- strsplit(res, " ")[[1]]
     bddata <- as.data.frame(bddata)
     ed <- try(as.Date(dates[1], format = "%Y-%m-%d"))
     if (class(ed) == "try-error" || is.na(ed)) {
-        print("That date wasn't correct!")
+        warning("That date wasn't correct!")
         return(bddata)
     }
-    bddata$bdclean.earliestDate <- FALSE
-    bddata[which(as.Date(bddata$eventDate) > ed), 'bdclean.earliestDate'] <-
+    bddata[, "bdclean.earliestDate"] <- FALSE
+    bddata[which(as.Date(bddata[, "eventDate"]) > ed), "bdclean.earliestDate"] <-
         TRUE
     return(bddata)
 }
@@ -132,20 +146,20 @@ earliestDate <- function(bddata, res = "1700-01-01") {
 #'
 #' @section checkCategory:
 #' temporal
-#' 
-#'@param bddata Bio diversity data in a data frame
-#'@param res restriction of records with/without data, month, year fields
 #'
-#'@export
-temporalResolution <- function(bddata, res = "Day") {
-    cat(paste(
+#' @param bddata Bio diversity data in a data frame
+#' @param res restriction of records with/without data, month, year fields
+#'
+#' @export
+temporal_resolution <- function(bddata, res = "Day") {
+    message(paste(
         "temporalResolution:",
         "\n Removing records above :",
         res,
         "\n"
     ))
     bddata <- as.data.frame(bddata)
-    bddata$bdclean.temporalResolution <- FALSE
+    bddata[, "bdclean.temporalResolution"] <- FALSE
     if (res == "Day") {
         bddata[which(!is.na(bddata$day)), "bdclean.temporalResolution"] <-
             TRUE

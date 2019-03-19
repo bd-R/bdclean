@@ -4,19 +4,19 @@
 \alias{create_report_data}
 \title{Generate data required to create report, function required in bdclean internal usage.}
 \usage{
-create_report_data(inputData, flaggedData, cleanedData, responses,
-  cleaningTrue, format)
+create_report_data(input_data, flagged_data, cleaned_data, responses,
+  cleaning_true, format)
 }
 \arguments{
-\item{inputData}{The input dataframe before cleaning}
+\item{input_data}{The input dataframe before cleaning}
 
-\item{flaggedData}{The flagged data for cleaning}
+\item{flagged_data}{The flagged data for cleaning}
 
-\item{cleanedData}{The data with flagged records removed}
+\item{cleaned_data}{The data with flagged records removed}
 
 \item{responses}{The BDQuestions object with user responses}
 
-\item{cleaningTrue}{Flag specifying if the cleaning should be done, or just flagging}
+\item{cleaning_true}{Flag specifying if the cleaning should be done, or just flagging}
 
 \item{format}{The format of the report to be generated}
 }

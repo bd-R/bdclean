@@ -35,8 +35,7 @@ BdQuestion <-
                 .self$question.id <- question.id
                 .self$ui.type <- ui.type
             },
-            
-            printQuestion = function() {
+            print_question = function() {
                 cat(.self$question, "\n")
                 if (length(.self$possible.responses) > 0) {
                     for (i in 1:length(.self$possible.responses)) {
@@ -44,30 +43,23 @@ BdQuestion <-
                     }
                 }
             },
-            
-            addValidationFunction = function(valFunction) {
-                .self$validation.function <- valFunction
+            add_validation_function = function(val_function) {
+                .self$validation.function <- val_function
             },
-            
-            setResponse = function(response) {
+            set_response = function(response) {
                 if (class(response) == "logical") {
                     .self$users.answer <- ifelse(response, "yes", "no")
                 } else {
                     .self$users.answer <- as.character(response)
                 }
             },
-            
-            getResponse = function() {
+            get_response = function() {
                 ans <- readline()
                 length <- length(.self$possible.responses)
-                
                 if (length > 0) {
                     # Means it was a menu question, and not an open answer
                     ans <- suppressWarnings(as.numeric(ans))
-                    
-                    if (!is.na(ans) &&
-                        ans > 0 &&
-                        ans <= length) {
+                    if (!is.na(ans) && ans > 0 && ans <= length) {
                         # Validating user renponse is a menu number.
                         .self$users.answer <-
                             .self$possible.responses[as.numeric(ans)]
@@ -75,16 +67,13 @@ BdQuestion <-
                         message("Please choose number from menu...")
                         .self$getResponse()
                     }
-                    
                 } else {
                     # Means answer is open ended
-                    
                     if (is.null(.self$validation.function)) {
                         # If a validation function is not given
                         .self$users.answer <- ans
                     } else {
-                        val = .self$validation.function(ans)
-                        
+                        val <- .self$validation.function(ans)
                         if (val) {
                             # If the validation function passes (returns true)
                             .self$users.answer <- ans
@@ -94,72 +83,62 @@ BdQuestion <-
                     }
                 }
             },
-            
-            addChildQuestion = function(questions) {
+            add_child_question = function(questions) {
                 .self$child.questions <- questions
             },
-            
-            addQualityChecks = function(newChecks) {
-                cat("Adding Quality Checks.")
-                .self$quality.checks <- newChecks
+            add_quality_checks = function(new_checks) {
+                message("Adding Quality Checks.")
+                .self$quality.checks <- new_checks
             },
-            
-            flagData = function(data, missing = FALSE) {
-                flaggedData <- data
+            flag_data = function(data, missing = FALSE) {
+                flagged_data <- data
                 
                 if (length(.self$quality.checks) > 0) {
                     for (i in 1:length(.self$quality.checks)) {
-                        checkName <- .self$quality.checks[i]
-                        
-                        if (grepl("DC_", checkName)) {
+                        check_name <- .self$quality.checks[i]
+                        if (grepl("DC_", check_name)) {
                             # bdchecks quality checks
-                            checkTemp <-
-                                bdchecks::performDataCheck(data = flaggedData,
-                                                           DConly = c(checkName))
+                            check_temp <-
+                                bdchecks::performDataCheck(data = flagged_data,
+                                                           DConly = c(check_name))
                             
-                            
-                            if (!is.null(checkTemp) &&
-                                length(checkTemp@flags) > 0 &&
-                                length(checkTemp@flags[[1]]@result) > 0) {
-                                checkTemp <- checkTemp@flags[[1]]@result
+                            if (!is.null(check_temp) &&
+                                length(check_temp@flags) > 0 &&
+                                length(check_temp@flags[[1]]@result) > 0) {
+                                check_temp <- check_temp@flags[[1]]@result
                                 
                                 if (missing) {
-                                    checkTemp[is.na(checkTemp)] <-
-                                        FALSE # Treating mising values as fails
+                                    check_temp[is.na(check_temp)] <-
+                                        FALSE  # Treating mising values as fails
                                 } else {
-                                    checkTemp[is.na(checkTemp)] <-
-                                        TRUE
+                                    check_temp[is.na(check_temp)] <- TRUE
                                 }
-                                
-                                flaggedData[, paste("bdclean", checkName, sep = ".")] <-
-                                    checkTemp
+                                flagged_data[, paste("bdclean", check_name, sep = ".")] <-
+                                    check_temp
                             }
-                            
                         } else {
                             # bdclean quality checks
-                            flaggedData <-
-                                get(checkName)(flaggedData, .self$users.answer)
+                            flagged_data <-
+                                get(check_name)(flagged_data, .self$users.answer)
                         }
                     }
                 }
-                
-                return(flaggedData)
+                return(flagged_data)
             },
-            
-            addToReport = function(flaggedData,
-                                   clean = TRUE,
-                                   CleaningThreshold = 5) {
-                packageDocumentation <- tools::Rd_db("bdchecks")
-                flaggedData <- as.data.frame(flaggedData)
+            add_to_report = function(flagged_data,
+                                     clean = TRUE,
+                                     cleaning_threshold = 5) {
+                package_documentation <- tools::Rd_db("bdchecks")
+                flagged_data <- as.data.frame(flagged_data)
                 
                 for (i in 1:length(.self$quality.checks)) {
-                    nameOfQualityCheck <- .self$quality.checks[i]
+                    name_of_quality_check <- .self$quality.checks[i]
                     
-                    if (!(paste("bdclean", nameOfQualityCheck, sep = ".") %in% names(flaggedData))) { 
+                    if (!(paste("bdclean", name_of_quality_check, sep = ".") %in% names(flagged_data))) {
                         # both bdchecks and bdclean columns have bdcelan prefix
                         warning(
                             "Required column ",
-                            paste("bdclean", nameOfQualityCheck, sep = "."),
+                            paste("bdclean", name_of_quality_check, sep = "."),
                             " not found! Probably, quality check is missing from
                             environment and check was not performed."
                         )
@@ -167,90 +146,75 @@ BdQuestion <-
                     }
                     
                     flag <-
-                        flaggedData[,paste("bdclean", nameOfQualityCheck, sep = ".")]
-                    
-                    # Uncomment if using threshold
-                    # countOfFlaggedData <-
-                    #     sum(flag < CleaningThreshold, na.rm = TRUE)
-                    
-                    countOfFlaggedData <-
-                        sum(flag != TRUE, na.rm = T)
+                        flagged_data[, paste("bdclean", name_of_quality_check, sep = ".")]
+                    count_of_flagged_data <- sum(flag != TRUE, na.rm = T)
                     
                     
                     # ------ Parsing MetaData for check from .Rd file
-                    functionDocumentation <-
-                        packageDocumentation[grep(nameOfQualityCheck, names(packageDocumentation))]
+                    function_documentation <-
+                        package_documentation[grep(name_of_quality_check, names(package_documentation))]
                     
-                    if (length(functionDocumentation) == 0) {
+                    if (length(function_documentation) == 0) {
                         warning(
                             "Could not find function documentation for ",
-                            nameOfQualityCheck,
+                            name_of_quality_check,
                             ". Skipping report."
                         )
                         next
                     }
                     
-                    
-                    brokenDocumentation <-
+                    broken_documentation <-
                         unlist(strsplit(
-                            paste(functionDocumentation[[1]], collapse = " "),
-                            split = '\\',
+                            paste(function_documentation[[1]], collapse = " "),
+                            split = "\\",
                             fixed = TRUE
                         ))
                     
-                    brokenDocumentation <- gsub("\\n", "",
-                                                gsub(
-                                                    "[{}]", "", brokenDocumentation
-                                                )
-                    )
+                    broken_documentation <-
+                        gsub("\\n", "", gsub("[{}]", "", broken_documentation))
                     
                     description <-
-                        brokenDocumentation[grep("title", brokenDocumentation)]
+                        broken_documentation[grep("title", broken_documentation)]
                     description <-
                         gsub("title  Data check", "", description, fixed = T)
                     
-                    samplePassData <-
-                        brokenDocumentation[grep("samplePassData", brokenDocumentation)]
-                    samplePassData <-
-                        gsub("section   samplePassData", "", samplePassData, fixed = T)
+                    sample_pass_data <-
+                        broken_documentation[grep("samplePassData", broken_documentation)]
+                    sample_pass_data <-
+                        gsub("section   samplePassData", "", sample_pass_data, fixed = T)
                     
-                    sampleFailData <-
-                        brokenDocumentation[grep("sampleFailData", brokenDocumentation)]
-                    sampleFailData <-
-                        gsub("section   sampleFailData", "", sampleFailData, fixed = T)
+                    sample_fail_data <-
+                        broken_documentation[grep("sampleFailData", broken_documentation)]
+                    sample_fail_data <-
+                        gsub("section   sampleFailData", "", sample_fail_data, fixed = T)
                     
-                    checkCategory <-
-                        brokenDocumentation[grep("checkCategory", brokenDocumentation)]
-                    checkCategory <-
-                        gsub("section   checkCategory", "", checkCategory, fixed = T)
+                    check_category <-
+                        broken_documentation[grep("checkCategory", broken_documentation)]
+                    check_category <-
+                        gsub("section   checkCategory", "", check_category, fixed = T)
                     
-                    targetDWCField <-
-                        brokenDocumentation[grep("targetDWCField", brokenDocumentation)]
-                    targetDWCField <-
-                        gsub("section   targetDWCField", "", targetDWCField, fixed = T)
+                    target_dwc_field <-
+                        broken_documentation[grep("targetDWCField", broken_documentation)]
+                    target_dwc_field <-
+                        gsub("section   targetDWCField", "", target_dwc_field, fixed = T)
                     
                     # ------ End of Parsing MetaData for check from .Rd file
                     
                     temp <- list()
+                    temp$description <- paste(description, collapse = " ")
+                    temp$sample_pass_data <- sample_pass_data
+                    temp$sample_fail_data <- sample_fail_data
+                    temp$check_category <- check_category
+                    temp$target_dwc_field <- target_dwc_field
+                    temp$affected_data <- count_of_flagged_data
                     
-                    temp$description <-
-                        paste(description, collapse = " ")
-                    temp$samplePassData <- samplePassData
-                    temp$sampleFailData <- sampleFailData
-                    temp$checkCategory <- checkCategory
-                    temp$targetDWCField <- targetDWCField
-                    temp$affectedData <- countOfFlaggedData
-                    
-                    .self$cleaning.details[nameOfQualityCheck] <-
-                        list(temp)
+                    .self$cleaning.details[name_of_quality_check] <- list(temp)
                 }
                 },
-            
             notify = function() {
-                cat("New Question object created.")
+                message("New Question object created.")
             },
-            
-            printSelf = function() {
+            print_self = function() {
                 print(.self$question)
                 for (i in 1:length(.self$possible.responses)) {
                     cat(" ", i, " ", .self$possible.responses[i], "\n")
@@ -268,22 +232,21 @@ BdQuestion <-
 BdQuestionContainer <-
     setRefClass(
         "BdQuestionContainer",
-        fields = list(BdQuestions = "list"),
+        fields = list(bdquestions = "list"),
         methods = list(
-            initialize = function(BdQuestions = NA) {
+            initialize = function(bdquestions = NA) {
                 "Construct an instance of BdQuestionContainer after validating the type."
                 
-                if (class(BdQuestions[[1]]) != "BdQuestion") {
+                if (class(bdquestions[[1]]) != "BdQuestion") {
                     stop("Incompatible input type. Provide a list of BdQuestion")
                 }
-                .self$BdQuestions <- BdQuestions
+                .self$bdquestions <- bdquestions
                 .self$notify()
             },
-            
-            flagData = function(inputData, missing) {
-                message("Initial records: ", paste(dim(inputData), collapse = "x"))
-                flaggedData <- inputData
-                for (question in .self$BdQuestions) {
+            flag_data = function(input_data, missing) {
+                message("Initial records: ", paste(dim(input_data), collapse = "x"))
+                flagged_data <- input_data
+                for (question in .self$bdquestions) {
                     if (length(question$quality.checks) > 0 &&
                         length(question$users.answer) > 0) {
                         if (question$question.type == "Router" &&
@@ -295,33 +258,22 @@ BdQuestionContainer <-
                             # If its ChildRouter and condition fails
                             next
                         }
-                        
-                        flaggedData <-
-                            question$flagData(flaggedData, missing)
+                        flagged_data <-
+                            question$flag_data(flagged_data, missing)
                     }
-                    
-                    # temp <- try({
-                    #     question$flagData(tempData)
-                    # })
-                    #
-                    # if (!is(temp, "try-error")) {
-                    #     tempData <- temp
-                    # }
                 }
-                return(flaggedData)
+                return(flagged_data)
             },
-            
             notify = function() {
                 message(paste(
                     "New BdQuestionContainer instance created with",
-                    length(.self$BdQuestions),
+                    length(.self$bdquestions),
                     "questions."
                 ))
             },
-            
-            printSelf = function() {
-                for (question in .self$BdQuestions) {
-                    question$printSelf()
+            print_self = function() {
+                for (question in .self$bdquestions) {
+                    question$print_self()
                 }
             }
         )

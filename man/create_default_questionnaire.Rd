@@ -13,21 +13,7 @@ BdQuestionContainer object with default Questions
 Create the package default Questionnaire.
 }
 \examples{
-\dontrun{
-library(rgbif)
-occdat1 <- occ_data(
- country = "AU",     # Country code for australia
- classKey= 359,      # Class code for mammalia
- limit=5000,         # Get only 5000 records
- )
- myData<-occdat1$data
 
- responses <- run_questionnaire()
- cleanedData <- clean_data_new(myData, responses)
-
- customQuestionnaire <- create_default_questionnaire()
- customResponses <- run_questionnaire(customQuestionnaire)
- cleanedData <- clean_data_new(myData, customResponses)
-}
+customQuestionnaire <- create_default_questionnaire()
 
 }
