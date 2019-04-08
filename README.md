@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/bd-R/bdclean.svg?branch=new_bdclean)](https://travis-ci.org/bd-R/bdclean)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/thiloshon/bdclean?branch=master&svg=true)](https://ci.appveyor.com/project/thiloshon/bdclean)
+[![Coverage status](https://codecov.io/gh/thiloshon/bdclean/branch/master/graph/badge.svg)](https://codecov.io/github/thiloshon/bdclean?branch=master)
 
 # bdclean
 ### User-friendly biodiversity data cleaning pipeline
