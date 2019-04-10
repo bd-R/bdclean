@@ -19,6 +19,7 @@
 #' 
 #' @examples
 #' 
+#' if(interactive()){
 #' 
 #' library(rgbif)
 #' occdat <- occ_data(
@@ -30,6 +31,7 @@
 #' 
 #' responses <- taxo_level(myData, 'SPECIES')
 #' 
+#' }
 #'
 #' @export
 taxo_level <- function(bddata, res = "SPECIES") {
@@ -78,6 +80,22 @@ taxo_level <- function(bddata, res = "SPECIES") {
 #'
 #' @param bddata Bio diversity data in a data frame
 #' @param res The highest coordinate uncertainty required
+#' 
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' 
+#' responses <- spatial_resolution(myData, 1500)
+#' 
+#' }
 #'
 #' @export
 spatial_resolution <- function(bddata, res = 100) {
@@ -114,6 +132,22 @@ spatial_resolution <- function(bddata, res = 100) {
 #'
 #' @param bddata Bio diversity data in a data frame
 #' @param res The earliest data required
+#' 
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' 
+#' responses <- earliest_date(myData, '2000-01-01')
+#' 
+#' }
 #'
 #' @export
 earliest_date <- function(bddata, res = "1700-01-01") {
@@ -149,6 +183,22 @@ earliest_date <- function(bddata, res = "1700-01-01") {
 #'
 #' @param bddata Bio diversity data in a data frame
 #' @param res restriction of records with/without data, month, year fields
+#' 
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' 
+#' responses <- taxo_level(temporal_resolution, 'Day')
+#' 
+#' }
 #'
 #' @export
 temporal_resolution <- function(bddata, res = "Day") {

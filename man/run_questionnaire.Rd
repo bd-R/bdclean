@@ -16,17 +16,11 @@ list with BdQuestionObjects containing user answers
 Execute the Questionnaire and save user responses.
 }
 \examples{
-\dontrun{
-library(rgbif)
-occdat1 <- occ_data(
-  country = 'AU', # Country code for australia
-  classKey = 359, # Class code for mammalia
-  limit = 5000, # Get only 5000 records
-)
-myData <- occdat1$data
+
+if(interactive()){ 
 
 responses <- run_questionnaire()
-cleaned_data <- clean_data_new(myData, responses)
+
 }
 
 }

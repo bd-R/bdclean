@@ -21,5 +21,25 @@ create_report_data(input_data, flagged_data, cleaned_data, responses,
 \item{format}{The format of the report to be generated}
 }
 \description{
-NOTE: This is an package internal function. Do not use for external uses.
+NOTE: This is an package internal function. Do not use for external uses. Exported to make it available for shiny app.
+}
+\examples{
+
+if(interactive()){
+
+library(rgbif)
+occdat <- occ_data(
+  country = 'AU', # Country code for australia
+  classKey = 359, # Class code for mammalia
+  limit = 50 # Get only 50 records
+)
+myData <- occdat$data
+
+question <- BdQuestion()
+responses <- get_user_response(question)
+
+cleaned_data <- create_report_data(myData, myData, myData, responses, T, 'pdf')
+
+} 
+
 }

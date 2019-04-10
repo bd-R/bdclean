@@ -1,6 +1,6 @@
 #' Generate data required to create report, function required in bdclean internal usage.
 #'
-#' NOTE: This is an package internal function. Do not use for external uses.
+#' NOTE: This is an package internal function. Do not use for external uses. Exported to make it available for shiny app.
 #'
 #' @param input_data The input dataframe before cleaning
 #' @param flagged_data The flagged data for cleaning
@@ -8,6 +8,25 @@
 #' @param responses The BDQuestions object with user responses
 #' @param cleaning_true Flag specifying if the cleaning should be done, or just flagging
 #' @param format The format of the report to be generated
+#' 
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' 
+#' question <- BdQuestion()
+#' responses <- get_user_response(question)
+#' 
+#' cleaned_data <- create_report_data(myData, myData, myData, responses, T, 'pdf')
+#' 
+#' } 
 #'
 #' @export
 create_report_data <-

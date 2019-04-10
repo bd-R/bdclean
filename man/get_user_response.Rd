@@ -12,3 +12,12 @@ get_user_response(bd_question)
 \description{
 Internal function for getting user response
 }
+\examples{
+
+if(interactive()){ 
+
+question <- BdQuestion()
+responses <- get_user_response(question)
+
+}
+}

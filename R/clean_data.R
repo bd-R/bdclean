@@ -33,6 +33,8 @@
 #' responses <- run_questionnaire()
 #' cleaned_data <- clean_data(myData, responses)
 #' 
+#' cleaned_data2 <- clean_data(myData)
+#' 
 #' } 
 #'
 #' @export
@@ -90,17 +92,11 @@ clean_data <-
 #' @return list with BdQuestionObjects containing user answers
 #'
 #' @examples
-#' \dontrun{
-#' library(rgbif)
-#' occdat1 <- occ_data(
-#'   country = 'AU', # Country code for australia
-#'   classKey = 359, # Class code for mammalia
-#'   limit = 5000, # Get only 5000 records
-#' )
-#' myData <- occdat1$data
+#' 
+#' if(interactive()){ 
 #'
 #' responses <- run_questionnaire()
-#' cleaned_data <- clean_data_new(myData, responses)
+#' 
 #' }
 #'
 #' @export
@@ -136,6 +132,14 @@ run_questionnaire <- function(custom_questionnaire = NULL) {
 #'
 #' @param bd_question The BDQuestion object to get users responses.
 #'
+#' @examples
+#' 
+#' if(interactive()){ 
+#'
+#' question <- BdQuestion()
+#' responses <- get_user_response(question)
+#' 
+#' }
 get_user_response <- function(bd_question) {
     # Child & ChildRouter already filtered in first loop above
     if (bd_question$question.type == "Atomic") {

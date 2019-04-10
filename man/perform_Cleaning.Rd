@@ -14,3 +14,18 @@ perform_Cleaning(flagged_data, cleaning_threshold = 5)
 \description{
 NOTE: This is an package internal function. Do not use for external uses.
 }
+\examples{
+
+if(interactive()){
+
+library(rgbif)
+occdat <- occ_data(
+  country = 'AU', # Country code for australia
+  classKey = 359, # Class code for mammalia
+  limit = 50 # Get only 50 records
+)
+myData <- occdat$data
+cleaned_data <- perform_Cleaning(myData)
+
+} 
+}

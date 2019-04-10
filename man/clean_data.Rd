@@ -50,6 +50,8 @@ myData <- occdat$data
 responses <- run_questionnaire()
 cleaned_data <- clean_data(myData, responses)
 
+cleaned_data2 <- clean_data(myData)
+
 } 
 
 }

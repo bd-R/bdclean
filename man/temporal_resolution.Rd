@@ -34,3 +34,20 @@ day, month, year
 temporal
 }
 
+\examples{
+
+if(interactive()){
+
+library(rgbif)
+occdat <- occ_data(
+  country = 'AU', # Country code for australia
+  classKey = 359, # Class code for mammalia
+  limit = 50 # Get only 50 records
+)
+myData <- occdat$data
+
+responses <- taxo_level(temporal_resolution, 'Day')
+
+}
+
+}

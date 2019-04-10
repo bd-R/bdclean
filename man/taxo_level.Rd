@@ -36,6 +36,7 @@ taxonomic
 
 \examples{
 
+if(interactive()){
 
 library(rgbif)
 occdat <- occ_data(
@@ -47,5 +48,6 @@ myData <- occdat$data
 
 responses <- taxo_level(myData, 'SPECIES')
 
+}
 
 }

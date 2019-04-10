@@ -1,8 +1,23 @@
 #' Data decision function (binary decision) required in bdclean internal usage.
 #'
-#' NOTE: This is an package internal function. Do not use for external uses.
+#' NOTE: This is an package internal function. Do not use for external uses. Exported to make it available for shiny app.
 #'
 #' @param bddata The dataframe to clean
+#' 
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' cleaned_data <- cleaning_function(myData)
+#' 
+#' } 
 #'
 #' @export
 cleaning_function <- function(bddata) {
@@ -42,6 +57,20 @@ cleaning_function <- function(bddata) {
 #' @param flagged_data The dataset with flags to be cleaned.
 #' @param cleaning_threshold The Cleaning tolerance. Not used in current version.
 #'
+#' @examples
+#'
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' cleaned_data <- perform_Cleaning(myData)
+#' 
+#' } 
 perform_Cleaning <- function(flagged_data, cleaning_threshold = 5) {
     flag_columns <- which(grepl("bdclean", names(flagged_data)))
     
@@ -66,6 +95,14 @@ perform_Cleaning <- function(flagged_data, cleaning_threshold = 5) {
 #' Returning checks list, function required in bdclean internal usage.
 #'
 #' NOTE: This is an package internal function. Do not use for external uses.
+#' 
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' all_checks <- get_checks_list()
+#' 
+#' } 
 #'
 #' @export
 get_checks_list <- function() {
