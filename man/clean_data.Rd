@@ -4,14 +4,14 @@
 \alias{clean_data}
 \title{Data cleaning according to Questionnaire Responses.}
 \usage{
-clean_data(data, customQuestionnaire = NULL, clean = TRUE,
+clean_data(data, custom_questionnaire = NULL, clean = TRUE,
   missing = FALSE, report = TRUE, format = c("html_document",
   "pdf_document"))
 }
 \arguments{
 \item{data}{Biodiversity data in a data frame}
 
-\item{customQuestionnaire}{Custom user created questionnaire responses if to pypass answering questions each time.}
+\item{custom_questionnaire}{Custom user created questionnaire responses if to pypass answering questions each time.}
 
 \item{clean}{Whether to clean after flagging. If false only flagging will be done.}
 
@@ -34,23 +34,24 @@ You can add your custom questions to this questionnaire and then pass it to this
 function to process the data.
 }
 \examples{
-\dontrun{
+
+custom_questionnaire <- create_default_questionnaire()
+
+if(interactive()){
+
 library(rgbif)
 occdat <- occ_data(
- country = "AU",     # Country code for australia
- classKey= 359,      # Class code for mammalia
- limit=5000          # Get only 5000 records
- )
- myData<-occdat$data
+  country = 'AU', # Country code for australia
+  classKey = 359, # Class code for mammalia
+  limit = 50 # Get only 50 records
+)
+myData <- occdat$data
 
- cleanedData <- clean_data(myData)
+responses <- run_questionnaire()
+cleaned_data <- clean_data(myData, responses)
 
- responses <- run_questionnaire()
- cleanedData <- clean_data(myData, responses)
+cleaned_data2 <- clean_data(myData)
 
- customQuestionnaire <- create_default_questionnaire()
- customResponses <- run_questionnaire(customQuestionnaire)
- cleanedData <- clean_data(myData, customResponses)
- }
+} 
 
 }

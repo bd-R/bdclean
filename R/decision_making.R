@@ -1,150 +1,179 @@
 #' Data decision function (binary decision) required in bdclean internal usage.
 #'
-#' NOTE: This is an package internal function. Do not use for external uses.
+#' NOTE: This is an package internal function. Do not use for external uses. Exported to make it available for shiny app.
 #'
 #' @param bddata The dataframe to clean
 #' 
-#'@export
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' cleaned_data <- cleaning_function(myData)
+#' 
+#' } 
+#'
+#' @export
 cleaning_function <- function(bddata) {
     bddata <- as.data.frame(bddata)
     
-    checkColumns <- which(grepl("bdclean", names(bddata)))
+    check_columns <- which(grepl("bdclean", names(bddata)))
     
-    if (length(checkColumns) == 0) {
+    if (length(check_columns) == 0) {
         warning("Dataset has no flag columns! Skipping cleaning")
         return(bddata)
     }
     
-    checkData <- bddata[, checkColumns]
+    check_data <- bddata[, check_columns]
     
     # ------------- Decision Making of Cleaning -------------
-    # Cleaning criteria is binary: Pass, Fail
-    # Records with cleanliness-score 10 for all checks will pass.
-    # Records with cleanliness-score less than 10 in atleast 1 check will fail
+    # Cleaning criteria is binary: Pass, Fail Records with cleanliness-score 10 for all
+    # checks will pass.  Records with cleanliness-score less than 10 in atleast 1 check will fail
     # ------------- Decision Making of Cleaning -------------
     
-    if (class(checkData) == "logical") {
-        failedDataLogical <- checkData != TRUE
+    if (class(check_data) == "logical") {
+        failed_data_logical <- check_data != TRUE
     } else {
-        failedDataLogical <- rowSums(checkData != TRUE, na.rm = T) >= 1
+        failed_data_logical <- rowSums(check_data != TRUE, na.rm = T) >= 1
     }
     
     # ------------- End of Decision Making of Cleaning -------------
-    
     message("Records remaining:",
-            nrow(bddata) - sum(failedDataLogical))
+            nrow(bddata) - sum(failed_data_logical))
     
-    return(bddata[!failedDataLogical, !grepl("bdclean", names(bddata))])
+    return(bddata[!failed_data_logical, !grepl("bdclean", names(bddata))])
 }
 
 #' Data decision function (threshold tuning) required in bdclean internal usage.
 #'
 #' NOTE: This is an package internal function. Do not use for external uses.
 #'
-#'@param flaggedData The dataset with flags to be cleaned.
-#'@param cleaningThreshold The Cleaning tolerance. Not used in current version.
+#' @param flagged_data The dataset with flags to be cleaned.
+#' @param cleaning_threshold The Cleaning tolerance. Not used in current version.
 #'
-perform_Cleaning <- function(flaggedData, cleaningThreshold = 5) {
-    flagColumns <- which(grepl("bdclean", names(flaggedData)))
+#' @examples
+#'
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' cleaned_data <- perform_Cleaning(myData)
+#' 
+#' } 
+perform_Cleaning <- function(flagged_data, cleaning_threshold = 5) {
+    flag_columns <- which(grepl("bdclean", names(flagged_data)))
     
-    if (length(flagColumns) == 0) {
+    if (length(flag_columns) == 0) {
         warning("Dataset has no flag columns! Skipping cleaning")
-        return(flaggedData)
+        return(flagged_data)
     }
+    cleaned_data <- flagged_data
+    cleaned_data$cleanliness_score <- 0
     
-    cleanedData <- flaggedData
-    cleanedData$cleanlinessScore <- 0
-    
-    for (columnIndex in flagColumns) {
-        cleanedData$cleanlinessScore <-
-            cleanedData$cleanlinessScore + cleanedData[, columnIndex]
+    for (column_index in flag_columns) {
+        cleaned_data$cleanliness_score <-
+            cleaned_data$cleanliness_score + cleaned_data[, column_index]
     }
-    cleanedData$cleanlinessScore <-
-        cleanedData$cleanlinessScore / length(flagColumns)
-    cleanedData <-
-        cleanedData[cleanedData$cleanlinessScore >= cleaningThreshold, c(flagColumns, length(cleanedData)) * -1]
-    
-    return(cleanedData)
+    cleaned_data$cleanliness_score <-
+        cleaned_data$cleanliness_score / length(flag_columns)
+    cleaned_data <-
+        cleaned_data[cleaned_data$cleanliness_score >= cleaning_threshold, c(flag_columns, length(cleaned_data)) * -1]
+    return(cleaned_data)
 }
 
 #' Returning checks list, function required in bdclean internal usage.
 #'
 #' NOTE: This is an package internal function. Do not use for external uses.
+#' 
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' all_checks <- get_checks_list()
+#' 
+#' } 
 #'
-#'@export
+#' @export
 get_checks_list <- function() {
-    # Uncomment if both suppoprted in customized checks. Right now,
-    # only bdcecks supported as it doenst require user input.
-    # bdcleanDocumentation <- tools::Rd_db("bdclean")
-    # bdchecksDocumentation <- tools::Rd_db("bdchecks")
-    # packageDocumentation <- c(bdcleanDocumentation, bdchecksDocumentation)
+    bdchecks_documentation <- tools::Rd_db("bdchecks")
+    package_documentation <- bdchecks_documentation
     
-    bdchecksDocumentation <- tools::Rd_db("bdchecks")
-    packageDocumentation <- bdchecksDocumentation
-    
-    qualityChecks <- list()
-    
-    for (i in 1:length(packageDocumentation)) {
-        string <- paste(packageDocumentation[i], collapse = " ")
+    quality_checks <- list()
+    for (i in 1:length(package_documentation)) {
+        string <- paste(package_documentation[i], collapse = " ")
         
         if (grepl("checkCategory", string)) {
-            nameOfQualityCheck <-
-                gsub(".Rd", "", names(packageDocumentation)[i])
+            name_of_quality_check <-
+                gsub(".Rd", "", names(package_documentation)[i])
             
-            functionDocumentation <- packageDocumentation[i]
-            
-            brokenDocumentation <-
+            function_documentation <- package_documentation[i]
+            broken_documentation <-
                 unlist(strsplit(
-                    paste(functionDocumentation[[1]], collapse = " "),
-                    split = '\\',
+                    paste(function_documentation[[1]], collapse = " "),
+                    split = "\\",
                     fixed = TRUE
                 ))
-            
-            brokenDocumentation <- gsub("\\n", "",
-                                        gsub(
-                                            "[{}]", "", brokenDocumentation
-                                        )
-            )
+            broken_documentation <-
+                gsub("\\n", "", gsub("[{}]", "", broken_documentation))
             
             description <-
-                brokenDocumentation[grep("title", brokenDocumentation)]
+                broken_documentation[grep("title", broken_documentation)]
             description <-
                 gsub("title  Data check", "", description, fixed = T)
             
-            samplePassData <-
-                brokenDocumentation[grep("samplePassData", brokenDocumentation)]
-            samplePassData <-
-                gsub("section   samplePassData", "", samplePassData, fixed = T)
+            sample_pass_data <-
+                broken_documentation[grep("samplePassData", broken_documentation)]
+            sample_pass_data <-
+                gsub("section   samplePassData",
+                     "",
+                     sample_pass_data,
+                     fixed = T)
             
-            sampleFailData <-
-                brokenDocumentation[grep("sampleFailData", brokenDocumentation)]
-            sampleFailData <-
-                gsub("section   sampleFailData", "", sampleFailData, fixed = T)
+            sample_fail_data <-
+                broken_documentation[grep("sampleFailData", broken_documentation)]
+            sample_fail_data <-
+                gsub("section   sampleFailData",
+                     "",
+                     sample_fail_data,
+                     fixed = T)
             
-            checkCategory <-
-                brokenDocumentation[grep("checkCategory", brokenDocumentation)]
-            checkCategory <-
-                gsub("section   checkCategory", "", checkCategory, fixed = T)
+            check_category <-
+                broken_documentation[grep("checkCategory", broken_documentation)]
+            check_category <-
+                gsub("section   checkCategory",
+                     "",
+                     check_category,
+                     fixed = T)
             
-            targetDWCField <-
-                brokenDocumentation[grep("targetDWCField", brokenDocumentation)]
-            targetDWCField <-
-                gsub("section   targetDWCField", "", targetDWCField, fixed = T)
+            target_dwc_field <-
+                broken_documentation[grep("targetDWCField", broken_documentation)]
+            target_dwc_field <-
+                gsub("section   targetDWCField",
+                     "",
+                     target_dwc_field,
+                     fixed = T)
             
             temp <- list()
-            
-            temp$nameOfQualityCheck <-
-                paste("DC_", nameOfQualityCheck, sep = "")
-            temp$description <-
-                paste(description, collapse = " ")
-            temp$samplePassData <- samplePassData
-            temp$sampleFailData <- sampleFailData
-            temp$checkCategory <- checkCategory
-            temp$targetDWCField <- targetDWCField
-            
-            qualityChecks[nameOfQualityCheck] <-
-                list(temp)
+            temp$name_of_quality_check <-
+                paste("DC_", name_of_quality_check, sep = "")
+            temp$description <- paste(description, collapse = " ")
+            temp$sample_pass_data <- sample_pass_data
+            temp$sample_fail_data <- sample_fail_data
+            temp$check_category <- check_category
+            temp$target_dwc_field <- target_dwc_field
+            quality_checks[name_of_quality_check] <- list(temp)
         }
     }
-    return(qualityChecks)
+    return(quality_checks)
 }

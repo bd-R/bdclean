@@ -9,3 +9,12 @@ run_bdclean()
 \description{
 Launch bdclean Shiny Application
 }
+\examples{
+
+if(interactive()){
+
+run_bdclean()
+
+} 
+
+}

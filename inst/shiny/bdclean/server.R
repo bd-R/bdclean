@@ -2,33 +2,20 @@ options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 library(bdchecks)
 
 shinyServer(function(input, output, session) {
-    # End session with browser close
-    # session$onSessionEnded(function() {
-    #     stopApp()
-    # })
-    
-    # jscode <- "shinyjs.closeWindow = function() { window.close(); }"
-    
     # ------------- Local Data store ------------------------
-    dataStore <-
+    data_store <-
         list(
             inputData = data.frame(),
             inputReceived = FALSE,
-            
             configuredCleaning = FALSE,
             customizedChecks = c(),
             customizedCheck = FALSE,
-            
             flaggedData = data.frame(),
             flaggingDone = FALSE,
-            
             cleanedData = data.frame(),
             cleaningDone = FALSE,
-            
             questionnaire = bdclean::create_default_questionnaire(),
-            # bdclean::
             qualityChecks = bdclean::get_checks_list(),
-            # bdclean::
             
             warningData =
                 data.frame(
@@ -55,8 +42,8 @@ shinyServer(function(input, output, session) {
         # for (stringIndex in length(warnings):1) {
         #     print("--------")
         #     print(warnings[stringIndex])
-        #     
-        #     
+        #
+        #
         #     if(grepl('[,:-]$', warnings[stringIndex])){
         #         print("in")
         #         warnings[stringIndex - 1] <- paste(warnings[stringIndex - 1], warnings[stringIndex])
@@ -73,7 +60,9 @@ shinyServer(function(input, output, session) {
                 time = format(Sys.time(), "%I:%M %p"),
                 icon = icon
             )
-        dataStore$warningData <<- rbind(temp, dataStore$warningData)
+        data_store$warningData <<-
+            rbind(temp, data_store$warningData)
+        # Assiging to the parent environment of this function which isn't global env.
     }
     
     # ------------- End of Warning Menu Notifiation ------------------------
@@ -88,7 +77,7 @@ shinyServer(function(input, output, session) {
         p(
             "Click the tabs in the left and follow the instructions to customize cleaning."
         ),
-        img(src = 'bdverse.png', align = "center"),
+        img(src = "bdverse.png", align = "center"),
         helpText(
             "GPL-3 ©Tomer Gueta, Vijay Barve, Thiloshon Nagarajah, Ashwin Agrawal and Carmel Yohay (2018).
             bdclean: Biodiversity Data Cleaning Workflow. R package version 0.1.900"
@@ -108,7 +97,7 @@ shinyServer(function(input, output, session) {
     # ------------- Next Buttons Navigation Control -------------------
     
     observeEvent(input$dataToConfigure, {
-        if (dataStore$inputReceived) {
+        if (data_store$inputReceived) {
             updateTabItems(session, "sideBar", "configure")
         } else {
             showNotification("Please add data first!", duration = 2)
@@ -121,9 +110,10 @@ shinyServer(function(input, output, session) {
                              duration = 2)
             
             dummyQuestion <-
-                bdclean::BdQuestion( # bdclean::
+                bdclean::BdQuestion(
+                    # bdclean::
                     question = "Customized Quality Checks",
-                    possible.responses = c("Yes" , "No"),
+                    possible.responses = c("Yes", "No"),
                     question.type = "ChildRouter",
                     router.condition = c("Yes"),
                     quality.checks = input$typeInput,
@@ -133,9 +123,9 @@ shinyServer(function(input, output, session) {
                 )
             dummyQuestion$users.answer <- "Yes"
             
-            dataStore$customizedChecks <<-
+            data_store$customizedChecks <<-
                 BdQuestionContainer(c(dummyQuestion))
-            dataStore$customizedCheck <<- TRUE
+            data_store$customizedCheck <<- TRUE
             
         } else {
             getResponse <- function(bdQuestion) {
@@ -153,19 +143,19 @@ shinyServer(function(input, output, session) {
                 }
             }
             
-            for (question in dataStore$questionnaire$BdQuestions) {
+            for (question in data_store$questionnaire$BdQuestions) {
                 if (question$question.type != "Child") {
                     getResponse(question)
                 }
             }
         }
         
-        dataStore$configuredCleaning <<- TRUE
+        data_store$configuredCleaning <<- TRUE
         updateTabItems(session, "sideBar", "flag")
     })
     
     observeEvent(input$flagToClean, {
-        if (!dataStore$flaggingDone) {
+        if (!data_store$flaggingDone) {
             showNotification("Please click Flag first!", duration = 2)
             return()
         }
@@ -178,8 +168,8 @@ shinyServer(function(input, output, session) {
             
             
             warnings <- capture.output(
-                dataStore$cleanedData <<-
-                    bdclean::cleaning_function(dataStore$flaggedData) # bdclean::
+                data_store$cleanedData <<-
+                    bdclean::cleaning_function(data_store$flaggedData) # bdclean::
                 ,
                 type = "message"
             )
@@ -187,16 +177,16 @@ shinyServer(function(input, output, session) {
             addWarnings("Warning while Cleaning", warnings, "trash")
         })
         
-        shinyjs::addClass(id = 'flagToCleanDiv',
-                          class = 'readyButton')
-        shinyjs::removeClass(id = 'flagToCleanDiv',
-                             class = 'completedButton')
+        shinyjs::addClass(id = "flagToCleanDiv",
+                          class = "readyButton")
+        shinyjs::removeClass(id = "flagToCleanDiv",
+                             class = "completedButton")
         
-        dataStore$cleaningDone <<- TRUE
+        data_store$cleaningDone <<- TRUE
     })
     
     observeEvent(input$flagToDocument, {
-        if (!dataStore$flaggingDone) {
+        if (!data_store$flaggingDone) {
             showNotification("Please click Flag first!", duration = 2)
             return()
         }
@@ -204,7 +194,7 @@ shinyServer(function(input, output, session) {
         updateTabItems(session, "sideBar", "document")
         
         checks <-
-            ifelse(dataStore$customizedCheck,
+            ifelse(data_store$customizedCheck,
                    "customizedChecks",
                    "questionnaire")
         
@@ -212,11 +202,11 @@ shinyServer(function(input, output, session) {
             warnings <- capture.output(
                 bdclean::create_report_data(
                     # bdclean::
-                    dataStore$inputData,
-                    dataStore$flaggedData,
-                    dataStore$cleanedData,
-                    dataStore[[checks]],
-                    dataStore$cleaningDone,
+                    data_store$inputData,
+                    data_store$flaggedData,
+                    data_store$cleanedData,
+                    data_store[[checks]],
+                    data_store$cleaningDone,
                     c("md_document")
                 ),
                 type = "message"
@@ -225,8 +215,8 @@ shinyServer(function(input, output, session) {
             addWarnings("Warning in Report Generation", warnings, "file")
         })
         
-        dataStore$cleaningDone <- FALSE
-        dataStore$cleanedData <-   dataStore$flaggedData
+        data_store$cleaningDone <- FALSE
+        data_store$cleanedData <-   data_store$flaggedData
     })
     
     observeEvent(input$cleanToDocument, {
@@ -234,18 +224,18 @@ shinyServer(function(input, output, session) {
         
         withProgress(message = "Generating Artifacts...", {
             checks <-
-                ifelse(dataStore$customizedCheck,
+                ifelse(data_store$customizedCheck,
                        "customizedChecks",
                        "questionnaire")
             
             warnings <- capture.output(
                 bdclean::create_report_data(
                     # bdclean::
-                    dataStore$inputData,
-                    dataStore$flaggedData,
-                    dataStore$cleanedData,
-                    dataStore[[checks]],
-                    dataStore$cleaningDone,
+                    data_store$inputData,
+                    data_store$flaggedData,
+                    data_store$cleanedData,
+                    data_store[[checks]],
+                    data_store$cleaningDone,
                     c("md_document")
                 ),
                 type = "message"
@@ -276,7 +266,7 @@ shinyServer(function(input, output, session) {
                             "3" = NULL
                         )
                     )
-                dataStore$inputData <<- data$data
+                data_store$inputData <<- data$data
                 
             } else {
                 warnings <- capture.output(
@@ -295,17 +285,17 @@ shinyServer(function(input, output, session) {
                     type = "message"
                 )
                 
-                if (length(warnings) > 0 ){
+                if (length(warnings) > 0) {
                     showNotification(paste(warnings, collapse = " "),
                                      duration = 6)
                 }
                 
                 tempData <- data[[input$queryDB]]$data[[1]]
-                dataStore$inputData <<- tempData
+                data_store$inputData <<- tempData
             }
         })
         
-        dataLoadedTask(dataStore$inputData)
+        dataLoadedTask(data_store$inputData)
     })
     
     observeEvent(input$inputFile, {
@@ -317,31 +307,31 @@ shinyServer(function(input, output, session) {
                 message("Reading DWCA ZIP...")
                 finchRead <-
                     finch::dwca_read(input$inputFile$datapath, read = T)
-                dataStore$inputData <<- finchRead$data[[1]]
+                data_store$inputData <<- finchRead$data[[1]]
                 
             } else {
-                dataStore$inputData <<-
+                data_store$inputData <<-
                     data.table::fread(input$inputFile$datapath)
             }
         })
         
-        dataLoadedTask(dataStore$inputData)
+        dataLoadedTask(data_store$inputData)
     })
     
     observeEvent(input$mapTexture, {
-        if (length(dataStore$inputData) == 0) {
+        if (length(data_store$inputData) == 0) {
             return(NULL)
         }
-        leafletProxy("mymap", data = dataStore$inputData) %>%
+        leafletProxy("mymap", data = data_store$inputData) %>%
             clearShapes() %>%
             addCircles(~ decimalLongitude, ~ decimalLatitude, color = input$mapColor)
     })
     
     observeEvent(input$mapColor, {
-        if (length(dataStore$inputData) == 0) {
+        if (length(data_store$inputData) == 0) {
             return(NULL)
         }
-        leafletProxy("mymap", data = dataStore$inputData) %>%
+        leafletProxy("mymap", data = data_store$inputData) %>%
             clearShapes() %>%
             addCircles(~ decimalLongitude, ~ decimalLtitude, color = input$mapColor)
     })
@@ -363,14 +353,14 @@ shinyServer(function(input, output, session) {
                 data.table::fread(file = dictionaryPath)
             
             darwinizer <-
-                bdDwC::darwinizeNames(dataStore$inputData, customDictionary)
+                bdDwC::darwinizeNames(data_store$inputData, customDictionary)
             
             fixed <-
                 darwinizer[darwinizer$matchType == "Darwinized",]
             
             if (nrow(fixed) > 0) {
-                tidyData <- bdDwC::renameUserData(dataStore$inputData, darwinizer)
-                dataStore$inputData <<- tidyData
+                tidyData <- bdDwC::renameUserData(data_store$inputData, darwinizer)
+                data_store$inputData <<- tidyData
                 
                 showNotification(paste(
                     "Converted Columns:",
@@ -384,42 +374,41 @@ shinyServer(function(input, output, session) {
             }
         }
         
-        if ("decimalLatitude" %in% colnames(dataStore$inputData))
-        {
-            dataStore$inputData$decimalLatitude <<-
-                as.numeric(dataStore$inputData$decimalLatitude)
-            dataStore$inputData$decimalLongitude <<-
-                as.numeric(dataStore$inputData$decimalLongitude)
+        if ("decimalLatitude" %in% colnames(data_store$inputData)) {
+            data_store$inputData$decimalLatitude <<-
+                as.numeric(data_store$inputData$decimalLatitude)
+            data_store$inputData$decimalLongitude <<-
+                as.numeric(data_store$inputData$decimalLongitude)
         }
         
         # ------------ End of Darwinizing Data -------------
         
-        try(leafletProxy("mymap", data = dataStore$inputData) %>%
+        try(leafletProxy("mymap", data = data_store$inputData) %>%
                 clearShapes() %>%
                 addCircles(~ decimalLongitude, ~ decimalLatitude, color = input$mapColor))
         
         output$inputDataTable <- DT::renderDataTable(DT::datatable({
-            summarizeDataframe(dataStore$inputData)
+            summarizeDataframe(data_store$inputData)
         }, options = list(scrollX = TRUE)))
         
-        shinyjs::addClass(id = 'queryDatabaseDiv',
-                          class = 'readyButton')
-        shinyjs::removeClass(id = 'queryDatabaseDiv',
-                             class = 'activeButton')
+        shinyjs::addClass(id = "queryDatabaseDiv",
+                          class = "readyButton")
+        shinyjs::removeClass(id = "queryDatabaseDiv",
+                             class = "activeButton")
         
-        shinyjs::addClass(id = 'inputFileDiv',
-                          class = 'readyButton')
-        shinyjs::removeClass(id = 'inputFileDiv',
-                             class = 'activeButton')
+        shinyjs::addClass(id = "inputFileDiv",
+                          class = "readyButton")
+        shinyjs::removeClass(id = "inputFileDiv",
+                             class = "activeButton")
         
-        shinyjs::addClass(id = 'dataToConfigureDiv',
-                          class = 'completedButton')
-        shinyjs::removeClass(id = 'queryDatabaseDiv',
-                             class = 'activeButton')
+        shinyjs::addClass(id = "dataToConfigureDiv",
+                          class = "completedButton")
+        shinyjs::removeClass(id = "queryDatabaseDiv",
+                             class = "activeButton")
         
         showNotification("Read Data Successfully", duration = 2)
         
-        dataStore$inputReceived <<- TRUE
+        data_store$inputReceived <<- TRUE
         
         # --------- Setting flag tab statistic boxes -------
         output$inputDataRows <- renderText(nrow(data))
@@ -528,7 +517,7 @@ shinyServer(function(input, output, session) {
             }
         }
         
-        for (question in dataStore$questionnaire$BdQuestions) {
+        for (question in data_store$questionnaire$BdQuestions) {
             if (question$question.type != "Child" &&
                 question$question.type != "ChildRouter") {
                 createUIContainer(question)
@@ -546,41 +535,42 @@ shinyServer(function(input, output, session) {
     output$qualityChecks <- renderUI({
         components <- list()
         
-        for (i in 1:length(dataStore$qualityChecks)) {
+        for (i in 1:length(data_store$qualityChecks)) {
             components[[i]] <- tagList(
                 HTML(
                     paste(
                         "<input type=checkbox
                         name=typeInput value=",
-                        dataStore$qualityChecks[[i]]$nameOfQualityCheck,
+                        data_store$qualityChecks[[i]]$nameOfQualityCheck,
                         ">"
                     )
                 ),
                 div(
                     class = "checksListContent",
-                    h4(dataStore$qualityChecks[[i]]$nameOfQualityCheck),
+                    h4(data_store$qualityChecks[[i]]$nameOfQualityCheck),
                     
                     div(class = "checksListTopic col-sm-3", p("Description: ")),
-                    div(class = "checksListTitle", p(
-                        dataStore$qualityChecks[[i]]$description
-                    )),
+                    div(
+                        class = "checksListTitle",
+                        p(data_store$qualityChecks[[i]]$description)
+                    ),
                     
                     div(class = "checksListTopic col-sm-3", p("Sample Passing Data: ")),
                     div(
                         class = "checksListTitle",
-                        p(dataStore$qualityChecks[[i]]$samplePassData)
+                        p(data_store$qualityChecks[[i]]$samplePassData)
                     ),
                     
                     div(class = "checksListTopic col-sm-3", p("Sample Failing Data: ")),
                     div(
                         class = "checksListTitle",
-                        p(dataStore$qualityChecks[[i]]$sampleFailData)
+                        p(data_store$qualityChecks[[i]]$sampleFailData)
                     ),
                     
                     div(class = "checksListTopic col-sm-3", p("Category of Quality Check: ")),
                     div(
                         class = "checksListTitle",
-                        p(dataStore$qualityChecks[[i]]$checkCategory)
+                        p(data_store$qualityChecks[[i]]$checkCategory)
                     ),
                     
                     div(class = "checksListTopic col-sm-3", p(
@@ -588,7 +578,7 @@ shinyServer(function(input, output, session) {
                     )),
                     div(
                         class = "checksListTitle",
-                        p(dataStore$qualityChecks[[i]]$targetDWCField)
+                        p(data_store$qualityChecks[[i]]$targetDWCField)
                     )
                 ),
                 br(),
@@ -598,7 +588,7 @@ shinyServer(function(input, output, session) {
         
         return(
             div(
-                id = 'typeInput',
+                id = "typeInput",
                 class = "form-group shiny-input-checkboxgroup shiny-input-container shiny-bound-input",
                 tags$br(),
                 tags$br(),
@@ -654,7 +644,7 @@ shinyServer(function(input, output, session) {
         
         return(
             div(
-                id = 'domainInput',
+                id = "domainInput",
                 class = "form-group shiny-input-radiogroup shiny-input-container shiny-bound-input",
                 tags$br(),
                 tags$br(),
@@ -670,42 +660,42 @@ shinyServer(function(input, output, session) {
     # ------------- Flagging Module -------------------
     
     observeEvent(input$flagButton, {
-        tempData <- dataStore$inputData
-        dataStore$flaggedData <<- data.frame()
-        dataStore$cleanedData <<- data.frame()
+        tempData <- data_store$inputData
+        data_store$flaggedData <<- data.frame()
+        data_store$cleanedData <<- data.frame()
         
         withProgress(message = "Flagging Data...", {
             checks <-
-                ifelse(dataStore$customizedCheck,
+                ifelse(data_store$customizedCheck,
                        "customizedChecks",
                        "questionnaire")
             
             warnings <- capture.output(
-                dataStore$flaggedData <<-
-                    dataStore[[checks]]$flagData(dataStore$inputData, missing =
-                                                     input$missingCase),
+                data_store$flaggedData <<-
+                    data_store[[checks]]$flagData(data_store$inputData, missing =
+                                                      input$missingCase),
                 type = "message"
             )
-            dataStore$flaggingDone <<- TRUE
+            data_store$flaggingDone <<- TRUE
             
             addWarnings("Warning while Flagging", warnings, "flag")
         })
         
-        shinyjs::addClass(id = 'flagButtonDiv',
-                          class = 'readyButton')
+        shinyjs::addClass(id = "flagButtonDiv",
+                          class = "readyButton")
         
-        shinyjs::removeClass(id = 'flagButtonDiv',
-                             class = 'completedButton')
+        shinyjs::removeClass(id = "flagButtonDiv",
+                             class = "completedButton")
         
-        shinyjs::addClass(id = 'flagToCleanDiv',
-                          class = 'completedButton')
-        shinyjs::removeClass(id = 'flagToCleanDiv',
-                             class = 'activeButton')
+        shinyjs::addClass(id = "flagToCleanDiv",
+                          class = "completedButton")
+        shinyjs::removeClass(id = "flagToCleanDiv",
+                             class = "activeButton")
     })
     
     output$messageMenu <- renderMenu({
         msgs <-
-            apply(as.data.frame(dataStore$warningData), 1, function(row) {
+            apply(as.data.frame(data_store$warningData), 1, function(row) {
                 messageItem(
                     from = row[["from"]],
                     message = row[["message"]],
@@ -746,7 +736,7 @@ shinyServer(function(input, output, session) {
                 checkData <- flaggedData[, checkColumns]
                 
                 
-                if (class(checkData) == "logical"){
+                if (class(checkData) == "logical") {
                     return(nrow(flaggedData) - length(checkData[checkData != TRUE]))
                 }
                 
@@ -759,7 +749,7 @@ shinyServer(function(input, output, session) {
         #                             dataStore$cleaningThresholdControl)
         
         warnings <- capture.output(flaggedCount <-
-                                       get_flagging_statistics(dataStore$flaggedData) ,
+                                       get_flagging_statistics(data_store$flaggedData),
                                    type = "message")
         addWarnings("Message while Flagging", warnings, "question")
         
@@ -798,14 +788,14 @@ shinyServer(function(input, output, session) {
                                     icon = icon("list-ol")),
                             infoBox(
                                 "# of Newly Added Columns",
-                                length(dataStore$flaggedData) - length(dataStore$inputData),
+                                length(data_store$flaggedData) - length(data_store$inputData),
                                 icon = icon("th-list"),
                                 color = "purple"
                             ),
                             infoBox(
                                 "# of Unique Scientific Names Remaining",
                                 length(unique(
-                                    dataStore$flaggedData$scientificName
+                                    data_store$flaggedData$scientificName
                                 )),
                                 icon = icon("paw"),
                                 color = "yellow"
@@ -813,7 +803,7 @@ shinyServer(function(input, output, session) {
                             infoBox(
                                 "Clean Data",
                                 paste(((
-                                    flaggedCount / nrow(dataStore$inputData)
+                                    flaggedCount / nrow(data_store$inputData)
                                 ) * 100), "%", sep = ""),
                                 icon = icon("flag"),
                                 color = "red"
@@ -823,7 +813,7 @@ shinyServer(function(input, output, session) {
                     tabPanel(
                         "Table View",
                         div(class = "secondaryHeaders", h3("View 02: Summarized Table")),
-                        DT::renderDataTable(summarizeDataframe(dataStore$flaggedData), width = 300)
+                        DT::renderDataTable(summarizeDataframe(data_store$flaggedData), width = 300)
                     )
                 ),
                 
@@ -844,7 +834,7 @@ shinyServer(function(input, output, session) {
     })
     
     output$flaggedDataTable <-
-        reactive(DT::renderDT(summarizeDataframe(dataStore$flaggedData)))
+        reactive(DT::renderDT(summarizeDataframe(data_store$flaggedData)))
     
     # ------------- End of Flagging Module -------------------
     
@@ -855,7 +845,7 @@ shinyServer(function(input, output, session) {
         conditionalPanel("input.flagToClean > 0",
                          tagList(
                              div(id = "completedIcon", img(
-                                 src = 'completed.png', align = "center"
+                                 src = "completed.png", align = "center"
                              )),
                              p(paste("Cleaning is succesfully done.")),
                              
@@ -873,10 +863,6 @@ shinyServer(function(input, output, session) {
                              ))
                          ))
     })
-    
-    # observeEvent(input$cleanControl, {
-    #     dataStore$cleaningThresholdControl <<- input$cleanControl
-    # })
     
     # ------------- End of Cleaning Module ------------------------
     
@@ -897,7 +883,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadInput", "Download Input Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(summarizeDataframe(dataStore$inputData), width = 300)
+                            DT::renderDataTable(summarizeDataframe(data_store$inputData), width = 300)
                         ),
                         tabPanel(
                             "Flagged Data",
@@ -907,7 +893,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadFlagged", "Download Flagged Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(summarizeDataframe(dataStore$flaggedData), width = 300)
+                            DT::renderDataTable(summarizeDataframe(data_store$flaggedData), width = 300)
                         ),
                         tabPanel(
                             "Cleaned Data",
@@ -915,7 +901,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadCleaned", "Download Cleaned Data"),
                             br(),
                             br(),
-                            DT::renderDataTable(summarizeDataframe(dataStore$cleanedData), width = 300)
+                            DT::renderDataTable(summarizeDataframe(data_store$cleanedData), width = 300)
                         ),
                         tabPanel(
                             "Cleaning Report",
@@ -966,7 +952,7 @@ shinyServer(function(input, output, session) {
     
     output$downloadShortReport <- downloadHandler(
         filename = function() {
-            paste('shortReport-', Sys.Date(), switch(
+            paste("shortReport-", Sys.Date(), switch(
                 input$reportFormat,
                 "pdf_document" = ".pdf",
                 "html_document" = ".html",
@@ -977,17 +963,17 @@ shinyServer(function(input, output, session) {
         content = function(file) {
             withProgress(message = "Preparing download...", {
                 checks <-
-                    ifelse(dataStore$customizedCheck,
+                    ifelse(data_store$customizedCheck,
                            "customizedChecks",
                            "questionnaire")
                 
                 bdclean::create_report_data(
                     # bdclean::
-                    dataStore$inputData,
-                    dataStore$cleanedData,
-                    dataStore$flaggedData,
-                    dataStore[[checks]],
-                    dataStore$cleaningDone,
+                    data_store$inputData,
+                    data_store$cleanedData,
+                    data_store$flaggedData,
+                    data_store[[checks]],
+                    data_store$cleaningDone,
                     input$reportFormat
                 )
             })
@@ -1009,7 +995,7 @@ shinyServer(function(input, output, session) {
     
     output$downloadDetailedReport <- downloadHandler(
         filename = function() {
-            paste('detailedReport-', Sys.Date(), switch(
+            paste("detailedReport-", Sys.Date(), switch(
                 input$reportFormat,
                 "pdf_document" = ".pdf",
                 "html_document" = ".html",
@@ -1020,16 +1006,16 @@ shinyServer(function(input, output, session) {
         content = function(file) {
             withProgress(message = "Preparing download...", {
                 checks <-
-                    ifelse(dataStore$customizedCheck,
+                    ifelse(data_store$customizedCheck,
                            "customizedChecks",
                            "questionnaire")
                 bdclean::create_report_data(
                     # bdclean::
-                    dataStore$inputData,
-                    dataStore$cleanedData,
-                    dataStore$flaggedData,
-                    dataStore[[checks]],
-                    dataStore$cleaningDone,
+                    data_store$inputData,
+                    data_store$cleanedData,
+                    data_store$flaggedData,
+                    data_store[[checks]],
+                    data_store$cleaningDone,
                     input$reportFormat
                 )
             })
@@ -1051,27 +1037,27 @@ shinyServer(function(input, output, session) {
     
     output$downloadInput <- downloadHandler(
         filename = function() {
-            paste('inputData-', Sys.Date(), '.csv')
+            paste("inputData-", Sys.Date(), ".csv")
         },
         content = function(con) {
-            write.csv(dataStore$inputData, con)
+            write.csv(data_store$inputData, con)
         }
     )
     output$downloadFlagged <- downloadHandler(
         filename = function() {
-            paste('flaggedData-', Sys.Date(), '.csv')
+            paste("flaggedData-", Sys.Date(), ".csv")
         },
         content = function(con) {
-            write.csv(dataStore$flaggedData, con)
+            write.csv(data_store$flaggedData, con)
         }
     )
     
     output$downloadCleaned <- downloadHandler(
         filename = function() {
-            paste('cleanedData-', Sys.Date(), '.csv')
+            paste("cleanedData-", Sys.Date(), ".csv")
         },
         content = function(con) {
-            write.csv(dataStore$cleanedData, con)
+            write.csv(data_store$cleanedData, con)
         }
     )
     

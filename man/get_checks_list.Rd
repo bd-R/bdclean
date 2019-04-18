@@ -9,3 +9,12 @@ get_checks_list()
 \description{
 NOTE: This is an package internal function. Do not use for external uses.
 }
+\examples{
+
+if(interactive()){
+
+all_checks <- get_checks_list()
+
+} 
+
+}

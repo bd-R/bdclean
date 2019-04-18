@@ -1,202 +1,198 @@
 #' Generate data required to create report, function required in bdclean internal usage.
 #'
-#' NOTE: This is an package internal function. Do not use for external uses.
-#' 
-#' @param inputData The input dataframe before cleaning
-#' @param flaggedData The flagged data for cleaning
-#' @param cleanedData The data with flagged records removed
-#' @param responses The BDQuestions object with user responses
-#' @param cleaningTrue Flag specifying if the cleaning should be done, or just flagging
-#' @param format The format of the report to be generated
+#' NOTE: This is an package internal function. Do not use for external uses. Exported to make it available for shiny app.
 #'
-#'@export
+#' @param input_data The input dataframe before cleaning
+#' @param flagged_data The flagged data for cleaning
+#' @param cleaned_data The data with flagged records removed
+#' @param responses The BDQuestions object with user responses
+#' @param cleaning_true Flag specifying if the cleaning should be done, or just flagging
+#' @param format The format of the report to be generated
+#' 
+#' @examples
+#' 
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' 
+#' question <- BdQuestion()
+#' responses <- get_user_response(question)
+#' 
+#' cleaned_data <- create_report_data(myData, myData, myData, responses, T, 'pdf')
+#' 
+#' } 
+#'
+#' @export
 create_report_data <-
-    function(inputData,
-             flaggedData,
-             cleanedData,
+    function(input_data,
+             flagged_data,
+             cleaned_data,
              responses,
-             cleaningTrue,
+             cleaning_true,
              format) {
-        for (question in responses$BdQuestions) {
+        for (question in responses$bdquestions) {
             if (length(question$quality.checks) > 0 &&
                 length(question$users.answer) > 0) {
-                question$addToReport(flaggedData, cleaningTrue)
+                question$add_to_report(flagged_data, cleaning_true)
             }
         }
         
-        if (!cleaningTrue) {
-            cleanedData <- flaggedData
+        if (!cleaning_true) {
+            cleaned_data <- flagged_data
         }
         
         # --------------- Data required for detailed report ---------------
-        inputSize <- dim(inputData)
-        outputSize <- dim(cleanedData)
+        input_size <- dim(input_data)
+        output_size <- dim(cleaned_data)
         
-        inputUniqueSpecies <-
-            length(unique(inputData$scientificName))
-        outputUniqueSpecies <-
-            length(unique(cleanedData$scientificName))
+        input_unique_species <-
+            length(unique(input_data[, "scientificName"]))
+        output_unique_species <-
+            length(unique(cleaned_data[, "scientificName"]))
         
-        # Sys.setenv( TZ="Etc/GMT+5" )
-        earliestInputDate <-
-            try(as.POSIXct(unique(inputData$eventDate), tz="UTC"), silent = T)
+        earliest_input_date <-
+            try(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"), silent = T)
         
-        if(class(earliestInputDate)!="try-error"){
-            earliestInputDate <- min(earliestInputDate)
-            latestInputDate <-
-                max(as.POSIXct(unique(inputData$eventDate), tz="UTC"))
+        if (class(earliest_input_date) != "try-error") {
+            earliest_input_date <- min(earliest_input_date)
+            latest_input_date <-
+                max(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"))
         } else {
-            earliestInputDate <- "Not Available"
-            latestInputDate <- "Not Available"
-        }
-            
-        earliestOutputDate <-
-            try(as.POSIXct(unique(cleanedData$eventDate), tz="UTC"), silent = T)
-        
-        if(class(earliestOutputDate)!="try-error"){
-            earliestOutputDate <- min(earliestInputDate)
-            latestOutputDate <-
-                max(as.POSIXct(unique(cleanedData$eventDate), tz="UTC"))
-        } else {
-            earliestOutputDate <- "Not Available"
-            latestOutputDate <- "Not Available"
+            earliest_input_date <- "Not Available"
+            latest_input_date <- "Not Available"
         }
         
-        InputData <-
-            c(
-                inputSize[1],
-                inputSize[2],
-                inputUniqueSpecies,
-                paste(earliestInputDate, "-", latestInputDate)
-            )
+        earliest_output_date <-
+            try(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"), silent = T)
         
-        CleanedData <-
+        if (class(earliest_output_date) != "try-error") {
+            earliest_output_date <- min(earliest_input_date)
+            latest_output_date <-
+                max(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"))
+        } else {
+            earliest_output_date <- "Not Available"
+            latest_output_date <- "Not Available"
+        }
+        input_data <-
             c(
-                outputSize[1],
-                outputSize[2],
-                outputUniqueSpecies,
-                paste(earliestOutputDate, "-", latestOutputDate)
+                input_size[1],
+                input_size[2],
+                input_unique_species,
+                paste(earliest_input_date, "-", latest_input_date)
             )
-        
-        data.summary <- data.frame(InputData, CleanedData) # One
+        cleaned_data <-
+            c(
+                output_size[1],
+                output_size[2],
+                output_unique_species,
+                paste(earliest_output_date, "-", latest_output_date)
+            )
+        data.summary <- data.frame(input_data, cleaned_data)  # One
         row.names(data.summary) <-
             c("Rows",
               "Columns",
               "Number of unique scientific names",
               "Date Range")
         
-        checks.records <- list() # Three
+        checks.records <- list()  # Three
         index <- 1
         
-        for (question in responses$BdQuestions) {
+        for (question in responses$bdquestions) {
             # length(question$quality.checks) > 0 &&
             if (length(question$users.answer) > 0) {
                 checks.records[[paste("question", index, sep = "")]] <-
                     list(
-                        "question" = question$question,
-                        "answer" = question$users.answer,
-                        "checks" = question$cleaning.details
+                        question = question$question,
+                        answer = question$users.answer,
+                        checks = question$cleaning.details
                     )
-                index = index + 1
+                index <- index + 1
             }
         }
-        
-        
-        
         # ------------------- End of data required for detailed report ---------------
         
         # ------------------ Data required for short report ---------------
-        
-        recordsTable <- data.frame(
-            DataCleaningProcedure = "Initial Records",
-            NoOfRecords = NROW(inputData),
-            Action = ""
-        )
-        
+        records_table <-
+            data.frame(
+                DataCleaningProcedure = "Initial Records",
+                NoOfRecords = NROW(input_data),
+                Action = ""
+            )
         
         for (question in checks.records) {
-            checkIndex <- 1
+            check_index <- 1
             for (check in question$checks) {
-                recordsTable <-
+                
+                print(names(question$checks))
+                print(names(question$checks)[check_index])
+                
+                records_table <-
                     rbind(
-                        recordsTable,
+                        records_table,
                         data.frame(
-                            DataCleaningProcedure = names(question$checks)[checkIndex],
+                            DataCleaningProcedure = names(question$checks)[check_index],
                             NoOfRecords = check$affectedData,
-                            Action = ifelse(cleaningTrue, "Removal", "Flagging")
+                            Action = ifelse(cleaning_true, "Removal", "Flagging")
                         )
                     )
-                checkIndex <- checkIndex + 1
+                check_index <- check_index + 1
             }
         }
-        
-        remainingRecords <-
-            (nrow(cleanedData))
-        removedRecords <- nrow(inputData) - nrow(cleanedData)
-        repairedRecords <- 0
-        
-        recordsTable <-
+        remaining_records <- (nrow(cleaned_data))
+        removed_records <- nrow(input_data) - nrow(cleaned_data)
+        records_table <-
             rbind(
-                recordsTable,
+                records_table,
                 data.frame(
                     DataCleaningProcedure = "Total",
                     NoOfRecords = paste(
-                        "Remaining " ,
-                        remainingRecords,
+                        "Remaining ",
+                        remaining_records,
                         " Records (",
-                        (remainingRecords / recordsTable[1, 2]) * 100,
+                        (remaining_records / records_table[1, 2]) * 100,
                         "%)",
                         sep = ""
                     ),
-                    Action = paste (
-                        ifelse(cleaningTrue, "Removal of ", "Flagging of"),
-                        removedRecords,
+                    Action = paste(
+                        ifelse(cleaning_true, "Removal of ", "Flagging of"),
+                        removed_records,
                         " Records (",
-                        (removedRecords / recordsTable[1, 2]) * 100,
+                        (removed_records / records_table[1, 2]) * 100,
                         "%)",
                         sep = ""
                     )
                 )
             )
-        
         # ------------ End of data required for short report ---------------
-        
-        print(knitr::kable(recordsTable, format = "markdown"))
-        
-        generateShortReport(recordsTable, format)
-        generateDetailedReport(data.summary, checks.records, format)
+        message(knitr::kable(records_table, format = "markdown"))
+        generate_short_report(records_table, format)
+        generate_detailed_report(data.summary, checks.records, format)
     }
 
-generateShortReport <- function(recordsTable, format) {
+generate_short_report <- function(records_table, format) {
     message("Generating Reports...")
-    
-    dir.create(file.path(getwd(), "CleaningReports"), showWarnings = FALSE)
-    
-    message("Created folder")
-    
     try(rmarkdown::render(
         system.file("rmd/generateShortReport.Rmd", package = "bdclean"),
         format,
         quiet = T,
-        output_dir = "CleaningReports"
+        output_dir = tempdir()
     ))
-    
     message("generated simple")
 }
 
-generateDetailedReport <-
+generate_detailed_report <-
     function(data.summary, checks.records, format) {
         try(rmarkdown::render(
             system.file("rmd/generateDetailedReport.Rmd", package = "bdclean"),
             format,
             quiet = T,
-            output_dir = "CleaningReports"
+            output_dir = tempdir()
         ))
-        
-        message(paste(
-            "Saved generated reports to '",
-            getwd() ,
-            "/CleaningReports'",
-            sep = ""
-        ))
+        message(paste("Saved generated reports to '", tempdir(), sep = ""))
     }

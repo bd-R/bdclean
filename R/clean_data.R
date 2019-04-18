@@ -7,69 +7,69 @@
 #' You can add your custom questions to this questionnaire and then pass it to this
 #' function to process the data.
 #'
-#'@param data Biodiversity data in a data frame
-#'@param customQuestionnaire Custom user created questionnaire responses if to pypass answering questions each time.
-#'@param clean Whether to clean after flagging. If false only flagging will be done.
-#'@param missing How to treat data with missing values. Default: false - will be treated as bad data.
-#'@param report Whether to print report of cleaning done.
-#'@param format Formats of the cleaning report required. Options are: Markdown, HTML or / and PDF
+#' @param data Biodiversity data in a data frame
+#' @param custom_questionnaire Custom user created questionnaire responses if to pypass answering questions each time.
+#' @param clean Whether to clean after flagging. If false only flagging will be done.
+#' @param missing How to treat data with missing values. Default: false - will be treated as bad data.
+#' @param report Whether to print report of cleaning done.
+#' @param format Formats of the cleaning report required. Options are: Markdown, HTML or / and PDF
 #'
-#'@return data frame with clean data
+#' @return data frame with clean data
 #'
-#'@examples \dontrun{
-#'library(rgbif)
-#'occdat <- occ_data(
-#'  country = "AU",     # Country code for australia
-#'  classKey= 359,      # Class code for mammalia
-#'  limit=5000          # Get only 5000 records
-#'  )
-#'  myData<-occdat$data
+#' @examples
+#' 
+#' custom_questionnaire <- create_default_questionnaire()
+#' 
+#' if(interactive()){
+#' 
+#' library(rgbif)
+#' occdat <- occ_data(
+#'   country = 'AU', # Country code for australia
+#'   classKey = 359, # Class code for mammalia
+#'   limit = 50 # Get only 50 records
+#' )
+#' myData <- occdat$data
+#' 
+#' responses <- run_questionnaire()
+#' cleaned_data <- clean_data(myData, responses)
+#' 
+#' cleaned_data2 <- clean_data(myData)
+#' 
+#' } 
 #'
-#'  cleanedData <- clean_data(myData)
-#'
-#'  responses <- run_questionnaire()
-#'  cleanedData <- clean_data(myData, responses)
-#'
-#'  customQuestionnaire <- create_default_questionnaire()
-#'  customResponses <- run_questionnaire(customQuestionnaire)
-#'  cleanedData <- clean_data(myData, customResponses)
-#'  }
-#'
-#'@export
+#' @export
 clean_data <-
     function(data,
-             customQuestionnaire = NULL,
+             custom_questionnaire = NULL,
              clean = TRUE,
              missing = FALSE,
              report = TRUE,
              format = c("html_document", "pdf_document")) {
         responses <- list()
-        inputData <- data
-        flaggedData <- data
-        cleanedData <- data
-        
+        input_data <- data
+        flagged_data <- data
+        cleaned_data <- data
         
         # Questionnaire
-        if (is.null(customQuestionnaire)) {
+        if (is.null(custom_questionnaire)) {
             responses <- run_questionnaire()
         } else {
-            responses <- customQuestionnaire
+            responses <- custom_questionnaire
         }
         
         # Flagging
-        flaggedData <- responses$flagData(inputData, missing)
-        
+        flagged_data <- responses$flag_data(input_data, missing)
         
         # Decision Making
         if (clean) {
-            cleanedData <- cleaning_function(flaggedData)
+            cleaned_data <- cleaning_function(flagged_data)
         }
         
         # Report
         if (report) {
             create_report_data(data,
-                               flaggedData,
-                               cleanedData,
+                               flagged_data,
+                               cleaned_data,
                                responses,
                                clean,
                                format)
@@ -77,61 +77,51 @@ clean_data <-
         
         # Cleaning
         if (clean) {
-            return(cleanedData)
+            return(cleaned_data)
         }
         
-        return(flaggedData)
+        return(flagged_data)
     }
 
 
 #' Execute the Questionnaire and save user responses.
 #'
 #'
-#'@param customQuestionnaire Custom User Created Questionnaire if already available.
+#' @param custom_questionnaire Custom User Created Questionnaire if already available.
 #'
-#'@return list with BdQuestionObjects containing user answers
+#' @return list with BdQuestionObjects containing user answers
 #'
-#'@examples \dontrun{
-#'library(rgbif)
-#'occdat1 <- occ_data(
-#'  country = "AU",     # Country code for australia
-#'  classKey= 359,      # Class code for mammalia
-#'  limit=5000,         # Get only 5000 records
-#'  )
-#'  myData<-occdat1$data
+#' @examples
+#' 
+#' if(interactive()){ 
 #'
-#'  responses <- run_questionnaire()
-#'  cleanedData <- clean_data_new(myData, responses)
-#'}
+#' responses <- run_questionnaire()
+#' 
+#' }
 #'
-#'@export
-run_questionnaire <- function(customQuestionnaire = NULL) {
+#' @export
+run_questionnaire <- function(custom_questionnaire = NULL) {
     responses <- list()
-    
-    if (is.null(customQuestionnaire)) {
+    if (is.null(custom_questionnaire)) {
         message("Custom Questionnaire not given. Using package default Questionnaire...")
         responses <- create_default_questionnaire()
-        
     } else {
-        if (class(customQuestionnaire) != "BdQuestionContainer") {
+        if (class(custom_questionnaire) != "BdQuestionContainer") {
             message(
                 "Provided Custom Questionnaire is not of class BdQuestionContainer.
                 Using package default Questionnaire"
             )
             responses <- create_default_questionnaire()
-            
         } else {
             message("Custom Questionnaire detected.")
-            responses <- customQuestionnaire
+            responses <- custom_questionnaire
         }
     }
-    
     message("Please answer the following questions to initiate cleaning process.")
-    
-    for (question in responses$BdQuestions) {
+    for (question in responses$bdquestions) {
         if (question$question.type != "Child" &&
             question$question.type != "ChildRouter") {
-            getUserResponse(question)
+            get_user_response(question)
         }
     }
     message("Thank you! Cleaning can be started now based on your responses.")
@@ -139,24 +129,30 @@ run_questionnaire <- function(customQuestionnaire = NULL) {
 }
 
 #' Internal function for getting user response
+#'
+#' @param bd_question The BDQuestion object to get users responses.
+#'
+#' @examples
 #' 
-#'@param bdQuestion The BDQuestion object to get users responses.
+#' if(interactive()){ 
+#'
+#' question <- BdQuestion()
+#' responses <- get_user_response(question)
 #' 
-getUserResponse <- function(bdQuestion) {
+#' }
+get_user_response <- function(bd_question) {
     # Child & ChildRouter already filtered in first loop above
-    
-    if (bdQuestion$question.type == "Atomic") {
+    if (bd_question$question.type == "Atomic") {
         # Atomic is filtered
-        bdQuestion$printQuestion()
-        bdQuestion$getResponse()
-        
+        bd_question$print_question()
+        bd_question$get_response()
     } else {
         # Router , Child as child & ChildRouter as child is filtered
-        bdQuestion$printQuestion()
-        bdQuestion$getResponse()
-        if (bdQuestion$users.answer %in% bdQuestion$router.condition) {
-            for (question in bdQuestion$child.questions) {
-                getUserResponse(question)
+        bd_question$print_question()
+        bd_question$get_response()
+        if (bd_question$users.answer %in% bd_question$router.condition) {
+            for (question in bd_question$child.questions) {
+                get_user_response(question)
             }
         }
     }

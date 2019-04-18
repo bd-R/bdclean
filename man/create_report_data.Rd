@@ -4,22 +4,42 @@
 \alias{create_report_data}
 \title{Generate data required to create report, function required in bdclean internal usage.}
 \usage{
-create_report_data(inputData, flaggedData, cleanedData, responses,
-  cleaningTrue, format)
+create_report_data(input_data, flagged_data, cleaned_data, responses,
+  cleaning_true, format)
 }
 \arguments{
-\item{inputData}{The input dataframe before cleaning}
+\item{input_data}{The input dataframe before cleaning}
 
-\item{flaggedData}{The flagged data for cleaning}
+\item{flagged_data}{The flagged data for cleaning}
 
-\item{cleanedData}{The data with flagged records removed}
+\item{cleaned_data}{The data with flagged records removed}
 
 \item{responses}{The BDQuestions object with user responses}
 
-\item{cleaningTrue}{Flag specifying if the cleaning should be done, or just flagging}
+\item{cleaning_true}{Flag specifying if the cleaning should be done, or just flagging}
 
 \item{format}{The format of the report to be generated}
 }
 \description{
-NOTE: This is an package internal function. Do not use for external uses.
+NOTE: This is an package internal function. Do not use for external uses. Exported to make it available for shiny app.
+}
+\examples{
+
+if(interactive()){
+
+library(rgbif)
+occdat <- occ_data(
+  country = 'AU', # Country code for australia
+  classKey = 359, # Class code for mammalia
+  limit = 50 # Get only 50 records
+)
+myData <- occdat$data
+
+question <- BdQuestion()
+responses <- get_user_response(question)
+
+cleaned_data <- create_report_data(myData, myData, myData, responses, T, 'pdf')
+
+} 
+
 }

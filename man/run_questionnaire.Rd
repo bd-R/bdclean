@@ -4,10 +4,10 @@
 \alias{run_questionnaire}
 \title{Execute the Questionnaire and save user responses.}
 \usage{
-run_questionnaire(customQuestionnaire = NULL)
+run_questionnaire(custom_questionnaire = NULL)
 }
 \arguments{
-\item{customQuestionnaire}{Custom User Created Questionnaire if already available.}
+\item{custom_questionnaire}{Custom User Created Questionnaire if already available.}
 }
 \value{
 list with BdQuestionObjects containing user answers
@@ -16,17 +16,11 @@ list with BdQuestionObjects containing user answers
 Execute the Questionnaire and save user responses.
 }
 \examples{
-\dontrun{
-library(rgbif)
-occdat1 <- occ_data(
- country = "AU",     # Country code for australia
- classKey= 359,      # Class code for mammalia
- limit=5000,         # Get only 5000 records
- )
- myData<-occdat1$data
 
- responses <- run_questionnaire()
- cleanedData <- clean_data_new(myData, responses)
+if(interactive()){ 
+
+responses <- run_questionnaire()
+
 }
 
 }

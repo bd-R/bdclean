@@ -25,7 +25,7 @@ analysis or modelling.
 \section{Citation}{
 
 \itemize{
-\item Gueta, T., Barve, V., Nagarajah, T., Agrawal, A. & Carmel, Y. (2018). bdclean: Biodiversity data cleaning workflows (R package V 1.0.0). Retrieved from https://github.com/bd-R/bdclean/
+\item Gueta, T., Barve, V., Nagarajah, T., Agrawal, A. & Carmel, Y. (2019). bdclean: Biodiversity data cleaning workflows (R package V 0.1.13). Retrieved from https://github.com/bd-R/bdclean/
 }
 }
 

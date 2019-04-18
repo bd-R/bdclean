@@ -1,3 +1,5 @@
+^codecov\.yml$
+^appveyor\.yml$
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^.*\.Rproj$
@@ -5,3 +7,7 @@
 ^\.travis\.yml$
 ^\.idea$
 ^img$
+^\.gitignore$
+^\.Rhistory$
+^\.RData$
+^\.gitattributes$

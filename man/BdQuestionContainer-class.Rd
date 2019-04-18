@@ -11,6 +11,6 @@ The Question Container Reference Class
 \section{Methods}{
 
 \describe{
-\item{\code{initialize(BdQuestions = NA)}}{Construct an instance of BdQuestionContainer after validating the type.}
+\item{\code{initialize(bdquestions = NA)}}{Construct an instance of BdQuestionContainer after validating the type.}
 }}
 

@@ -10,5 +10,21 @@ cleaning_function(bddata)
 \item{bddata}{The dataframe to clean}
 }
 \description{
-NOTE: This is an package internal function. Do not use for external uses.
+NOTE: This is an package internal function. Do not use for external uses. Exported to make it available for shiny app.
+}
+\examples{
+
+if(interactive()){
+
+library(rgbif)
+occdat <- occ_data(
+  country = 'AU', # Country code for australia
+  classKey = 359, # Class code for mammalia
+  limit = 50 # Get only 50 records
+)
+myData <- occdat$data
+cleaned_data <- cleaning_function(myData)
+
+} 
+
 }

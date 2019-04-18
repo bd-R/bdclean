@@ -4,13 +4,28 @@
 \alias{perform_Cleaning}
 \title{Data decision function (threshold tuning) required in bdclean internal usage.}
 \usage{
-perform_Cleaning(flaggedData, cleaningThreshold = 5)
+perform_Cleaning(flagged_data, cleaning_threshold = 5)
 }
 \arguments{
-\item{flaggedData}{The dataset with flags to be cleaned.}
+\item{flagged_data}{The dataset with flags to be cleaned.}
 
-\item{cleaningThreshold}{The Cleaning tolerance. Not used in current version.}
+\item{cleaning_threshold}{The Cleaning tolerance. Not used in current version.}
 }
 \description{
 NOTE: This is an package internal function. Do not use for external uses.
+}
+\examples{
+
+if(interactive()){
+
+library(rgbif)
+occdat <- occ_data(
+  country = 'AU', # Country code for australia
+  classKey = 359, # Class code for mammalia
+  limit = 50 # Get only 50 records
+)
+myData <- occdat$data
+cleaned_data <- perform_Cleaning(myData)
+
+} 
 }
