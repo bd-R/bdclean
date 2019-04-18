@@ -35,6 +35,9 @@
 #'
 #' @export
 taxo_level <- function(bddata, res = "SPECIES") {
+    assertive::assert_is_data.frame(bddata)
+    assertive::assert_has_cols(bddata)
+    
     ranks <-
         c("CLASS",
           "ORDER",
@@ -99,6 +102,9 @@ taxo_level <- function(bddata, res = "SPECIES") {
 #'
 #' @export
 spatial_resolution <- function(bddata, res = 100) {
+    assertive::assert_is_data.frame(bddata)
+    assertive::assert_has_cols(bddata)
+    
     message(paste(
         "spatialResolution:",
         "\n Removing records above :",
@@ -151,6 +157,9 @@ spatial_resolution <- function(bddata, res = 100) {
 #'
 #' @export
 earliest_date <- function(bddata, res = "1700-01-01") {
+    assertive::assert_is_data.frame(bddata)
+    assertive::assert_has_cols(bddata)
+    
     message(paste("earliestDate:", "\n Removing records above :", res, "\n"))
     dates <- strsplit(res, " ")[[1]]
     bddata <- as.data.frame(bddata)
@@ -202,6 +211,9 @@ earliest_date <- function(bddata, res = "1700-01-01") {
 #'
 #' @export
 temporal_resolution <- function(bddata, res = "Day") {
+    assertive::assert_is_data.frame(bddata)
+    assertive::assert_has_cols(bddata)
+    
     message(paste(
         "temporalResolution:",
         "\n Removing records above :",

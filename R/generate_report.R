@@ -36,6 +36,18 @@ create_report_data <-
              responses,
              cleaning_true,
              format) {
+        
+        assert_is_data.frame(input_data)
+        assert_has_cols(input_data)
+        assert_is_data.frame(flagged_data)
+        assert_has_cols(flagged_data)
+        assert_is_data.frame(cleaned_data)
+        assert_is_logical(cleaning_true)
+        assert_is_inherited_from(responses, "BdQuestionContainer")
+        if(!all(format %in% c("html_document", "pdf_document"))){
+            stop("Format can only be one of html_document, pdf_document")
+        }
+        
         for (question in responses$bdquestions) {
             if (length(question$quality.checks) > 0 &&
                 length(question$users.answer) > 0) {

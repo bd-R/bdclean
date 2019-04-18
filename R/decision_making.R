@@ -78,6 +78,8 @@ perform_Cleaning <- function(flagged_data, cleaning_threshold = 5) {
         warning("Dataset has no flag columns! Skipping cleaning")
         return(flagged_data)
     }
+    assert_is_numeric(cleaning_threshold)
+    
     cleaned_data <- flagged_data
     cleaned_data$cleanliness_score <- 0
     
