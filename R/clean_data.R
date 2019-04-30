@@ -51,12 +51,12 @@ clean_data <-
         assertive::assert_is_logical(clean)
         assertive::assert_is_logical(missing)
         assertive::assert_is_logical(report)
-        assertive::assert_is_character(report)
+        assertive::assert_is_character(format)
         if(!all(format %in% c("html_document", "pdf_document"))){
             stop("Format can only be one of html_document, pdf_document")
         }
-        if(!is_inherited_from(custom_questionnaire, "BdQuestion") & !is_null(custom_questionnaire)){
-            stop("custom_questionnaire should be of type BdQuestion")
+        if(!assertive::is_inherited_from(custom_questionnaire, "BdQuestionContainer") & !is.null(custom_questionnaire)){
+            stop("custom_questionnaire should be of type BdQuestionContainer")
         }
         
         responses <- list()
@@ -157,7 +157,7 @@ run_questionnaire <- function(custom_questionnaire = NULL) {
 #' 
 #' }
 get_user_response <- function(bd_question) {
-    assert_is_inherited_from(custom_questionnaire, "BdQuestionContainer")
+    assertive::assert_is_inherited_from(custom_questionnaire, "BdQuestionContainer")
     
     # Child & ChildRouter already filtered in first loop above
     if (bd_question$question.type == "Atomic") {

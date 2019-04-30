@@ -132,7 +132,7 @@ shinyServer(function(input, output, session) {
                 showNotification("Response to questionnaire detected",
                                  duration = 2)
                 # set response
-                bdQuestion$setResponse(input[[bdQuestion$question.id]])
+                bdQuestion$set_response(input[[bdQuestion$question.id]])
                 
                 if (bdQuestion$question.type == "Router") {
                     if (bdQuestion$users.answer %in% bdQuestion$router.condition) {
@@ -143,7 +143,7 @@ shinyServer(function(input, output, session) {
                 }
             }
             
-            for (question in data_store$questionnaire$BdQuestions) {
+            for (question in data_store$questionnaire$bdquestions) {
                 if (question$question.type != "Child") {
                     getResponse(question)
                 }
@@ -161,12 +161,6 @@ shinyServer(function(input, output, session) {
         }
         
         withProgress(message = "Cleaning Data...", {
-            # For threshold uncomment this
-            # dataStore$cleanedData <<-
-            #     perform_Cleaning(dataStore$flaggedData,
-            #                      cleaningThreshold = dataStore$cleaningThresholdControl)
-            
-            
             warnings <- capture.output(
                 data_store$cleanedData <<-
                     bdclean::cleaning_function(data_store$flaggedData) # bdclean::
@@ -353,7 +347,7 @@ shinyServer(function(input, output, session) {
                 data.table::fread(file = dictionaryPath)
             
             darwinizer <-
-                bdDwC::darwinizeNames(data_store$inputData, customDictionary)
+                bdDwC::darwinize_names(as.data.frame(data_store$inputData), as.data.frame(customDictionary))
             
             fixed <-
                 darwinizer[darwinizer$matchType == "Darwinized",]
@@ -517,7 +511,7 @@ shinyServer(function(input, output, session) {
             }
         }
         
-        for (question in data_store$questionnaire$BdQuestions) {
+        for (question in data_store$questionnaire$bdquestions) {
             if (question$question.type != "Child" &&
                 question$question.type != "ChildRouter") {
                 createUIContainer(question)
@@ -672,7 +666,7 @@ shinyServer(function(input, output, session) {
             
             warnings <- capture.output(
                 data_store$flaggedData <<-
-                    data_store[[checks]]$flagData(data_store$inputData, missing =
+                    data_store[[checks]]$flag_data(data_store$inputData, missing =
                                                       input$missingCase),
                 type = "message"
             )
@@ -912,7 +906,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadShortReport", "Download Cleaning Summary"),
                             br(),
                             br(),
-                            includeMarkdown("CleaningReports/generateShortReport.md")
+                            includeMarkdown(paste(tempdir(), "/generateShortReport.md", sep = ""))
                         ),
                         tabPanel(
                             "Detailed Quality Check Report",
@@ -922,7 +916,7 @@ shinyServer(function(input, output, session) {
                             downloadButton("downloadDetailedReport", "Download Detailed Report"),
                             br(),
                             br(),
-                            includeMarkdown("CleaningReports/generateDetailedReport.md")
+                            includeMarkdown(paste(tempdir(), "/generateDetailedReport.md", sep = ""))
                         )
                         # Uncomment after implmenting source code and R environment
                         # tabPanel(
@@ -979,9 +973,8 @@ shinyServer(function(input, output, session) {
             })
             
             file.copy(file.path(
-                getwd(),
-                "CleaningReports",
-                paste("generateShortReport", switch(
+                tempdir(),
+                paste("/generateShortReport", switch(
                     input$reportFormat,
                     "pdf_document" = ".pdf",
                     "html_document" = ".html",
@@ -1020,9 +1013,8 @@ shinyServer(function(input, output, session) {
                 )
             })
             file.copy(file.path(
-                getwd(),
-                "CleaningReports",
-                paste("generateDetailedReport", switch(
+                tempdir(),
+                paste("/generateDetailedReport", switch(
                     input$reportFormat,
                     "pdf_document" = ".pdf",
                     "html_document" = ".html",

@@ -24,7 +24,7 @@
 #' question <- BdQuestion()
 #' responses <- get_user_response(question)
 #' 
-#' cleaned_data <- create_report_data(myData, myData, myData, responses, T, 'pdf')
+#' cleaned_data <- create_report_data(myData, myData, myData, responses, T, 'pdf_document')
 #' 
 #' } 
 #'
@@ -37,14 +37,14 @@ create_report_data <-
              cleaning_true,
              format) {
         
-        assert_is_data.frame(input_data)
-        assert_has_cols(input_data)
-        assert_is_data.frame(flagged_data)
-        assert_has_cols(flagged_data)
-        assert_is_data.frame(cleaned_data)
-        assert_is_logical(cleaning_true)
-        assert_is_inherited_from(responses, "BdQuestionContainer")
-        if(!all(format %in% c("html_document", "pdf_document"))){
+        assertive::assert_is_data.frame(input_data)
+        assertive::assert_has_cols(input_data)
+        assertive::assert_is_data.frame(flagged_data)
+        assertive::assert_has_cols(flagged_data)
+        assertive::assert_is_data.frame(cleaned_data)
+        assertive::assert_is_logical(cleaning_true)
+        #assertive::assert_is_inherited_from(responses, "BdQuestionContainer")
+        if(!all(format %in% c("html_document", "pdf_document", "md_document"))){
             stop("Format can only be one of html_document, pdf_document")
         }
         
@@ -140,16 +140,12 @@ create_report_data <-
         for (question in checks.records) {
             check_index <- 1
             for (check in question$checks) {
-                
-                print(names(question$checks))
-                print(names(question$checks)[check_index])
-                
                 records_table <-
                     rbind(
                         records_table,
                         data.frame(
                             DataCleaningProcedure = names(question$checks)[check_index],
-                            NoOfRecords = check$affectedData,
+                            NoOfRecords = ifelse(is.null(check$affectedData), 0, check$affectedData),
                             Action = ifelse(cleaning_true, "Removal", "Flagging")
                         )
                     )

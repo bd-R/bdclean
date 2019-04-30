@@ -87,7 +87,6 @@ BdQuestion <-
                 .self$child.questions <- questions
             },
             add_quality_checks = function(new_checks) {
-                message("Adding Quality Checks.")
                 .self$quality.checks <- new_checks
             },
             flag_data = function(data, missing = FALSE) {
@@ -99,7 +98,7 @@ BdQuestion <-
                         if (grepl("DC_", check_name)) {
                             # bdchecks quality checks
                             check_temp <-
-                                bdchecks::performDataCheck(data = flagged_data,
+                                bdchecks::dc_perform(data = flagged_data,
                                                            DConly = c(check_name))
                             
                             if (!is.null(check_temp) &&
@@ -209,6 +208,8 @@ BdQuestion <-
                     temp$affected_data <- count_of_flagged_data
                     
                     .self$cleaning.details[name_of_quality_check] <- list(temp)
+                    
+                    print(.self$cleaning.details)
                 }
                 },
             notify = function() {
