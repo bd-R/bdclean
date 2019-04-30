@@ -16,3 +16,11 @@ r_packages:
 
 after_success:
   - Rscript -e 'library(covr); codecov()'
+  
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:opencpu/jq'
+    packages:
+      - libjq-dev
+      - libv8-dev
