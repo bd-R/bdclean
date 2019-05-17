@@ -205,7 +205,7 @@ earliest_date <- function(bddata, res = "1700-01-01") {
 #' )
 #' myData <- occdat$data
 #' 
-#' responses <- taxo_level(temporal_resolution, 'Day')
+#' responses <- temporal_resolution(myData, 'Day')
 #' 
 #' }
 #'
