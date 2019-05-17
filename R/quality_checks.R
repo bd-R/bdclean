@@ -150,7 +150,6 @@ spatial_resolution <- function(bddata, res = 100) {
 #'   limit = 50 # Get only 50 records
 #' )
 #' myData <- occdat$data
-#' 
 #' responses <- earliest_date(myData, '2000-01-01')
 #' 
 #' }
@@ -204,7 +203,6 @@ earliest_date <- function(bddata, res = "1700-01-01") {
 #'   limit = 50 # Get only 50 records
 #' )
 #' myData <- occdat$data
-#' 
 #' responses <- temporal_resolution(myData, 'Day')
 #' 
 #' }

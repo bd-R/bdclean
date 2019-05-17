@@ -1,4 +1,4 @@
-mammals_data <- read.csv(system.file("testdata/mammals.csv", package="bdclean"))
+mammals_data <- read.csv(system.file("testdata/mammals.csv", package="bdclean"), fileEncoding="latin1")
 
 question1 <- BdQuestion(
     question = "Do you worry about taxonomical aspect of the data?",
