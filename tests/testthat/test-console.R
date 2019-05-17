@@ -116,12 +116,12 @@ test_that("Cleaning function without data fails", {
 })
 
 
-test_that("Cleaning function without data fails", {
-    expect_error(clean_data(mammals_data, custom_questionnaire = responses, missing = T))
+test_that("Cleaning function with missing values works", {
+    expect_message(clean_data(mammals_data, custom_questionnaire = responses, missing = T))
 })
 
-test_that("Cleaning function without data fails", {
-    expect_error(clean_data(mammals_data, custom_questionnaire = responses, report = F))
+test_that("Cleaning function without report works", {
+    expect_message(clean_data(mammals_data, custom_questionnaire = responses, report = F))
 })
 
 
