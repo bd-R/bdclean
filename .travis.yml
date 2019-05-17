@@ -4,15 +4,29 @@ language: R
 sudo: false
 cache: packages
 
-r:
-  - oldrel
-  - release
-  - devel
+matrix:
+  include:
+  - name: "Release R github"
+    r: release
+    env: bdverse='github'
+    after_success:
+      - Rscript -e 'covr::codecov()'
+    r_github_packages:
+      - bd-R/bdDwC
+      - bd-R/bdchecks
+    
+  - name: "Release R github OSX"
+    r: release
+    env: bdverse='github'
+    r_github_packages:
+      - bd-R/bdDwC
+      - bd-R/bdchecks
+    os: osx
 
-r_check_args: "--as-cran"
-
-r_packages:
-  - covr
-
-after_success:
-  - Rscript -e 'library(covr); codecov()'
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:opencpu/jq'
+    packages:
+      - libjq-dev
+      - libv8-dev

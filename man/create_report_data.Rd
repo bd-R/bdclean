@@ -38,7 +38,7 @@ myData <- occdat$data
 question <- BdQuestion()
 responses <- get_user_response(question)
 
-cleaned_data <- create_report_data(myData, myData, myData, responses, T, 'pdf')
+cleaned_data <- create_report_data(myData, myData, myData, responses, T, 'pdf_document')
 
 } 
 
