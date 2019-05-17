@@ -14,10 +14,6 @@ matrix:
     r_github_packages:
       - bd-R/bdDwC
       - bd-R/bdchecks
-      
-  - name: "Release R CRAN"
-    r: release
-    env: bdverse='CRAN'
     
   - name: "Release R github OSX"
     r: release
@@ -26,10 +22,6 @@ matrix:
       - bd-R/bdDwC
       - bd-R/bdchecks
     os: osx
-    
-  - r: devel
-  - r: oldrel
-  - r: 3.4
 
 addons:
   apt:
