@@ -16,6 +16,8 @@ cache:
 # Adapt as necessary starting from here
 
 build_script:
+  - travis-tool.sh install_github bd-R/bdDwC
+  - travis-tool.sh install_github bd-R/bdchecks
   - travis-tool.sh install_deps
 
 test_script:
