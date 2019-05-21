@@ -86,31 +86,19 @@ shinyUI(dashboardPage(
                                 type = "tabs",
                                 tabPanel(
                                     "Option 01: Questionnaire ",
-                                    div(class = "secondaryHeaders", h3("Option 01: Questionnaire")),
-                                    helpText(
-                                        "Note: If you have limited knowledge in Biodiversity data,
-                                        this option is preferred.",
-                                        "Answer a few questions and let bdclean take care of the cleaning."
-                                    ),
-                                    
                                     
                                     # -------------------------------
                                     
-                                    uiOutput("questionnaire")
+                                    questionnaireUI("questionnaireMod")
                                     
                                     # -------------------------------
                                 ),
                                 tabPanel(
                                     "Option 02: Customized Checks",
-                                    div(class = "secondaryHeaders", h3("Option 02: Customized Checks")),
-                                    helpText(
-                                        "Note: Select the quality checks you prefer and
-                                        continue cleaning with just those checks"
-                                    ),
                                     
                                     # -------------------------------
                                     
-                                    uiOutput("qualityChecks")
+                                    customizedCheckUI("customCheckMod")
                                     
                                     # -------------------------------
                                     
@@ -135,56 +123,22 @@ shinyUI(dashboardPage(
                         12,
                         column(
                             12,
-                            h1("Flag Data"),
-                            br(),
-                            h4("Input Data"),
-                            div(
-                                class = "center",
-                                fluidRow(
-                                    infoBox("# of Records", textOutput("inputDataRows"), icon = icon("list-ol")),
-                                    infoBox(
-                                        "# of Fields",
-                                        textOutput("inputDataColumns"),
-                                        icon = icon("th-list"),
-                                        color = "purple"
-                                    ),
-                                    infoBox(
-                                        "# of Unique Scientific Names",
-                                        textOutput("inputDataSpecies"),
-                                        icon = icon("paw"),
-                                        color = "yellow"
-                                    )
-                                ),
-                                
-                                h4("Flag Settings"),
-                                checkboxInput("missingCase", label = "Mark missing values as Fail", value = FALSE),
-                                helpText(
-                                    "Quality checks in bdclean check the validity of each records of the column it targets. If ticked, records with missing values will be considered as invalid record and will be removed. If not ticked, missing records will not be considered in the quality check, so, will remain in the cleaned data.
-                                    "
-                                ),
-                                fluidRow(
-                                    div(
-                                        id = "flagButtonDiv",
-                                        class = "completedButton",
-                                        actionButton("flagButton", label = "Flag Data")
-                                    )
-                                    
-                                ),
-                                
-                                div(class = "progressStep", taskItem(
-                                    value = 45, color = "yellow",
-                                    "Step 3 of 6"
-                                ))
-                            ),
-                            br(),
+                            # -------------------------------
+                            
+                            FlaggingUI("flaggingMod"),
+                        
                             
                             # -------------------------------
                             
-                            uiOutput("flaggedContentUI"),
+                            
+                            
+                            div(class = "progressStep", taskItem(
+                                value = 45, color = "yellow",
+                                "Step 3 of 6"
+                            )),
                             
                             uiOutput("cleanedResultsUI")
                             
-                            # -------------------------------
                         )
                     ))),
             

@@ -45,8 +45,7 @@ occdat <- occ_data(
   limit = 50 # Get only 50 records
 )
 myData <- occdat$data
-
-responses <- taxo_level(temporal_resolution, 'Day')
+responses <- temporal_resolution(myData, 'Day')
 
 }
 

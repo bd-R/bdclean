@@ -175,7 +175,7 @@
       ]
     },
     "messageMenu": {
-      "html": "<li class=\"dropdown messages-menu\">\n  <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">\n    <i class=\"fa fa-envelope\"><\/i>\n    <span class=\"label label-primary\">1<\/span>\n  <\/a>\n  <ul class=\"dropdown-menu\">\n    <li class=\"header\">You have 1 messages<\/li>\n    <li>\n      <ul class=\"menu\">\n        <li>\n          <a href=\"#\">\n            <i class=\"fa fa-rocket\"><\/i>\n            <h4>\n              Startup\n              <small>\n                <i class=\"fa fa-clock-o\"><\/i>\n                09:15 AM\n              <\/small>\n            <\/h4>\n            <p>bdclean Started<\/p>\n          <\/a>\n        <\/li>\n      <\/ul>\n    <\/li>\n  <\/ul>\n<\/li>",
+      "html": "<li class=\"dropdown messages-menu\">\n  <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">\n    <i class=\"fa fa-envelope\"><\/i>\n    <span class=\"label label-primary\">1<\/span>\n  <\/a>\n  <ul class=\"dropdown-menu\">\n    <li class=\"header\">You have 1 messages<\/li>\n    <li>\n      <ul class=\"menu\">\n        <li>\n          <a href=\"#\">\n            <i class=\"fa fa-rocket\"><\/i>\n            <h4>\n              Startup\n              <small>\n                <i class=\"fa fa-clock-o\"><\/i>\n                11:13 AM\n              <\/small>\n            <\/h4>\n            <p>bdclean Started<\/p>\n          <\/a>\n        <\/li>\n      <\/ul>\n    <\/li>\n  <\/ul>\n<\/li>",
       "deps": [
         {
           "name": "font-awesome",
