@@ -53,6 +53,9 @@ BdQuestion <-
                     .self$users.answer <- as.character(response)
                 }
             },
+            
+           
+            
             get_response = function() {
                 ans <- readline()
                 length <- length(.self$possible.responses)
@@ -208,8 +211,6 @@ BdQuestion <-
                     temp$affected_data <- count_of_flagged_data
                     
                     .self$cleaning.details[name_of_quality_check] <- list(temp)
-                    
-                    print(.self$cleaning.details)
                 }
                 },
             notify = function() {
@@ -243,6 +244,11 @@ BdQuestionContainer <-
                 }
                 .self$bdquestions <- bdquestions
                 .self$notify()
+            },
+            reset_responses = function(){
+                for (question in .self$bdquestions) {
+                    question$set_response(character())
+                }
             },
             flag_data = function(input_data, missing) {
                 message("Initial records: ", paste(dim(input_data), collapse = "x"))

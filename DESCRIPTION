@@ -2,8 +2,8 @@ Package: bdclean
 Type: Package
 Title: A User-Friendly Biodiversity Data Cleaning App for the Inexperienced R User
 Description: Provides features to manage the complete workflow for biodiversity data cleaning. Uploading data, gathering input from users (in order to adjust cleaning procedures), cleaning data and finally, generating various reports and several versions of the data. Facilitates user-level data cleaning, designed for the inexperienced R user. T Gueta et al (2018) <doi:10.3897/biss.2.25564>. T Gueta et al (2017) <doi:10.3897/tdwgproceedings.1.20311>.
-Version: 0.1.16
-Date: 2019-04-30
+Version: 0.1.17
+Date: 2019-05-21
 License: GPL-3
 URL: https://github.com/bd-R/bdclean, https://bd-r.github.io/The-bdverse/index.html
 BugReports: https://github.com/bd-R/bdclean/issues
@@ -38,7 +38,7 @@ Authors@R: c(
         comment = c(ORCID = '0000-0002-5883-0184'))
     )
 Maintainer: Thiloshon Nagarajah <thiloshon@gmail.com>
-Imports: rmarkdown, knitr, shiny, shinydashboard, shinyjs, leaflet, DT, data.table, rgbif, spocc, finch, bdDwC, bdchecks, methods, tools
+Imports: rmarkdown, knitr, shiny, shinydashboard, shinyjs, leaflet, DT, data.table, rgbif, spocc, finch, bdDwC, bdchecks, methods, tools, gtools
 Depends: R (>= 2.10)
 RoxygenNote: 6.1.1
 Suggests: 

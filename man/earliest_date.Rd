@@ -45,7 +45,6 @@ occdat <- occ_data(
   limit = 50 # Get only 50 records
 )
 myData <- occdat$data
-
 responses <- earliest_date(myData, '2000-01-01')
 
 }

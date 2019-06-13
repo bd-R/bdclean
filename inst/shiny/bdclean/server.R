@@ -105,6 +105,8 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$configureToFlag, {
+        
+        
         if (length(input$typeInput) > 0) {
             showNotification("Response to customized cleaning detected",
                              duration = 2)
@@ -131,17 +133,24 @@ shinyServer(function(input, output, session) {
             getResponse <- function(bdQuestion) {
                 showNotification("Response to questionnaire detected",
                                  duration = 2)
-                # set response
-                bdQuestion$set_response(input[[bdQuestion$question.id]])
                 
-                if (bdQuestion$question.type == "Router") {
-                    if (bdQuestion$users.answer %in% bdQuestion$router.condition) {
-                        for (question in bdQuestion$child.questions) {
-                            getResponse(question)
+                if(bdQuestion$ui.type == "numericInput" && input[[paste(bdQuestion$question.id, "_ctrl", sep = "")]]){
+                   # do nothing
+                } else {
+                    # set response
+                    bdQuestion$set_response(input[[bdQuestion$question.id]])
+                    
+                    if (bdQuestion$question.type == "Router") {
+                        if (bdQuestion$users.answer %in% bdQuestion$router.condition) {
+                            
+                            for (question in bdQuestion$child.questions) {
+                                getResponse(question)
+                            }
                         }
                     }
                 }
             }
+            data_store$questionnaire$reset_responses()
             
             for (question in data_store$questionnaire$bdquestions) {
                 if (question$question.type != "Child") {
@@ -149,6 +158,7 @@ shinyServer(function(input, output, session) {
                 }
             }
         }
+        
         
         data_store$configuredCleaning <<- TRUE
         updateTabItems(session, "sideBar", "flag")
@@ -473,6 +483,11 @@ shinyServer(function(input, output, session) {
                     h4(paste(
                         index, question$question, sep = ") "
                     )),
+                    checkboxInput(
+                        paste(question$question.id, "_ctrl", sep = ""),
+                        label = "Disable Question",
+                        value = FALSE
+                    ),
                     numericInput(
                         question$question.id,
                         label = "",
@@ -535,13 +550,13 @@ shinyServer(function(input, output, session) {
                     paste(
                         "<input type=checkbox
                         name=typeInput value=",
-                        data_store$qualityChecks[[i]]$nameOfQualityCheck,
+                        data_store$qualityChecks[[i]]$name_of_quality_check,
                         ">"
                     )
                 ),
                 div(
                     class = "checksListContent",
-                    h4(data_store$qualityChecks[[i]]$nameOfQualityCheck),
+                    h4(data_store$qualityChecks[[i]]$name_of_quality_check),
                     
                     div(class = "checksListTopic col-sm-3", p("Description: ")),
                     div(
@@ -552,19 +567,19 @@ shinyServer(function(input, output, session) {
                     div(class = "checksListTopic col-sm-3", p("Sample Passing Data: ")),
                     div(
                         class = "checksListTitle",
-                        p(data_store$qualityChecks[[i]]$samplePassData)
+                        p(data_store$qualityChecks[[i]]$sample_pass_data)
                     ),
                     
                     div(class = "checksListTopic col-sm-3", p("Sample Failing Data: ")),
                     div(
                         class = "checksListTitle",
-                        p(data_store$qualityChecks[[i]]$sampleFailData)
+                        p(data_store$qualityChecks[[i]]$sample_fail_data)
                     ),
                     
                     div(class = "checksListTopic col-sm-3", p("Category of Quality Check: ")),
                     div(
                         class = "checksListTitle",
-                        p(data_store$qualityChecks[[i]]$checkCategory)
+                        p(data_store$qualityChecks[[i]]$check_category)
                     ),
                     
                     div(class = "checksListTopic col-sm-3", p(
@@ -572,7 +587,7 @@ shinyServer(function(input, output, session) {
                     )),
                     div(
                         class = "checksListTitle",
-                        p(data_store$qualityChecks[[i]]$targetDWCField)
+                        p(data_store$qualityChecks[[i]]$target_dwc_field)
                     )
                 ),
                 br(),
@@ -860,6 +875,31 @@ shinyServer(function(input, output, session) {
     
     # ------------- End of Cleaning Module ------------------------
     
+    output$citationsUI <- renderUI({
+        components <- list()
+        
+        components[[1]] <- tagList(
+            h3("R"),
+            suppressWarnings( format(citation(), style = "text"))
+        )
+        
+        components[[2]] <- tagList(
+            h3("bdclean"),
+            suppressWarnings( format(citation("bdclean"), style = "text"))
+        )
+        
+        dep <- gtools::getDependencies("bdclean")
+        
+        for (ind in length(dep) : 1) {
+            components[[length(dep) + 2 - ind]] <- tagList(
+                h3(dep[ind]),
+               suppressWarnings( format(citation(dep[ind]), style = "text"))
+            )
+        }
+        
+        return(components)
+
+        })
     
     # ------------- Documentation Module ------------------------
     
