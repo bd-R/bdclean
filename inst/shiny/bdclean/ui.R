@@ -345,6 +345,16 @@ shinyUI(dashboardPage(
                             
                             uiOutput("documentContentUI")
                         )
+                    ))),
+            
+            tabItem("citTab",
+                    fluidRow(column(
+                        12,
+                        column(
+                            12,
+                            h1("Package Citations"),
+                            uiOutput("citationsUI")
+                        )
                     )))
         )
         

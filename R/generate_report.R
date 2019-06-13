@@ -44,7 +44,7 @@ create_report_data <-
         assertive::assert_is_data.frame(cleaned_data)
         assertive::assert_is_logical(cleaning_true)
         #assertive::assert_is_inherited_from(responses, "BdQuestionContainer")
-        if(!all(format %in% c("html_document", "pdf_document", "md_document"))){
+        if(!all(format %in% c("html_document", "pdf_document", "md_document", "word_document"))){
             stop("Format can only be one of html_document, pdf_document")
         }
         
@@ -60,6 +60,7 @@ create_report_data <-
         }
         
         # --------------- Data required for detailed report ---------------
+        input_data <- as.data.frame(input_data)
         input_size <- dim(input_data)
         output_size <- dim(cleaned_data)
         
@@ -91,21 +92,21 @@ create_report_data <-
             earliest_output_date <- "Not Available"
             latest_output_date <- "Not Available"
         }
-        input_data <-
+        input_data_meta <-
             c(
                 input_size[1],
                 input_size[2],
                 input_unique_species,
                 paste(earliest_input_date, "-", latest_input_date)
             )
-        cleaned_data <-
+        cleaned_data_meta <-
             c(
                 output_size[1],
                 output_size[2],
                 output_unique_species,
                 paste(earliest_output_date, "-", latest_output_date)
             )
-        data.summary <- data.frame(input_data, cleaned_data)  # One
+        data.summary <- data.frame(input_data_meta, cleaned_data_meta)  # One
         row.names(data.summary) <-
             c("Rows",
               "Columns",
@@ -133,8 +134,8 @@ create_report_data <-
         records_table <-
             data.frame(
                 DataCleaningProcedure = "Initial Records",
-                NoOfRecords = NROW(input_data),
-                Action = ""
+                NoOfRecords = nrow(input_data),
+                Action = "Initialize"
             )
         
         for (question in checks.records) {

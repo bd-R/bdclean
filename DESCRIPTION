@@ -38,7 +38,7 @@ Authors@R: c(
         comment = c(ORCID = '0000-0002-5883-0184'))
     )
 Maintainer: Thiloshon Nagarajah <thiloshon@gmail.com>
-Imports: rmarkdown, knitr, shiny, shinydashboard, shinyjs, leaflet, DT, data.table, rgbif, spocc, finch, bdDwC, bdchecks, methods, tools
+Imports: rmarkdown, knitr, shiny, shinydashboard, shinyjs, leaflet, DT, data.table, rgbif, spocc, finch, bdDwC, bdchecks, methods, tools, gtools
 Depends: R (>= 2.10)
 RoxygenNote: 6.1.1
 Suggests: 
