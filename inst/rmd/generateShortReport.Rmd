@@ -1,0 +1,16 @@
+---
+title: 'Data Cleaning Report of bdclean Package'
+author: "`r Sys.info()[['user']]`"
+date: "`r date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages(library(knitr))
+```
+
+## Data Cleaning Summary Table
+
+```{r echo=FALSE}
+kable(records_table)
+```

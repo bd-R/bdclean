@@ -1,0 +1,117 @@
+{
+  "input": {
+    "bdFileInput-darwinizerControl": true,
+    "bdFileInput-hasCoords": "3",
+    "bdFileInput-hasCoords-selectized": "",
+    "bdFileInput-inputFile": null,
+    "bdFileInput-mapColor": "red",
+    "bdFileInput-mapColor-selectized": "",
+    "bdFileInput-mapTexture": "CartoDB.Positron",
+    "bdFileInput-mapTexture-selectized": "",
+    "bdFileInput-mymap_bounds": {
+      "north": 76.6797849031069,
+      "east": 91.40625,
+      "south": -76.6797849031069,
+      "west": -91.0546875
+    },
+    "bdFileInput-mymap_center": {
+      "lng": 0,
+      "lat": 0
+    },
+    "bdFileInput-mymap_zoom": 2,
+    "bdFileInput-queryDatabase": 2,
+    "bdFileInput-queryDB": "idigbio",
+    "bdFileInput-recordSize": 500,
+    "bdFileInput-scientificName": "Puma concolor",
+    "configureToFlag": 0,
+    "dataToConfigure": 0,
+    "flaggingMod-flagButton": 0,
+    "flaggingMod-missingCase": false,
+    "reportFormat": "pdf_document",
+    "reportFormat-selectized": "",
+    "sideBar": "add",
+    "sidebarCollapsed": false,
+    "sidebarItemExpanded": null
+  },
+  "output": {
+    "bdFileInput-mymap": {
+      "x": {
+        "options": {
+          "crs": {
+            "crsClass": "L.CRS.EPSG3857",
+            "code": null,
+            "proj4def": null,
+            "projectedBounds": null,
+            "options": {
+
+            }
+          }
+        },
+        "calls": [
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "CartoDB.Positron",
+              null,
+              null,
+              {
+                "errorTileUrl": "",
+                "noWrap": false,
+                "detectRetina": false
+              }
+            ]
+          }
+        ],
+        "setView": [
+          [
+            0,
+            0
+          ],
+          2,
+          [
+
+          ]
+        ]
+      },
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "leaflet-providers",
+          "version": "1.1.17",
+          "src": {
+            "href": "leaflet-providers-1.1.17"
+          },
+          "meta": null,
+          "script": "leaflet-providers.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "leaflet-providers-plugin",
+          "version": "2.0.2",
+          "src": {
+            "href": "leaflet-providers-plugin-2.0.2"
+          },
+          "meta": null,
+          "script": "leaflet-providers-plugin.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        }
+      ]
+    }
+  },
+  "export": {
+
+  }
+}

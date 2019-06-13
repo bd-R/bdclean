@@ -1,0 +1,13 @@
+^codecov\.yml$
+^appveyor\.yml$
+^cran-comments\.md$
+^CRAN-RELEASE$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.travis\.yml$
+^\.idea$
+^img$
+^\.gitignore$
+^\.Rhistory$
+^\.RData$
+^\.gitattributes$
