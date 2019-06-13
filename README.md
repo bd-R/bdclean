@@ -11,18 +11,12 @@
 [![](https://img.shields.io/badge/doi-10.3897/biss.2.25564-yellow.svg)](https://doi.org/10.3897/biss.2.25564)
 [![](https://img.shields.io/badge/doi-10.3897/tdwgproceedings.1.20311-yellow.svg)](https://doi.org/10.3897/tdwgproceedings.1.20311)
 
-
-
-
-
 # bdclean
 ### User-friendly biodiversity data cleaning pipeline
 
-`bdclean` will provide features to manage complete pipeline for biodiversity data cleaning. 
-A modular approach to plug in data checking and cleaning functions would make this package
-one stop shop for many biodiversity data cleaning needs.
+`bdclean` is a user-friendly data cleaning Shiny app for the inexperienced R user. It provides features to manage complete workflow for biodiversity data cleaning, from uploading the data; gathering input from the user, in order to adjust cleaning procedures; perform the cleaning; and finally, generating various reports and several versions of the data
 
-![](https://github.com/bd-R/bdclean/blob/master/img/bdclean2.png)
+:notebook: **[bdclean User Guid](https://bd-r.github.io/bdclean-guide/index.html)** :notebook:
 
 
 
