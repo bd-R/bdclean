@@ -1,0 +1,108 @@
+/* Base for label styling */
+ [type="checkbox"]:not(:checked),  [type="checkbox"]:checked {
+  position: absolute;
+  height: 0;
+  width: 0;
+}
+
+ [type="checkbox"]:not(:checked),  [type="checkbox"]:checked {
+  position: relative;
+  padding-left: 1.95em;
+  cursor: pointer;
+}
+
+/* checkbox aspect */
+ [type="checkbox"]:not(:checked):before,  [type="checkbox"]:checked:before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 1.8em; height: 1.8em;
+  border: 2px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.1);
+}
+
+/* checked mark aspect */
+ [type="checkbox"]:not(:checked):after,  [type="checkbox"]:checked:after {
+  content: '✔';
+  position: absolute;
+  font-size: 2.5em;
+  line-height: 0.8;
+  color: #09ad7e;
+  transition: all .2s;
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* checked mark aspect changes */
+ [type="checkbox"]:not(:checked):after {
+  opacity: 0;
+  transform: scale(0);
+}
+
+ [type="checkbox"]:checked:after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+/* hover style just for information */
+ label:hover:before {
+  border: 2px solid #4778d9!important;
+}
+
+ .checkbox span {
+    margin-left: 10%;
+    position: absolute;
+}
+
+/* -------------------- */
+
+
+#domainCleaning [type="radio"]:not(:checked), #domainCleaning [type="radio"]:checked {
+  position: absolute;
+  height: 0;
+  width: 0;
+}
+
+#domainCleaning [type="radio"]:not(:checked), #domainCleaning [type="radio"]:checked {
+  position: relative;
+  padding-left: 1.95em;
+  cursor: pointer;
+}
+
+/* radio aspect */
+#domainCleaning [type="radio"]:not(:checked):before, #domainCleaning [type="radio"]:checked:before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 1.8em; height: 1.8em;
+  border: 2px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.1);
+}
+
+/* checked mark aspect */
+#domainCleaning [type="radio"]:not(:checked):after, #domainCleaning [type="radio"]:checked:after {
+  content: '✔';
+  position: absolute;
+  font-size: 2.5em;
+  line-height: 0.8;
+  color: #09ad7e;
+  transition: all .2s;
+  font-family: Helvetica, Arial, sans-serif;
+}
+/* checked mark aspect changes */
+#domainCleaning [type="radio"]:not(:checked):after {
+  opacity: 0;
+  transform: scale(0);
+}
+
+#domainCleaning [type="radio"]:checked:after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+
+
