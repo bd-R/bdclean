@@ -1,0 +1,43 @@
+/* Text Definitions */
+@import url("https://fonts.googleapis.com/css?family=Nunito+Sans");
+/* EOF Text Definitions */
+/* Color Definitions */
+/* EOF Color Definitions */
+/* CSS */
+body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
+  font-family: "Nunito Sans", sans-serif; }
+
+.btn {
+  color: #fff !important;
+  background-color: #379a6d !important;
+  border-color: #379a6d !important;
+  padding: 6px 12px !important;
+  font-size: 14px !important; }
+
+.skin-blue .main-header .logo {
+  background-color: #2a7452;
+  color: #fff;
+  border-bottom: 0 solid transparent; }
+
+.skin-blue .main-header .navbar {
+  background-color: #379a6d; }
+
+.skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
+  background-color: #222d32; }
+
+.skin-blue .sidebar-menu > li.active > a, .skin-blue .sidebar-menu > li:hover > a {
+  border-left-color: #2a7452; }
+
+.content-wrapper, .right-side {
+  background-color: #ecf0f5; }
+
+h1 {
+  color: #000; }
+
+h2 {
+  color: #379a6d; }
+
+h3 {
+  color: #333; }
+
+/*# sourceMappingURL=bdverse.css.map */

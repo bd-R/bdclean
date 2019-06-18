@@ -1,0 +1,78 @@
+/* Text Definitions */
+
+@import url('https://fonts.googleapis.com/css?family=Nunito+Sans');
+
+$font-stack: 'Nunito Sans', sans-serif;
+
+$header-text-color: #fff;
+$active-tab-text-color:  #3c8dbc;
+$inactive-tab-text-color: #3c8dbc;
+
+/* EOF Text Definitions */
+
+
+/* Color Definitions */
+
+
+$header-bg-color: #379a6d;
+$sidebar-bg-color: #222d32;
+$body-bg-color: #ecf0f5;
+
+$primary-heading-color: #000;
+$secondary-heading-color: #379a6d;
+$tertiary-heading-color: #333;
+
+$primary-button-color: #3c8dbc;
+$secondary-button-color: #3c8dbc;
+$tertiary-button-color: #3c8dbc;
+  
+ /* EOF Color Definitions */
+
+
+/* CSS */
+  
+body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
+    font-family: $font-stack;
+} 
+
+.btn{
+    color: #fff !important;
+    background-color: $header-bg-color !important;
+    border-color: $header-bg-color !important;
+    padding: 6px 12px !important;
+    font-size: 14px !important;
+}
+
+.skin-blue .main-header .logo {
+    background-color: darken($header-bg-color, 10%);
+    color: $header-text-color;
+    border-bottom: 0 solid transparent;
+}
+
+.skin-blue .main-header .navbar {
+    background-color: $header-bg-color;
+}
+
+.skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
+    background-color: $sidebar-bg-color;
+}
+
+.skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
+    border-left-color: darken($header-bg-color, 10%);
+}
+
+.content-wrapper, .right-side {
+    background-color: $body-bg-color;
+}
+
+h1 {
+    color: $primary-heading-color;
+}
+
+h2 {
+    color: $secondary-heading-color;
+}
+
+h3 {
+    color: $tertiary-heading-color;
+}

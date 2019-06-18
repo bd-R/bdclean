@@ -8,6 +8,20 @@
 #'
 #' @export
 create_default_questionnaire <- function() {
+    # Sample question with all possible fields
+    #
+    # question <-
+    #     BdQuestion(
+    #         question = "Do you worry about taxonomical aspect of the data?",
+    #         possible.responses = c("Yes", "No"),
+    #         question.type = "Router",
+    #         router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+    #         question.id = "taxonMain",
+    #       quality.checks = c("taxo_level"),
+    #         ui.type = "single-checkbox"
+    #     )
+    
+    
     question1 <-
         BdQuestion(
             question = "Do you worry about taxonomical aspect of the data?",
@@ -217,4 +231,202 @@ create_default_questionnaire <- function() {
             )
         )
     return(all_questions)
+}
+
+
+
+#' Create the alternate Questionnaire.
+#'
+#' @return BdQuestionContainer object with default Questions
+#'
+#' @examples
+#'
+#' customQuestionnaire <- create_default_questionnaire()
+#'
+#' @export
+create_alternate_questionnaire_1 <- function() {
+    question1 <-
+        BdQuestion(
+            question = "Flag important missing records?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "missing",
+            quality.checks = c(
+                "DC_yearMissing",
+                "DC_dateNull",
+                "DC_identifiedDateImprobable",
+                "DC_identifiedDateImprobable",
+                "DC_classUnknown"
+            ),
+            ui.type = "single-checkbox"
+        )
+    
+    question2 <-
+        BdQuestion(
+            question = "Flag invalid values?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "invalid",
+            quality.checks = c(
+                "DC_precisionRangeMismatch",
+                "DC_uncertaintyRangeMismatch",
+                "DC_depthOutOfRange",
+                "DC_elevationOutOfRange",
+                "DC_monthInvalid",
+                "DC_dayInvalid",
+                "DC_countryNameUnknown",
+                "DC_eventDateInFuture",
+                "DC_modifiedInFuture",
+                "DC_namePublishedYearInFuture",
+                "DC_individualcountInvalid",
+                "DC_occurrenceIdNotGuid"
+            ),
+            ui.type = "single-checkbox"
+        )
+    
+    question3 <-
+        BdQuestion(
+            question = "Flag common digitization errors?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "digitization",
+            quality.checks = c("taxo_level"),
+            ui.type = "single-checkbox"
+        )
+    
+    question4 <-
+        BdQuestion(
+            question = "Flag invalid taxon names?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "taxon",
+            quality.checks = c("taxo_level"),
+            ui.type = "single-checkbox"
+        )
+    
+    question5 <-
+        BdQuestion(
+            question = "Flag common coordinate mixup errors?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "mixup",
+            quality.checks = c("DC_coordinatesZero"),
+            ui.type = "single-checkbox"
+        )
+    
+    question6 <-
+        BdQuestion(
+            question = "Flag common coordinate mismatch errors?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "mismatch",
+            quality.checks = c("taxo_level"),
+            ui.type = "single-checkbox"
+        )
+    
+    question7 <-
+        BdQuestion(
+            question = "Flag coordinate ~ otherFileds mismatch errors?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "otherfields",
+            quality.checks = c("DC_coordinatePrecisionMismatch", "DC_countryMismatch"),
+            ui.type = "single-checkbox"
+        )
+    
+    question8 <-
+        BdQuestion(
+            question = "Flag coordinate taggging errors?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "tagging",
+            quality.checks = c("taxo_level"),
+            ui.type = "single-checkbox"
+        )
+    
+    question9 <-
+        BdQuestion(
+            question = "Flag gbif issues?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "gbifissues",
+            quality.checks = c("taxo_level"),
+            ui.type = "single-checkbox"
+        )
+    
+    question10 <-
+        BdQuestion(
+            question = "Flag with input based checks?",
+            possible.responses = c("Yes", "No"),
+            question.type = "Router",
+            router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
+            question.id = "inputbased",
+            ui.type = "single-checkbox"
+        )
+    
+    question10sub1 <-
+        BdQuestion(
+            question = "What is the lowest taxonomic level you require in your data?",
+            possible.responses = c(
+                "Subspecies",
+                "Species",
+                "Genus",
+                "Family",
+                "Order",
+                "Class"
+            ),
+            question.type = "Child",
+            quality.checks = c("taxo_level"),
+            question.id = "taxonLevel",
+            ui.type = "select"
+        )
+    
+    question10sub2 <-
+        BdQuestion(
+            question = "What is the spatial resolution required for your data? (in meteres)",
+            question.type = "Child",
+            quality.checks = c("spatial_resolution"),
+            question.id = "spatialResolution",
+            ui.type = "numericInput"
+        )
+    
+    question10sub3 <-
+        BdQuestion(
+            question = "What is the range of dates of the observations in this data set? In format (YYYY-mm-dd YYYY-mm-dd)",
+            question.type = "Child",
+            quality.checks = c("earliest_date"),
+            question.id = "temporalEarliest",
+            ui.type = "date-range"
+        )
+    
+    question10$add_child_question(c(question10sub1, question10sub2, question10sub3))
+    
+    
+    return(BdQuestionContainer(
+        c(
+            question1,
+            question2,
+            question3,
+            question4,
+            question5,
+            question6,
+            question7,
+            question8,
+            question9,
+            question10,
+            question10sub1,
+            question10sub2,
+            question10sub3
+            
+        )
+    ))
 }

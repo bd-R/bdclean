@@ -5,11 +5,11 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
 }
 
 .shiny-notification{
-  position: fixed;
-  top: 33%;
-  left: 33%;
-  right: 33%;
-  opacity: 1;
+    position: fixed;
+    top: 33%;
+    left: 33%;
+    right: 33%;
+    opacity: 1;
 }
 
 #shiny-notification-panel .progress-bar{
@@ -41,7 +41,7 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
 }
 
 .checksListContent {
-        margin-left: 5%;
+    margin-left: 5%;
     margin-top: -3%;
 }
 
@@ -84,27 +84,27 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
 }
 
 #messageMenu{
-     background-color: #3c8dbc;
-  animation-name: color;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
+    background-color: #3c8dbc;
+    animation-name: color;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
 }
 
 @keyframes color {
-  0% {
-    background-color: #3c8dbc;
-  }
-  50% {
-    background-color: #f39c12;
-  }
-  100 {
+    0% {
+        background-color: #3c8dbc;
+    }
+    50% {
+        background-color: #f39c12;
+    }
+    100% {
     background-color: #222;
-  }
+    }
 }
 
 .dropdown-menu{
     /** background-color: #222d32; **/
-        box-shadow: aqua;
+    box-shadow: aqua;
     border-color: #3c8dbc;
 }
 
