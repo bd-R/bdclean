@@ -110,6 +110,11 @@ createQuestionsUI <- function(question, index) {
             h4(paste(
                 index, question$question, sep = ") "
             )),
+            checkboxInput(
+                                    paste(question$question.id, "_ctrl", sep = ""),
+                                    label = "Disable Question",
+                                    value = FALSE
+                                ),
             numericInput(
                 question$question.id,
                 label = "",
