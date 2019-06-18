@@ -1,109 +1,118 @@
-/* Base for label styling */
-[type="checkbox"]:not(:checked),  [type="checkbox"]:checked {
-    position: absolute;
-    height: 0;
-    width: 0;
+@import url('https://fonts.googleapis.com/css?family=Nunito+Sans');
+
+body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
+    font-family: 'Nunito Sans', sans-serif;
 }
 
-[type="checkbox"]:not(:checked),  [type="checkbox"]:checked {
-    position: relative;
-    padding-left: 1.95em;
-    cursor: pointer;
-}
-
-/* checkbox aspect */
-[type="checkbox"]:not(:checked):before,  [type="checkbox"]:checked:before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0;
-    width: 1.8em; height: 1.8em;
-    border: 2px solid #ccc;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,.1);
-}
-
-/* checked mark aspect */
-[type="checkbox"]:not(:checked):after,  [type="checkbox"]:checked:after {
-    content: '✔';
-    position: absolute;
-    font-size: 2.5em;
-    line-height: 0.8;
-    color: #09ad7e;
-    transition: all .2s;
-    font-family: Helvetica, Arial, sans-serif;
-}
-/* checked mark aspect changes */
-[type="checkbox"]:not(:checked):after {
-    opacity: 0;
-    transform: scale(0);
-}
-
-[type="checkbox"]:checked:after {
+.shiny-notification{
+    position: fixed;
+    top: 33%;
+    left: 33%;
+    right: 33%;
     opacity: 1;
-    transform: scale(1);
+}
+
+#shiny-notification-panel .progress-bar{
+    background-color: #f38f12;
+}
+
+.progressStep li {
+    list-style: none;
+}
+
+.secondaryHeaders{
+    color: #3c8dbc;
+}
+
+#completedIcon img {
+    width: 10%;
+}
+
+#typeInput {
+    width: 100%;
+}
+
+#domainInput {
+    width: 100%;
+}
+
+.checksListTopic{
+    color: grey;
+}
+
+.checksListContent {
+    margin-left: 5%;
+    margin-top: -3%;
+}
+
+.checksListContent h4{
+    color: orange;
+}
+
+.readyButton .btn{
+    background-color: transparent;
+}
+
+.activeButton .btn{
+    background-color: orange;
+}
+
+.completedButton .btn{
+    background-color: green;
+    color: white
+}
+
+.modal-dialog {
+    width: 90%;
+    text-align: center;
+}
+
+.modal-content img{
+    width: 60%;
+}
+
+.modal-header {
+    color: orange;
+}
+
+.navbar-nav>.messages-menu>.dropdown-menu, .navbar-nav>.notifications-menu>.dropdown-menu, .navbar-nav>.tasks-menu>.dropdown-menu{
+    width: 1000px;
+}
+
+.navbar-nav>.messages-menu>.dropdown-menu>li .menu, .navbar-nav>.notifications-menu>.dropdown-menu>li .menu, .navbar-nav>.tasks-menu>.dropdown-menu>li .menu{
+    max-height: 500px;
+}
+
+#messageMenu{
+    background-color: #3c8dbc;
+    animation-name: color;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes color {
+    0% {
+        background-color: #3c8dbc;
+    }
+    50% {
+        background-color: #f39c12;
+    }
+100 {
+    background-color: #222;
+}
+}
+
+.dropdown-menu{
+    /** background-color: #222d32; **/
+    box-shadow: aqua;
+    border-color: #3c8dbc;
+}
+
+.subSpan{
+    margin-left: 5%;
 }
 
 
-/* hover style just for information */
-label:hover:before {
-    border: 2px solid #4778d9!important;
+.shiny-input-container:not(.shiny-input-container-inline){
+    width: auto;
 }
-
-.checkbox span {
-    margin-top: 7.5px;
-    margin-left: 3%;
-    position: absolute;
-}
-
-/* -------------------- */
-
-
-#domainCleaning [type="radio"]:not(:checked), #domainCleaning [type="radio"]:checked {
-    position: absolute;
-    height: 0;
-    width: 0;
-}
-
-#domainCleaning [type="radio"]:not(:checked), #domainCleaning [type="radio"]:checked {
-    position: relative;
-    padding-left: 1.95em;
-    cursor: pointer;
-}
-
-/* radio aspect */
-#domainCleaning [type="radio"]:not(:checked):before, #domainCleaning [type="radio"]:checked:before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0;
-    width: 1.8em; height: 1.8em;
-    border: 2px solid #ccc;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,.1);
-}
-
-/* checked mark aspect */
-#domainCleaning [type="radio"]:not(:checked):after, #domainCleaning [type="radio"]:checked:after {
-    content: '✔';
-    position: absolute;
-    font-size: 2.5em;
-    line-height: 0.8;
-    color: #09ad7e;
-    transition: all .2s;
-    font-family: Helvetica, Arial, sans-serif;
-}
-/* checked mark aspect changes */
-#domainCleaning [type="radio"]:not(:checked):after {
-    opacity: 0;
-    transform: scale(0);
-}
-
-#domainCleaning [type="radio"]:checked:after {
-    opacity: 1;
-    transform: scale(1);
-}
-
-
-
-
