@@ -48,29 +48,26 @@ shinyUI(dashboardPage(
         tabItems(
             # ------------- Add Data Module -------------------
             tabItem("add",
-                    fluidRow(
-                        div(
-                            
-                            # -------------------------------
-                            
-                            bdFileInput("bdFileInput", "User data (.csv format)"),
+                    fluidRow(div(
+                        # -------------------------------
                         
-                            # -------------------------------
+                        bdFileInput("bdFileInput", "User data (.csv format)"),
+                        
+                        # -------------------------------
+                        
+                        column(
+                            12,
+                            div(
+                                id = "dataToConfigureDiv",
+                                actionButton("dataToConfigure", "Next: Configure Cleaning")
+                            ),
                             
-                            column(12,
-                                   div(
-                                       id = "dataToConfigureDiv",
-                                       actionButton("dataToConfigure", "Next: Configure Cleaning")
-                                   ),
-                                   
-                                   div(class = "progressStep", taskItem(
-                                       value = 15, color = "orange",
-                                       "Step 1 of 6"
-                                   ))
-                            )
+                            div(class = "progressStep", taskItem(
+                                value = 15, color = "orange",
+                                "Step 1 of 6"
+                            ))
                         )
-                        
-                    )),
+                    ))),
             
             # -------------  End of Add Data Module -------------------
             
@@ -126,7 +123,7 @@ shinyUI(dashboardPage(
                             # -------------------------------
                             
                             FlaggingUI("flaggingMod"),
-                        
+                            
                             
                             # -------------------------------
                             
@@ -168,16 +165,16 @@ shinyUI(dashboardPage(
                             
                             uiOutput("documentContentUI")
                         )
-                         ))),
-
-                                    tabItem("citTab",
-                                            fluidRow(column(
-                                                12,
-                                                column(
-                                                    12,
-                                                    h1("Package Citations"),
-                                                    uiOutput("citationsUI")
-                                                )
+                    ))),
+            
+            tabItem("citTab",
+                    fluidRow(column(
+                        12,
+                        column(12,
+                               h1("Package Citations"),
+                               
+                               CitationsUI("CitationMod")
+                               )
                     )))
         )
         

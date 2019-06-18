@@ -261,31 +261,7 @@ shinyServer(function(input, output, session) {
     
     # ------------- End of Cleaning Module ------------------------
 
-    output$citationsUI <- renderUI({
-            components <- list()
-
-            components[[1]] <- tagList(
-                h3("R"),
-                suppressWarnings( format(citation(), style = "text"))
-            )
-
-            components[[2]] <- tagList(
-                h3("bdclean"),
-                suppressWarnings( format(citation("bdclean"), style = "text"))
-            )
-
-            dep <- gtools::getDependencies("bdclean")
-
-            for (ind in length(dep) : 1) {
-                components[[length(dep) + 2 - ind]] <- tagList(
-                    h3(dep[ind]),
-                   suppressWarnings( format(citation(dep[ind]), style = "text"))
-                )
-            }
-
-            return(components)
-
-            })
+    callModule(Citations, "CitationMod")
     
     # ------------- Documentation Module ------------------------
     

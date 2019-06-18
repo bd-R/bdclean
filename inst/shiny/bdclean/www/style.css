@@ -97,9 +97,9 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
     50% {
         background-color: #f39c12;
     }
-100 {
+    100% {
     background-color: #222;
-}
+    }
 }
 
 .dropdown-menu{

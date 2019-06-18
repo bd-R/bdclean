@@ -31,36 +31,36 @@ customizedCheck <- function(input, output, session) {
                                 paste(
                                     "<input type=checkbox
                                     name=typeInput value=",
-                                    data_store$qualityChecks[[i]]$name_of_quality_check,
+                                    qualityChecks[[i]]$name_of_quality_check,
                                     ">"
                                 )
                             ),
                             div(
                                 class = "checksListContent",
-                                h4(data_store$qualityChecks[[i]]$name_of_quality_check),
+                                h4(qualityChecks[[i]]$name_of_quality_check),
 
                                 div(class = "checksListTopic col-sm-3", p("Description: ")),
                                 div(
                                     class = "checksListTitle",
-                                    p(data_store$qualityChecks[[i]]$description)
+                                    p(qualityChecks[[i]]$description)
                                 ),
 
                                 div(class = "checksListTopic col-sm-3", p("Sample Passing Data: ")),
                                 div(
                                     class = "checksListTitle",
-                                    p(data_store$qualityChecks[[i]]$sample_pass_data)
+                                    p(qualityChecks[[i]]$sample_pass_data)
                                 ),
 
                                 div(class = "checksListTopic col-sm-3", p("Sample Failing Data: ")),
                                 div(
                                     class = "checksListTitle",
-                                    p(data_store$qualityChecks[[i]]$sample_fail_data)
+                                    p(qualityChecks[[i]]$sample_fail_data)
                                 ),
 
                                 div(class = "checksListTopic col-sm-3", p("Category of Quality Check: ")),
                                 div(
                                     class = "checksListTitle",
-                                    p(data_store$qualityChecks[[i]]$check_category)
+                                    p(qualityChecks[[i]]$check_category)
                                 ),
 
                                 div(class = "checksListTopic col-sm-3", p(
@@ -68,7 +68,7 @@ customizedCheck <- function(input, output, session) {
                                 )),
                                 div(
                                     class = "checksListTitle",
-                                    p(data_store$qualityChecks[[i]]$target_dwc_field)
+                                    p(qualityChecks[[i]]$target_dwc_field)
                                 )
                             ),
                             br(),
