@@ -75,9 +75,9 @@ create_report_data <-
             try(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"), silent = T)
         
         if (class(earliest_input_date) != "try-error") {
-            earliest_input_date <- min(earliest_input_date)
+            earliest_input_date <- format(min(earliest_input_date), "%d-%b-%Y")
             latest_input_date <-
-                max(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"))
+                format(max(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC")), "%d-%b-%Y")
         } else {
             earliest_input_date <- "NA"
             latest_input_date <- "NA"
@@ -87,9 +87,9 @@ create_report_data <-
             try(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"), silent = T)
         
         if (class(earliest_output_date) != "try-error") {
-            earliest_output_date <- min(earliest_input_date)
+            earliest_output_date <- format(min(earliest_input_date))
             latest_output_date <-
-                max(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"))
+                format(max(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC")), "%d-%b-%Y")
         } else {
             earliest_output_date <- "NA"
             latest_output_date <- "NA"
@@ -99,14 +99,14 @@ create_report_data <-
                 input_size[1],
                 input_size[2],
                 input_unique_species,
-                paste(earliest_input_date, "-", latest_input_date)
+                paste("From ", earliest_input_date, " to ", latest_input_date)
             )
         cleaned_data_meta <-
             c(
                 output_size[1],
                 output_size[2],
                 output_unique_species,
-                paste(earliest_output_date, "-", latest_output_date)
+                paste("From", earliest_output_date, " to ", latest_output_date)
             )
         data.summary <- data.frame(input_data_meta, cleaned_data_meta)  # One
         row.names(data.summary) <-

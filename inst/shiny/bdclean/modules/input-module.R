@@ -56,13 +56,12 @@ bdFileInput <- function(id, label = "Add Occurrence Data") {
                             selected = "gbif"
                         ),
                         
-                        br(),
+                  
                         div(
                             id = ns("queryDatabaseDiv"),
                             class = "activeButton",
                             actionButton(ns("queryDatabase"), "Query Database", icon("download"))
-                        ),
-                        br()
+                        )
                     ),
                     
                     # ------------- End of DB Module -------------------
@@ -86,22 +85,36 @@ bdFileInput <- function(id, label = "Add Occurrence Data") {
                                 )
                             )
                         )
-                    ),
-                    
-                    checkboxInput(ns("darwinizerControl"),
-                                  label = "Perform Header Cleaning",
-                                  value = TRUE),
-                    
-                    helpText(
-                        "To manually edit or clean headers, use ",
-                        a("bdDwC", href = "https://github.com/bd-R/bdDwC"),
-                        " package."
                     )
-                    
                     
                     # ------------- End of Local Disk Module -------------------
                     
                     
+                ),
+                
+                tagList(
+                    
+                    br(),
+
+                    checkboxInput(ns("darwinizerControl"),
+                                  label = "Perform Header Cleaning",
+                                  value = TRUE),
+                    br(),
+               
+                    
+                    helpText(
+                        "To manually edit or clean headers, use ",
+                        a("bdDwC", href = "https://cran.r-project.org/web/packages/bdDwC/index.html"),
+                        " package. Launch bdDwC shiny app with the command 'bdDwC::run_dwc()' in R console,  or "
+                    ),
+                    br(),
+                    br(),
+                    actionButton(ns("launch_bddwc"), "Launch bddwc Shiny App Now"),
+                    helpText(
+                        "(Requires RStudio 1.2 and above.)"
+                    ),
+                    br(),
+                    br()
                 )
                 
                 
@@ -156,9 +169,6 @@ bdFileInput <- function(id, label = "Add Occurrence Data") {
 }
 
 
-
-
-
 # Input Module server function
 bdFile <- function(input, output, session) {
     ns <- session$ns
@@ -166,6 +176,11 @@ bdFile <- function(input, output, session) {
     map <- leafletProxy(ns("mymap"))
     
     # ----------------
+    
+    observeEvent(input$launch_bddwc, {
+        path_app <- system.file("scripts", 'bddwc.R', package = "bdclean")
+        rstudioapi::jobRunScript(path = path_app)
+    })
     
     observeEvent(input$queryDatabase, {
         withProgress(message = paste("Querying", input$queryDB, "..."), {
@@ -211,8 +226,6 @@ bdFile <- function(input, output, session) {
         })
         
         dataLoadedTask(returnData)
-        
-       
     })
     
     observeEvent(input$inputFile, {
@@ -255,7 +268,6 @@ bdFile <- function(input, output, session) {
             clearShapes() %>%
             addCircles(~ decimalLongitude, ~ decimalLatitude, color = input$mapColor)
     })
-   
     
     output$mymap <- renderLeaflet({
         leaflet() %>%
