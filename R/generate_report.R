@@ -37,6 +37,8 @@ create_report_data <-
              cleaning_true,
              format) {
         
+
+        
         assertive::assert_is_data.frame(input_data)
         assertive::assert_has_cols(input_data)
         assertive::assert_is_data.frame(flagged_data)
@@ -77,8 +79,8 @@ create_report_data <-
             latest_input_date <-
                 max(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"))
         } else {
-            earliest_input_date <- "Not Available"
-            latest_input_date <- "Not Available"
+            earliest_input_date <- "NA"
+            latest_input_date <- "NA"
         }
         
         earliest_output_date <-
@@ -89,8 +91,8 @@ create_report_data <-
             latest_output_date <-
                 max(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"))
         } else {
-            earliest_output_date <- "Not Available"
-            latest_output_date <- "Not Available"
+            earliest_output_date <- "NA"
+            latest_output_date <- "NA"
         }
         input_data_meta <-
             c(

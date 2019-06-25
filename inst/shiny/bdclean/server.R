@@ -4,28 +4,28 @@ library(bdchecks)
 shinyServer(function(input, output, session) {
     # ------------- Local Data store ------------------------
     data_store <-
-            list(
-                inputData = data.frame(),
-                configuredCleaning = FALSE,
-                customizedChecks = c(),
-                customizedCheck = FALSE,
-                flaggedData = data.frame(),
-                flaggingDone = FALSE,
-                cleanedData = data.frame(),
-                cleaningDone = FALSE,
-                questionnaire = bdclean::create_default_questionnaire(),
-                
-                warningData =
-                    data.frame(
-                        from = c("Startup"),
-                        message = c("bdclean Started"),
-                        time = "Now",
-                        icon = "rocket"
-                    ),
-                
-                cleaningThresholdControl = 7
-            )
-        
+        list(
+            inputData = data.frame(),
+            configuredCleaning = FALSE,
+            customizedChecks = c(),
+            customizedCheck = FALSE,
+            flaggedData = data.frame(),
+            flaggingDone = FALSE,
+            cleanedData = data.frame(),
+            cleaningDone = FALSE,
+            questionnaire = bdclean::create_default_questionnaire(),
+            
+            warningData =
+                data.frame(
+                    from = c("Startup"),
+                    message = c("bdclean Started"),
+                    time = "Now",
+                    icon = "rocket"
+                ),
+            
+            cleaningThresholdControl = 7
+        )
+    
     
     # ------------- End of Local Data store ------------------------
     
@@ -52,7 +52,7 @@ shinyServer(function(input, output, session) {
             a("https://bd-r-group.slack.com",     href = "https://bd-r-group.slack.com")
         )
         
-        ))
+    ))
     
     # ------------- End of Information Modal ------------------------
     
@@ -64,10 +64,14 @@ shinyServer(function(input, output, session) {
         data_store$inputData <<- data_store$inputData()
         
         
-        output$inputDataRows <- renderText(nrow(data_store$inputData))
-        output$inputDataColumns <- renderText(length(data_store$inputData))
+        output$inputDataRows <-
+            renderText(nrow(data_store$inputData))
+        output$inputDataColumns <-
+            renderText(length(data_store$inputData))
         output$inputDataSpecies <-
-            renderText(length(unique(data_store$inputData$scientificName)))
+            renderText(length(unique(
+                data_store$inputData$scientificName
+            )))
         
         if (nrow(data_store$inputData) > 0) {
             updateTabItems(session, "sideBar", "configure")
@@ -101,32 +105,32 @@ shinyServer(function(input, output, session) {
             
         } else {
             getResponse <- function(bdQuestion) {
-                            showNotification("Response to questionnaire detected",
-                                             duration = 2)
-
-                            if(bdQuestion$ui.type == "numericInput" && input[[paste(bdQuestion$question.id, "_ctrl", sep = "")]]){
-                               # do nothing
-                            } else {
-                                # set response
-                                bdQuestion$set_response(input[[bdQuestion$question.id]])
-
-                                if (bdQuestion$question.type == "Router") {
-                                    if (bdQuestion$users.answer %in% bdQuestion$router.condition) {
-
-                                        for (question in bdQuestion$child.questions) {
-                                            getResponse(question)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        data_store$questionnaire$reset_responses()
-
-                        for (question in data_store$questionnaire$bdquestions) {
-                            if (question$question.type != "Child") {
+                showNotification("Response to questionnaire detected",
+                                 duration = 2)
+                
+                if (bdQuestion$ui.type == "numericInput" &&
+                    !(input[[paste(bdQuestion$question.id, "_ctrl", sep = "")]])) {
+                    # do nothing
+                } else {
+                    # set response
+                    bdQuestion$set_response(input[[bdQuestion$question.id]])
+                    
+                    if (bdQuestion$question.type == "Router") {
+                        if (bdQuestion$users.answer %in% bdQuestion$router.condition) {
+                            for (question in bdQuestion$child.questions) {
                                 getResponse(question)
                             }
                         }
+                    }
+                }
+            }
+            data_store$questionnaire$reset_responses()
+            
+            for (question in data_store$questionnaire$bdquestions) {
+                if (question$question.type != "Child") {
+                    getResponse(question)
+                }
+            }
         }
         
         data_store$configuredCleaning <<- TRUE
@@ -135,7 +139,7 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$flagToClean, {
         data_store$flaggedData <<- data_store$flaggedData()
-        data_store$flaggingDone <<- TRUE 
+        data_store$flaggingDone <<- TRUE
         
         if (!data_store$flaggingDone) {
             showNotification("Please click Flag first!", duration = 2)
@@ -157,7 +161,7 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$flagToDocument, {
         data_store$flaggedData <<- data_store$flaggedData()
-        data_store$flaggingDone <<- TRUE 
+        data_store$flaggingDone <<- TRUE
         
         updateTabItems(session, "sideBar", "document")
         
@@ -200,7 +204,7 @@ shinyServer(function(input, output, session) {
                 data_store$cleaningDone,
                 c("md_document")
             )
-
+            
         })
     })
     
@@ -208,7 +212,7 @@ shinyServer(function(input, output, session) {
     
     
     # ------------- Add Data Module -------------------
-
+    
     data_store$inputData <- callModule(bdFile, "bdFileInput")
     
     # ------------- End of Add Data Module -------------------
@@ -216,7 +220,9 @@ shinyServer(function(input, output, session) {
     
     # ------------- Questionnaire Module -------------------
     
-    callModule(questionnaire, "questionnaireMod", bdquestions = data_store$questionnaire$bdquestions)
+    callModule(questionnaire,
+               "questionnaireMod",
+               bdquestions = data_store$questionnaire$bdquestions)
     
     # ------------- End of Questionnaire Module -------------------
     
@@ -231,7 +237,10 @@ shinyServer(function(input, output, session) {
     # ------------- Flagging Module -------------------
     
     
-    data_store$flaggedData <- callModule(Flagging, "flaggingMod", reactive({data_store}))
+    data_store$flaggedData <-
+        callModule(Flagging, "flaggingMod", reactive({
+            data_store
+        }))
     
     # ------------- End of Flagging Module -------------------
     
@@ -260,7 +269,7 @@ shinyServer(function(input, output, session) {
     })
     
     # ------------- End of Cleaning Module ------------------------
-
+    
     callModule(Citations, "CitationMod")
     
     # ------------- Documentation Module ------------------------
@@ -305,20 +314,48 @@ shinyServer(function(input, output, session) {
                                 "Report 01: Short Cleaning Summary"
                             )),
                             
+                            br(),
+                            
+                            selectInput(
+                                "reportFormat_short",
+                                "Report Type",
+                                choices = list(
+                                    "PDF" = "pdf_document",
+                                    "HTML" = "html_document",
+                                    "Word" = "word_document",
+                                    "Markdown" = "md_document"
+                                ),
+                                selected = "pdf_document"
+                            ),
                             downloadButton("downloadShortReport", "Download Cleaning Summary"),
                             br(),
-                            br(),
-                            includeMarkdown(paste(tempdir(), "/generateShortReport.md", sep = ""))
+                            
+                            includeMarkdown(paste(
+                                tempdir(), "/generateShortReport.md", sep = ""
+                            ))
                         ),
                         tabPanel(
                             "Detailed Quality Check Report",
                             div(class = "secondaryHeaders", h3(
                                 "Report 02: Detailed Quality Check Report"
                             )),
+                            br(),
+                            selectInput(
+                                "reportFormat_detailed",
+                                "Report Type",
+                                choices = list(
+                                    "PDF" = "pdf_document",
+                                    "HTML" = "html_document",
+                                    "Word" = "word_document",
+                                    "Markdown" = "md_document"
+                                ),
+                                selected = "pdf_document"
+                            ),
                             downloadButton("downloadDetailedReport", "Download Detailed Report"),
                             br(),
-                            br(),
-                            includeMarkdown(paste(tempdir(), "/generateDetailedReport.md", sep = ""))
+                            includeMarkdown(
+                                paste(tempdir(), "/generateDetailedReport.md", sep = "")
+                            )
                         )
                     ),
                     div(
@@ -334,7 +371,7 @@ shinyServer(function(input, output, session) {
     output$downloadShortReport <- downloadHandler(
         filename = function() {
             paste("shortReport-", Sys.Date(), switch(
-                input$reportFormat,
+                input$reportFormat_short,
                 "pdf_document" = ".pdf",
                 "html_document" = ".html",
                 "word_document" = ".docx",
@@ -355,14 +392,14 @@ shinyServer(function(input, output, session) {
                     data_store$flaggedData,
                     data_store[[checks]],
                     data_store$cleaningDone,
-                    input$reportFormat
+                    input$reportFormat_short
                 )
             })
             
             file.copy(file.path(
                 tempdir(),
                 paste("/generateShortReport", switch(
-                    input$reportFormat,
+                    input$reportFormat_short,
                     "pdf_document" = ".pdf",
                     "html_document" = ".html",
                     "word_document" = ".docx",
@@ -376,10 +413,10 @@ shinyServer(function(input, output, session) {
     output$downloadDetailedReport <- downloadHandler(
         filename = function() {
             paste("detailedReport-", Sys.Date(), switch(
-                input$reportFormat,
+                input$reportFormat_detailed,
                 "pdf_document" = ".pdf",
                 "html_document" = ".html",
-                "word_document" = ".word",
+                "word_document" = ".docx",
                 "md_document" = ".md"
             ), sep = "")
         },
@@ -396,16 +433,16 @@ shinyServer(function(input, output, session) {
                     data_store$flaggedData,
                     data_store[[checks]],
                     data_store$cleaningDone,
-                    input$reportFormat
+                    input$reportFormat_detailed
                 )
             })
             file.copy(file.path(
                 tempdir(),
                 paste("/generateDetailedReport", switch(
-                    input$reportFormat,
+                    input$reportFormat_detailed,
                     "pdf_document" = ".pdf",
                     "html_document" = ".html",
-                    "word_document" = ".word",
+                    "word_document" = ".docx",
                     "md_document" = ".md"
                 ), sep = "")
             ),
@@ -416,7 +453,7 @@ shinyServer(function(input, output, session) {
     
     output$downloadInput <- downloadHandler(
         filename = function() {
-            paste("inputData-", Sys.Date(), ".csv")
+            paste("inputData-", Sys.Date(), ".csv", sep = "")
         },
         content = function(con) {
             write.csv(data_store$inputData, con)
@@ -424,7 +461,7 @@ shinyServer(function(input, output, session) {
     )
     output$downloadFlagged <- downloadHandler(
         filename = function() {
-            paste("flaggedData-", Sys.Date(), ".csv")
+            paste("flaggedData-", Sys.Date(), ".csv", sep = "")
         },
         content = function(con) {
             write.csv(data_store$flaggedData, con)
@@ -433,7 +470,7 @@ shinyServer(function(input, output, session) {
     
     output$downloadCleaned <- downloadHandler(
         filename = function() {
-            paste("cleanedData-", Sys.Date(), ".csv")
+            paste("cleanedData-", Sys.Date(), ".csv", sep = "")
         },
         content = function(con) {
             write.csv(data_store$cleanedData, con)

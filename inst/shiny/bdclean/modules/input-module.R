@@ -9,6 +9,7 @@ bdFileInput <- function(id, label = "Add Occurrence Data") {
             h1("Add Occurrence Data"),
             column(
                 3,
+                class = "upload_side",
                 # ------------- DB Module -------------------
                 tabsetPanel(
                     type = "tabs",
@@ -108,6 +109,7 @@ bdFileInput <- function(id, label = "Add Occurrence Data") {
             
             # ------------- Map / Table Module -------------------
             column(9,
+                   class = "upload_main",
                    tabsetPanel(
                        type = "tabs",
                        tabPanel(

@@ -173,9 +173,7 @@ Flagging <- function(input, output, session, data_store) {
                     id = "flagToCleanDiv",
                     class = "completedButton",
                     actionButton("flagToClean", label = "Next: Perform Cleaning")
-                ),
-                
-                actionButton("flagToDocument", label = "Next: Continue with Just Flagging")
+                )
             )
         )
         

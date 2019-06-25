@@ -130,29 +130,34 @@ BdQuestion <-
             add_to_report = function(flagged_data,
                                      clean = TRUE,
                                      cleaning_threshold = 5) {
-                package_documentation <- tools::Rd_db("bdchecks")
                 flagged_data <- as.data.frame(flagged_data)
                 
                 for (i in 1:length(.self$quality.checks)) {
                     name_of_quality_check <- .self$quality.checks[i]
+                    print(name_of_quality_check)
+                   
                     
                     if (!(paste("bdclean", name_of_quality_check, sep = ".") %in% names(flagged_data))) {
                         # both bdchecks and bdclean columns have bdcelan prefix
-                        warning(
-                            "Required column ",
-                            paste("bdclean", name_of_quality_check, sep = "."),
-                            " not found! Probably, quality check is missing from
-                            environment and check was not performed."
-                        )
+                        # warning(
+                        #     "Required column ",
+                        #     paste("bdclean", name_of_quality_check, sep = "."),
+                        #     " not found! Probably, quality check is missing from
+                        #     environment and check was not performed."
+                        # )
                         next
                     }
+                    
+                    print("in")
                     
                     flag <-
                         flagged_data[, paste("bdclean", name_of_quality_check, sep = ".")]
                     count_of_flagged_data <- sum(flag != TRUE, na.rm = T)
                     
+                    print(flag)
                     
                     # ------ Parsing MetaData for check from .Rd file
+                    package_documentation <- tools::Rd_db("bdchecks")
                     function_documentation <-
                         package_documentation[grep(name_of_quality_check, names(package_documentation))]
                     

@@ -54,10 +54,10 @@ taxo_level <- function(bddata, res = "SPECIES") {
     
     idx <- which(ranks == res)
     message(paste("taxoLevel:", "\n Removing records above :", res, "\n"))
-    bddata[, "bdclean.taxoLevel"] <- FALSE
+    bddata[, "bdclean.taxo_level"] <- FALSE
     if (idx > 0) {
         for (i in idx:length(ranks)) {
-            bddata[which(bddata[, "taxonRank"] == ranks[i]), "bdclean.taxoLevel"] <-
+            bddata[which(bddata[, "taxonRank"] == ranks[i]), "bdclean.taxo_level"] <-
                 TRUE
         }
     }
@@ -112,9 +112,9 @@ spatial_resolution <- function(bddata, res = 100) {
         "\n"
     ))
     res <- as.numeric(res)
-    bddata[, "bdclean.spatialResolution"] <- FALSE
+    bddata[, "bdclean.spatial_resolution"] <- FALSE
     if (res > 0) {
-        bddata[which(bddata[, "coordinateUncertaintyInMeters"] < res), "bdclean.spatialResolution"] <-
+        bddata[which(bddata[, "coordinateUncertaintyInMeters"] < res), "bdclean.spatial_resolution"] <-
             TRUE
     }
     return(bddata)
@@ -167,8 +167,8 @@ earliest_date <- function(bddata, res = "1700-01-01") {
         warning("That date wasn't correct!")
         return(bddata)
     }
-    bddata[, "bdclean.earliestDate"] <- FALSE
-    bddata[which(as.Date(bddata[, "eventDate"]) > ed), "bdclean.earliestDate"] <-
+    bddata[, "bdclean.earliest_date"] <- FALSE
+    bddata[which(as.Date(bddata[, "eventDate"]) > ed), "bdclean.earliest_date"] <-
         TRUE
     return(bddata)
 }
@@ -219,17 +219,17 @@ temporal_resolution <- function(bddata, res = "Day") {
         "\n"
     ))
     bddata <- as.data.frame(bddata)
-    bddata[, "bdclean.temporalResolution"] <- FALSE
+    bddata[, "bdclean.temporal_resolution"] <- FALSE
     if (res == "Day") {
-        bddata[which(!is.na(bddata$day)), "bdclean.temporalResolution"] <-
+        bddata[which(!is.na(bddata$day)), "bdclean.temporal_resolution"] <-
             TRUE
     }
     if (res == "Month") {
-        bddata[which(!is.na(bddata$month)), "bdclean.temporalResolution"] <-
+        bddata[which(!is.na(bddata$month)), "bdclean.temporal_resolution"] <-
             TRUE
     }
     if (res == "Year") {
-        bddata[which(!is.na(bddata$year)), "bdclean.temporalResolution"] <-
+        bddata[which(!is.na(bddata$year)), "bdclean.temporal_resolution"] <-
             TRUE
     }
     return(bddata)

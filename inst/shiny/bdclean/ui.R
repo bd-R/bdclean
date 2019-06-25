@@ -149,17 +149,7 @@ shinyUI(dashboardPage(
                             12,
                             h1("Artifacts and Reports"),
                             br(),
-                            selectInput(
-                                "reportFormat",
-                                "Report Type",
-                                choices = list(
-                                    "PDF" = "pdf_document",
-                                    "HTML" = "html_document",
-                                    "Word" = "word_document",
-                                    "Markdown" = "md_document"
-                                ),
-                                selected = "pdf_document"
-                            ),
+                           
                             
                             # -------------------------------
                             

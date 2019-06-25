@@ -16,6 +16,18 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
     background-color: #f38f12;
 }
 
+.upload_side {
+    width: 30%;
+}
+
+.upload_main {
+    width: 70%;
+}
+
+.upload_main .shiny-input-container:not(.shiny-input-container-inline) {
+    width: 250px;
+}
+
 .progressStep li {
     list-style: none;
 }
