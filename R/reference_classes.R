@@ -157,7 +157,10 @@ BdQuestion <-
                     print(flag)
                     
                     # ------ Parsing MetaData for check from .Rd file
-                    package_documentation <- tools::Rd_db("bdchecks")
+                    package_documentation_1 <- tools::Rd_db("bdchecks")
+                    package_documentation_2 <- tools::Rd_db("bdclean")
+                    package_documentation <- c(package_documentation_1, package_documentation_2)
+                    
                     function_documentation <-
                         package_documentation[grep(name_of_quality_check, names(package_documentation))]
                     
