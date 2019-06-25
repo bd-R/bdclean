@@ -148,7 +148,7 @@ create_report_data <-
                         records_table,
                         data.frame(
                             DataCleaningProcedure = names(question$checks)[check_index],
-                            NoOfRecords = ifelse(is.null(check$affectedData), 0, check$affectedData),
+                            NoOfRecords = ifelse(is.null(check$affected_data), 0, check$affected_data),
                             Action = ifelse(cleaning_true, "Removal", "Flagging")
                         )
                     )

@@ -148,13 +148,9 @@ BdQuestion <-
                         next
                     }
                     
-                    print("in")
-                    
                     flag <-
                         flagged_data[, paste("bdclean", name_of_quality_check, sep = ".")]
-                    count_of_flagged_data <- sum(flag != TRUE, na.rm = T)
-                    
-                    print(flag)
+                    count_of_flagged_data <- sum(!flag, na.rm = T)
                     
                     # ------ Parsing MetaData for check from .Rd file
                     package_documentation_1 <- tools::Rd_db("bdchecks")
