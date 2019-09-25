@@ -213,7 +213,44 @@ shinyServer(function(input, output, session) {
     
     # ------------- Add Data Module -------------------
     
-    data_store$inputData <- callModule(bdFile, "bdFileInput")
+    data_store$inputData <- callModule(mod_add_data_server, "bdFileInput", "dataToDictionaryDiv")
+    
+    a <- function(){
+        if (input$darwinizerControl) {
+            showNotification("Cleaning Headers", duration = 2)
+            dictionaryPath <-
+                system.file("txts/customDwCdictionary.txt", package = "bdclean")
+            customDictionary <-
+                data.table::fread(file = dictionaryPath)
+            
+            darwinizer <-
+                bdDwC::darwinize_names(as.data.frame(returnData), as.data.frame(customDictionary))
+            
+            fixed <-
+                darwinizer[darwinizer$matchType == "Darwinized",]
+            
+            if (nrow(fixed) > 0) {
+                tidyData <- bdDwC::renameUserData(returnData, darwinizer)
+                
+                returnData <<- tidyData
+                
+                showNotification(paste(
+                    "Converted Columns:",
+                    paste(
+                        paste(fixed[, 1], collapse = ", "),
+                        paste(fixed[, 2], collapse = ", "),
+                        sep = " -> "
+                    )
+                ),
+                duration = 7)
+            }
+        }
+    } 
+    
+    observeEvent(input$launch_bddwc, {
+        path_app <- system.file("scripts", 'bddwc.R', package = "bdclean")
+        rstudioapi::jobRunScript(path = path_app)
+    })
     
     # ------------- End of Add Data Module -------------------
     

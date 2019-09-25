@@ -2,7 +2,8 @@
 CitationsUI <- function(id) {
   ns <- NS(id)
   
-  tagList(radioButtons(
+  tagList(
+    radioButtons(
     ns("citation_level"),
     label = h3("Citation Level"),
     choices = list(
@@ -15,7 +16,8 @@ CitationsUI <- function(id) {
   
   downloadButton(ns("download_bib"), label = "Download Bibtext file for current citation"),
   
-  uiOutput(ns("citationsUI")))
+  uiOutput(ns("citationsUI"))
+  )
 }
 
 

@@ -101,8 +101,8 @@ BdQuestion <-
                         if (grepl("DC_", check_name)) {
                             # bdchecks quality checks
                             check_temp <-
-                                bdchecks::dc_perform(data = flagged_data,
-                                                           DConly = c(check_name))
+                                bdchecks::perform_dc(data = flagged_data,
+                                                           wanted_dc = c(check_name))
                             
                             if (!is.null(check_temp) &&
                                 length(check_temp@flags) > 0 &&
