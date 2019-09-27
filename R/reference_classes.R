@@ -100,6 +100,8 @@ BdQuestion <-
                         check_name <- .self$quality.checks[i]
                         if (grepl("DC_", check_name)) {
                             # bdchecks quality checks
+                            
+                            check_name <- gsub("DC_", "", check_name, fixed = T)
                             check_temp <-
                                 bdchecks::perform_dc(data = flagged_data,
                                                            wanted_dc = c(check_name))
@@ -134,17 +136,16 @@ BdQuestion <-
                 
                 for (i in 1:length(.self$quality.checks)) {
                     name_of_quality_check <- .self$quality.checks[i]
-                    print(name_of_quality_check)
-                   
+                    name_of_quality_check <- gsub("DC_", "", name_of_quality_check, fixed = T)
                     
                     if (!(paste("bdclean", name_of_quality_check, sep = ".") %in% names(flagged_data))) {
-                        # both bdchecks and bdclean columns have bdcelan prefix
-                        # warning(
-                        #     "Required column ",
-                        #     paste("bdclean", name_of_quality_check, sep = "."),
-                        #     " not found! Probably, quality check is missing from
-                        #     environment and check was not performed."
-                        # )
+                        #both bdchecks and bdclean columns have bdclean prefix
+                        warning(
+                            "Required column ",
+                            paste("bdclean", name_of_quality_check, sep = "."),
+                            " not found! Probably, quality check is missing from
+                            environment and check was not performed."
+                        )
                         next
                     }
                     

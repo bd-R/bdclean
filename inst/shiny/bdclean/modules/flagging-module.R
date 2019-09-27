@@ -46,8 +46,6 @@ FlaggingUI <- function(id) {
         
         uiOutput(ns("flaggedContentUI"))
         
-        
-        
         # -------------------------------
     )
 }
@@ -66,12 +64,9 @@ Flagging <- function(input, output, session, data_store) {
                        "customizedChecks",
                        "questionnaire")
             
-            warnings <- capture.output(
-                returnState <<-
-                    data_store()[[checks]]$flag_data(data_store()$inputData, missing =
-                                                         input$missingCase),
-                type = "message"
-            )
+            returnState <<-
+                data_store()[[checks]]$flag_data(data_store()$inputData, missing =
+                                                     input$missingCase)
         })
         
         shinyjs::addClass(id = "flagButtonDiv",
@@ -90,13 +85,13 @@ Flagging <- function(input, output, session, data_store) {
     
     output$flaggedContentUI <- renderUI({
         input$flagButton
-        
+    
         get_flagging_statistics <-
             function(flaggedData) {
                 flaggedData <- as.data.frame(flaggedData)
                 
                 if (nrow(flaggedData) == 0) {
-                    return(0)
+                    return(data.frame())
                 }
                 
                 checkColumns <-
@@ -107,21 +102,11 @@ Flagging <- function(input, output, session, data_store) {
                     return(nrow(flaggedData))
                 }
                 
-                checkData <- flaggedData[, checkColumns]
-                
-                
-                if (class(checkData) == "logical") {
-                    return(nrow(flaggedData) - length(checkData[checkData != TRUE]))
-                }
-                
-                return(nrow(flaggedData) - sum(rowSums(checkData != TRUE, na.rm = TRUE) >= 1))
+                checkData <- as.data.frame(flaggedData[, checkColumns])
+                return(flaggedData[which(apply(checkData,1,all)),])
             }
         
-        warnings <- capture.output(flaggedCount <-
-                                       get_flagging_statistics(returnState),
-                                   type = "message")
-        #addWarnings("Message while Flagging", warnings, "question")
-        
+        statsData <- get_flagging_statistics(returnState)
         
         conditionalPanel("input['flaggingMod-flagButton'] > 0",
                          tagList(
@@ -136,7 +121,7 @@ Flagging <- function(input, output, session, data_store) {
                                      div(class = "secondaryHeaders", h3("View 01: Statistics Boxes")),
                                      fluidRow(
                                          infoBox("# of Clean Records",
-                                                 flaggedCount,
+                                                 nrow(statsData),
                                                  icon = icon("list-ol")),
                                          infoBox(
                                              "# of Newly Added Columns",
@@ -144,17 +129,13 @@ Flagging <- function(input, output, session, data_store) {
                                              icon = icon("th-list"),
                                              color = "purple"
                                          ),
-                                         infoBox(
-                                             "# of Unique Scientific Names Remaining",
-                                             length(unique(returnState$scientificName)),
-                                             icon = icon("paw"),
-                                             color = "yellow"
-                                         ),
+                                         infoBox("# of Unique Scientific Names Remaining",
+                                                 length(unique(statsData$scientificName)),
+                                                 icon = icon("paw"),
+                                                 color = "yellow"),
                                          infoBox(
                                              "Clean Data",
-                                             paste(((
-                                                 flaggedCount / nrow(data_store()$inputData)
-                                             ) * 100), "%", sep = ""),
+                                             paste(((nrow(statsData) / nrow(data_store()$inputData)) * 100), "%", sep = ""),
                                              icon = icon("flag"),
                                              color = "red"
                                          )
