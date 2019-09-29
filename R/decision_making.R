@@ -167,8 +167,7 @@ get_checks_list <- function() {
                      fixed = T)
             
             temp <- list()
-            temp$name_of_quality_check <-
-                paste("DC_", name_of_quality_check, sep = "")
+            temp$name_of_quality_check <- gsub("dc_", "DC_", name_of_quality_check, fixed = T)
             temp$description <- paste(description, collapse = " ")
             temp$sample_pass_data <- sample_pass_data
             temp$sample_fail_data <- sample_fail_data

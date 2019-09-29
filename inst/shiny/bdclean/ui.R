@@ -6,6 +6,7 @@ suppressPackageStartupMessages(library(shinydashboard))
 suppressPackageStartupMessages(library(bdchecks))
 suppressPackageStartupMessages(library(finch))
 suppressPackageStartupMessages(library(leaflet))
+suppressPackageStartupMessages(library(bdutilities.app))
 
 source("functions.R")
 
@@ -51,7 +52,29 @@ shinyUI(dashboardPage(
                     fluidRow(div(
                         # -------------------------------
                         
-                        bdFileInput("bdFileInput", "User data (.csv format)"),
+                        mod_add_data_ui("bdFileInput", "User data (.csv format)"),
+                        
+                        tagList(
+                            column(12, id = "darwinControl",
+                                   br(),
+                                   
+                                   checkboxInput("darwinizerControl",
+                                                 label = "Perform Header Cleaning",
+                                                 value = TRUE),
+                                   helpText(
+                                       "To manually edit or clean headers, use ",
+                                       a("bdDwC", href = "https://cran.r-project.org/web/packages/bdDwC/index.html"),
+                                       " package. Launch bdDwC shiny app with the command 'bdDwC::run_dwc()' in R console,  or "
+                                   ),
+                                   
+                                   actionButton("launch_bddwc", "Launch bddwc Shiny App Now"),
+                                   helpText(
+                                       "(Requires RStudio 1.2 and above.)"
+                                   ),
+                                   br()
+                                   )
+                        ),
+                        
                         
                         # -------------------------------
                         
@@ -81,8 +104,10 @@ shinyUI(dashboardPage(
                             12,
                             tabsetPanel(
                                 type = "tabs",
+                                id = "questionnaireTab",
                                 tabPanel(
                                     "Option 01: Questionnaire ",
+                                    value = 'option1',
                                     
                                     # -------------------------------
                                     
@@ -92,6 +117,7 @@ shinyUI(dashboardPage(
                                 ),
                                 tabPanel(
                                     "Option 02: Customized Checks",
+                                    value = 'option2',
                                     
                                     # -------------------------------
                                     
@@ -149,17 +175,7 @@ shinyUI(dashboardPage(
                             12,
                             h1("Artifacts and Reports"),
                             br(),
-                            selectInput(
-                                "reportFormat",
-                                "Report Type",
-                                choices = list(
-                                    "PDF" = "pdf_document",
-                                    "HTML" = "html_document",
-                                    "Word" = "word_document",
-                                    "Markdown" = "md_document"
-                                ),
-                                selected = "pdf_document"
-                            ),
+                           
                             
                             # -------------------------------
                             
@@ -172,8 +188,7 @@ shinyUI(dashboardPage(
                         12,
                         column(12,
                                h1("Package Citations"),
-                               
-                               CitationsUI("CitationMod")
+                               bddwc.app::mod_citation_ui("bdcite")
                                )
                     )))
         )

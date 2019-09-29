@@ -11,6 +11,6 @@ test_that("bdcleanApp() works", {
     # Use compareImages=FALSE because the expected image screenshots were created
     # on a Mac, and they will differ from screenshots taken on the CI platform,
     # which runs on Linux.
-    appdir <- system.file(package = "bdclean", "shiny/bdclean-modules")
+    appdir <- system.file(package = "bdclean", "shiny/bdclean")
     expect_pass(testApp(appdir, compareImages = FALSE))
 })

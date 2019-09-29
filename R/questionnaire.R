@@ -206,7 +206,7 @@ create_default_questionnaire <- function() {
                 "DC_basisOfRecordBadlyFormed",
                 "DC_classUnknown",
                 "DC_dataGeneralised",
-                "DC_individualcountInvalid",
+                "DC_individualCountInvalid",
                 "DC_occurrenceIdNotGuid"
             ),
             question.id = "smallerIssues",

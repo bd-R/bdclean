@@ -40,16 +40,18 @@ for (question in checks.records) {
 
 Checks <-
     c(
-        'Taxonomical quality Checks',
-        'Spatial quality Checks',
-        'Temporal quality Checks',
-        'Total quality Checks'
+        'Taxonomical quality checks',
+        'Spatial quality checks',
+        'Temporal quality checks',
+        'Other quality checks',
+        'Total quality checks'
     )
 Count <-
     c(
         taxonChecks,
         spatialChecks,
         temporalChecks,
+        otherChecks,
         (taxonChecks + spatialChecks + temporalChecks + otherChecks)
     )
 check.summary <- data.frame(Checks, Count)

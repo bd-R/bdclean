@@ -37,6 +37,8 @@ create_report_data <-
              cleaning_true,
              format) {
         
+
+        
         assertive::assert_is_data.frame(input_data)
         assertive::assert_has_cols(input_data)
         assertive::assert_is_data.frame(flagged_data)
@@ -73,38 +75,38 @@ create_report_data <-
             try(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"), silent = T)
         
         if (class(earliest_input_date) != "try-error") {
-            earliest_input_date <- min(earliest_input_date)
+            earliest_input_date <- format(min(earliest_input_date), "%d-%b-%Y")
             latest_input_date <-
-                max(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"))
+                format(max(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC")), "%d-%b-%Y")
         } else {
-            earliest_input_date <- "Not Available"
-            latest_input_date <- "Not Available"
+            earliest_input_date <- "NA"
+            latest_input_date <- "NA"
         }
         
         earliest_output_date <-
             try(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"), silent = T)
         
         if (class(earliest_output_date) != "try-error") {
-            earliest_output_date <- min(earliest_input_date)
+            earliest_output_date <- format(min(earliest_input_date))
             latest_output_date <-
-                max(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"))
+                format(max(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC")), "%d-%b-%Y")
         } else {
-            earliest_output_date <- "Not Available"
-            latest_output_date <- "Not Available"
+            earliest_output_date <- "NA"
+            latest_output_date <- "NA"
         }
         input_data_meta <-
             c(
                 input_size[1],
                 input_size[2],
                 input_unique_species,
-                paste(earliest_input_date, "-", latest_input_date)
+                paste("From ", earliest_input_date, " to ", latest_input_date)
             )
         cleaned_data_meta <-
             c(
                 output_size[1],
                 output_size[2],
                 output_unique_species,
-                paste(earliest_output_date, "-", latest_output_date)
+                paste("From", earliest_output_date, " to ", latest_output_date)
             )
         data.summary <- data.frame(input_data_meta, cleaned_data_meta)  # One
         row.names(data.summary) <-
@@ -146,7 +148,7 @@ create_report_data <-
                         records_table,
                         data.frame(
                             DataCleaningProcedure = names(question$checks)[check_index],
-                            NoOfRecords = ifelse(is.null(check$affectedData), 0, check$affectedData),
+                            NoOfRecords = ifelse(is.null(check$affected_data), 0, check$affected_data),
                             Action = ifelse(cleaning_true, "Removal", "Flagging")
                         )
                     )

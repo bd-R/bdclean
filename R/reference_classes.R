@@ -100,9 +100,11 @@ BdQuestion <-
                         check_name <- .self$quality.checks[i]
                         if (grepl("DC_", check_name)) {
                             # bdchecks quality checks
+                            
+                            check_name <- gsub("DC_", "", check_name, fixed = T)
                             check_temp <-
-                                bdchecks::dc_perform(data = flagged_data,
-                                                           DConly = c(check_name))
+                                bdchecks::perform_dc(data = flagged_data,
+                                                           wanted_dc = c(check_name))
                             
                             if (!is.null(check_temp) &&
                                 length(check_temp@flags) > 0 &&
@@ -130,14 +132,14 @@ BdQuestion <-
             add_to_report = function(flagged_data,
                                      clean = TRUE,
                                      cleaning_threshold = 5) {
-                package_documentation <- tools::Rd_db("bdchecks")
                 flagged_data <- as.data.frame(flagged_data)
                 
                 for (i in 1:length(.self$quality.checks)) {
                     name_of_quality_check <- .self$quality.checks[i]
+                    name_of_quality_check <- gsub("DC_", "", name_of_quality_check, fixed = T)
                     
                     if (!(paste("bdclean", name_of_quality_check, sep = ".") %in% names(flagged_data))) {
-                        # both bdchecks and bdclean columns have bdcelan prefix
+                        #both bdchecks and bdclean columns have bdclean prefix
                         warning(
                             "Required column ",
                             paste("bdclean", name_of_quality_check, sep = "."),
@@ -149,10 +151,13 @@ BdQuestion <-
                     
                     flag <-
                         flagged_data[, paste("bdclean", name_of_quality_check, sep = ".")]
-                    count_of_flagged_data <- sum(flag != TRUE, na.rm = T)
-                    
+                    count_of_flagged_data <- sum(!flag, na.rm = T)
                     
                     # ------ Parsing MetaData for check from .Rd file
+                    package_documentation_1 <- tools::Rd_db("bdchecks")
+                    package_documentation_2 <- tools::Rd_db("bdclean")
+                    package_documentation <- c(package_documentation_1, package_documentation_2)
+                    
                     function_documentation <-
                         package_documentation[grep(name_of_quality_check, names(package_documentation))]
                     
