@@ -104,8 +104,10 @@ shinyUI(dashboardPage(
                             12,
                             tabsetPanel(
                                 type = "tabs",
+                                id = "questionnaireTab",
                                 tabPanel(
                                     "Option 01: Questionnaire ",
+                                    value = 'option1',
                                     
                                     # -------------------------------
                                     
@@ -115,6 +117,7 @@ shinyUI(dashboardPage(
                                 ),
                                 tabPanel(
                                     "Option 02: Customized Checks",
+                                    value = 'option2',
                                     
                                     # -------------------------------
                                     
@@ -185,8 +188,7 @@ shinyUI(dashboardPage(
                         12,
                         column(12,
                                h1("Package Citations"),
-                               
-                               CitationsUI("CitationMod")
+                               bddwc.app::mod_citation_ui("bdcite")
                                )
                     )))
         )

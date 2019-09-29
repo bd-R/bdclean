@@ -116,8 +116,10 @@ Flagging <- function(input, output, session, data_store) {
                              
                              tabsetPanel(
                                  type = "tabs",
+                                 id = "flagTab",
                                  tabPanel(
                                      "Statistics View",
+                                     value = "option1",
                                      div(class = "secondaryHeaders", h3("View 01: Statistics Boxes")),
                                      fluidRow(
                                          infoBox("# of Clean Records",
@@ -143,6 +145,7 @@ Flagging <- function(input, output, session, data_store) {
                                  ),
                                  tabPanel(
                                      "Table View",
+                                     value = "option2",
                                      div(class = "secondaryHeaders", h3("View 02: Summarized Table")),
                                      DT::renderDataTable(summarizeDataframe(returnState), width = 300)
                                  )

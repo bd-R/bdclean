@@ -30,7 +30,7 @@ customizedCheck <- function(input, output, session) {
                             HTML(
                                 paste(
                                     "<input type=checkbox
-                                    name=typeInput value=",
+                                    name=typeInput id=", qualityChecks[[i]]$name_of_quality_check," value=" ,
                                     qualityChecks[[i]]$name_of_quality_check,
                                     ">"
                                 )

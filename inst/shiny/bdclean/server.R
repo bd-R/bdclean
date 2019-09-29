@@ -307,7 +307,11 @@ shinyServer(function(input, output, session) {
     
     # ------------- End of Cleaning Module ------------------------
     
-    callModule(Citations, "CitationMod")
+    callModule(
+        bddwc.app::mod_citation_server,
+        id = "bdcite",
+        package = "bdclean"
+    )
     
     # ------------- Documentation Module ------------------------
     
@@ -319,8 +323,10 @@ shinyServer(function(input, output, session) {
                 tagList(
                     tabsetPanel(
                         type = "tabs",
+                        id="artifactsTab",
                         tabPanel(
                             "Input Data",
+                            value = "option1",
                             div(class = "secondaryHeaders", h3("Artifact 01: Input RAW Data")),
                             downloadButton("downloadInput", "Download Input Data"),
                             br(),
@@ -329,6 +335,7 @@ shinyServer(function(input, output, session) {
                         ),
                         tabPanel(
                             "Flagged Data",
+                            value = "option2",
                             div(class = "secondaryHeaders", h3(
                                 "Artifact 02: Complete Flagged Data"
                             )),
@@ -339,6 +346,7 @@ shinyServer(function(input, output, session) {
                         ),
                         tabPanel(
                             "Cleaned Data",
+                            value = "option3",
                             div(class = "secondaryHeaders", h3("Artifact 03: Cleaned Data")),
                             downloadButton("downloadCleaned", "Download Cleaned Data"),
                             br(),
@@ -347,6 +355,7 @@ shinyServer(function(input, output, session) {
                         ),
                         tabPanel(
                             "Cleaning Report",
+                            value = "option4",
                             div(class = "secondaryHeaders", h3(
                                 "Report 01: Short Cleaning Summary"
                             )),
@@ -373,6 +382,7 @@ shinyServer(function(input, output, session) {
                         ),
                         tabPanel(
                             "Detailed Quality Check Report",
+                            value = "option5",
                             div(class = "secondaryHeaders", h3(
                                 "Report 02: Detailed Quality Check Report"
                             )),
