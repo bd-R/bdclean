@@ -32,27 +32,27 @@ shinyServer(function(input, output, session) {
     
     # ------------- Information Modal ------------------------
     
-    showModal(modalDialog(
-        title = h3("Welcome to bdclean!"),
-        p(
-            "Clean your Biodiversity data with this tool with greater control."
-        ),
-        p(
-            "Click the tabs in the left and follow the instructions to customize cleaning."
-        ),
-        img(src = "bdverse.png", align = "center"),
-        helpText(
-            "GPL-3 ©Tomer Gueta, Vijay Barve, Thiloshon Nagarajah, Ashwin Agrawal and Carmel Yohay (2018).
-            bdclean: Biodiversity Data Cleaning Workflow. R package version 0.1.900"
-        ),
-        helpText(
-            "Contribute: ",
-            a("https://github.com/bd-R/bdclean", href = "https://github.com/bd-R/bdclean"),
-            " Join: ",
-            a("https://bd-r-group.slack.com",     href = "https://bd-r-group.slack.com")
-        )
-        
-    ))
+    # showModal(modalDialog(
+    #     title = h3("Welcome to bdclean!"),
+    #     p(
+    #         "Clean your Biodiversity data with this tool with greater control."
+    #     ),
+    #     p(
+    #         "Click the tabs in the left and follow the instructions to customize cleaning."
+    #     ),
+    #     img(src = "bdverse.png", align = "center"),
+    #     helpText(
+    #         "GPL-3 ©Tomer Gueta, Vijay Barve, Thiloshon Nagarajah, Ashwin Agrawal and Carmel Yohay (2018).
+    #         bdclean: Biodiversity Data Cleaning Workflow. R package version 0.1.900"
+    #     ),
+    #     helpText(
+    #         "Contribute: ",
+    #         a("https://github.com/bd-R/bdclean", href = "https://github.com/bd-R/bdclean"),
+    #         " Join: ",
+    #         a("https://bd-r-group.slack.com",     href = "https://bd-r-group.slack.com")
+    #     )
+    #     
+    # ))
     
     # ------------- End of Information Modal ------------------------
     
@@ -100,7 +100,7 @@ shinyServer(function(input, output, session) {
             dummyQuestion$users.answer <- "Yes"
             
             data_store$customizedChecks <<-
-                BdQuestionContainer(c(dummyQuestion))
+                bdclean::BdQuestionContainer(c(dummyQuestion))
             data_store$customizedCheck <<- TRUE
             
         } else {
