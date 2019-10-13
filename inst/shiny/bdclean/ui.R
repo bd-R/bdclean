@@ -188,7 +188,7 @@ shinyUI(dashboardPage(
                         12,
                         column(12,
                                h1("Package Citations"),
-                               bdutilities.app::mod_citation_ui("bdcite")
+                               bdutilities.app::mod_citation_ui("bdcite", "bdclean")
                                )
                     )))
         )
