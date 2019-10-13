@@ -213,7 +213,7 @@ shinyServer(function(input, output, session) {
     
     # ------------- Add Data Module -------------------
     
-    data_store$inputData <- callModule(mod_add_data_server, "bdFileInput", "dataToDictionaryDiv")
+    data_store$inputData <- callModule(bdutilities.app::mod_add_data_server, "bdFileInput", "dataToDictionaryDiv")
     
     a <- function(){
         if (input$darwinizerControl) {
@@ -308,7 +308,7 @@ shinyServer(function(input, output, session) {
     # ------------- End of Cleaning Module ------------------------
     
     callModule(
-        bddwc.app::mod_citation_server,
+        bdutilities.app::mod_citation_server,
         id = "bdcite",
         package = "bdclean"
     )

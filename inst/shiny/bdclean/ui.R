@@ -1,11 +1,8 @@
-suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(shiny))
 suppressPackageStartupMessages(library(DT))
 suppressPackageStartupMessages(library(shinyjs))
 suppressPackageStartupMessages(library(shinydashboard))
 suppressPackageStartupMessages(library(bdchecks))
-suppressPackageStartupMessages(library(finch))
-suppressPackageStartupMessages(library(leaflet))
 suppressPackageStartupMessages(library(bdutilities.app))
 
 source("functions.R")
@@ -43,7 +40,8 @@ shinyUI(dashboardPage(
     dashboardBody(
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
-            tags$link(rel = "stylesheet", type = "text/css", href = "checkbox.css")
+            tags$link(rel = "stylesheet", type = "text/css", href = "checkbox.css"),
+            tags$link(rel= "shortcut icon", href= "bdclean_favicon_3.png")
         ),
         useShinyjs(),
         tabItems(
@@ -52,7 +50,7 @@ shinyUI(dashboardPage(
                     fluidRow(div(
                         # -------------------------------
                         
-                        mod_add_data_ui("bdFileInput", "User data (.csv format)"),
+                        bdutilities.app::mod_add_data_ui("bdFileInput", "User data (.csv format)"),
                         
                         tagList(
                             column(12, id = "darwinControl",
@@ -188,7 +186,7 @@ shinyUI(dashboardPage(
                         12,
                         column(12,
                                h1("Package Citations"),
-                               bddwc.app::mod_citation_ui("bdcite")
+                               bdutilities.app::mod_citation_ui("bdcite", "bdclean")
                                )
                     )))
         )
