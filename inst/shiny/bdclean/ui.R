@@ -1,11 +1,8 @@
-suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(shiny))
 suppressPackageStartupMessages(library(DT))
 suppressPackageStartupMessages(library(shinyjs))
 suppressPackageStartupMessages(library(shinydashboard))
 suppressPackageStartupMessages(library(bdchecks))
-suppressPackageStartupMessages(library(finch))
-suppressPackageStartupMessages(library(leaflet))
 suppressPackageStartupMessages(library(bdutilities.app))
 
 source("functions.R")
@@ -43,7 +40,8 @@ shinyUI(dashboardPage(
     dashboardBody(
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
-            tags$link(rel = "stylesheet", type = "text/css", href = "checkbox.css")
+            tags$link(rel = "stylesheet", type = "text/css", href = "checkbox.css"),
+            tags$link(rel= "shortcut icon", href= "bdclean_favicon_3.png")
         ),
         useShinyjs(),
         tabItems(
