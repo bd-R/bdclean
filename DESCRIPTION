@@ -43,8 +43,14 @@ Imports:
     shinydashboard,
     shinyjs,
     tools,
-    rmarkdown
-Remotes: bd-R/bdDwC, bd-R/bdchecks, bd-R/bdutilities.app
+    rmarkdown,
+    bdDwC (>= 0.1.5),
+    bdchecks (>= 0.1.3),
+    bdutilities.app (>= 0.0.1),
+Remotes: 
+    bd-R/bdDwC, 
+    bd-R/bdchecks, 
+    bd-R/bdutilities.app
 Depends: R (>= 2.10)
 RoxygenNote: 6.1.1
 Suggests: 
