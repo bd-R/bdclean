@@ -36,9 +36,6 @@ Authors@R: c(
 Maintainer: Thiloshon Nagarajah <thiloshon@gmail.com>
 Imports: 
     assertive,
-    bdchecks,
-    bdDwC,
-    bdutilities.app,
     DT,
     knitr,
     methods, 
@@ -47,6 +44,7 @@ Imports:
     shinyjs,
     tools,
     rmarkdown
+Remotes: bd-R/bdDwC, bd-R/bdchecks, bd-R/bdutilities.app
 Depends: R (>= 2.10)
 RoxygenNote: 6.1.1
 Suggests: 
