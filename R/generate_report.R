@@ -37,8 +37,6 @@ create_report_data <-
              cleaning_true,
              format) {
         
-
-        
         assertive::assert_is_data.frame(input_data)
         assertive::assert_has_cols(input_data)
         assertive::assert_is_data.frame(flagged_data)
@@ -65,35 +63,47 @@ create_report_data <-
         input_data <- as.data.frame(input_data)
         input_size <- dim(input_data)
         output_size <- dim(cleaned_data)
+        input_unique_species <- "NA"
+        output_unique_species <- "NA"
+        earliest_input_date <- "NA"
+        latest_input_date <- "NA"
+        earliest_output_date <- "NA"
+        latest_output_date <- "NA"
         
-        input_unique_species <-
-            length(unique(input_data[, "scientificName"]))
-        output_unique_species <-
-            length(unique(cleaned_data[, "scientificName"]))
         
-        earliest_input_date <-
-            try(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"), silent = T)
-        
-        if (class(earliest_input_date) != "try-error") {
-            earliest_input_date <- format(min(earliest_input_date), "%d-%b-%Y")
-            latest_input_date <-
-                format(max(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC")), "%d-%b-%Y")
-        } else {
-            earliest_input_date <- "NA"
-            latest_input_date <- "NA"
+        if ("scientificName" %in% colnames(input_data)){
+            input_unique_species <-
+                length(unique(input_data[, "scientificName"]))
+            output_unique_species <-
+                length(unique(cleaned_data[, "scientificName"]))
         }
         
-        earliest_output_date <-
-            try(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"), silent = T)
-        
-        if (class(earliest_output_date) != "try-error") {
-            earliest_output_date <- format(min(earliest_input_date))
-            latest_output_date <-
-                format(max(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC")), "%d-%b-%Y")
-        } else {
-            earliest_output_date <- "NA"
-            latest_output_date <- "NA"
+        if ("eventDate" %in% colnames(input_data)){
+            earliest_input_date <-
+                try(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC"), silent = T)
+            
+            if (class(earliest_input_date) != "try-error") {
+                earliest_input_date <- format(min(earliest_input_date), "%d-%b-%Y")
+                latest_input_date <-
+                    format(max(as.POSIXct(unique(input_data[, "eventDate"]), tz = "UTC")), "%d-%b-%Y")
+            } else {
+                earliest_input_date <- "NA"
+                latest_input_date <- "NA"
+            }
+            
+            earliest_output_date <-
+                try(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC"), silent = T)
+            
+            if (class(earliest_output_date) != "try-error") {
+                earliest_output_date <- format(min(earliest_input_date))
+                latest_output_date <-
+                    format(max(as.POSIXct(unique(cleaned_data[, "eventDate"]), tz = "UTC")), "%d-%b-%Y")
+            } else {
+                earliest_output_date <- "NA"
+                latest_output_date <- "NA"
+            }
         }
+        
         input_data_meta <-
             c(
                 input_size[1],
@@ -108,6 +118,7 @@ create_report_data <-
                 output_unique_species,
                 paste("From", earliest_output_date, " to ", latest_output_date)
             )
+        
         data.summary <- data.frame(input_data_meta, cleaned_data_meta)  # One
         row.names(data.summary) <-
             c("Rows",

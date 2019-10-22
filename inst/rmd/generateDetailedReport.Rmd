@@ -10,13 +10,13 @@ suppressPackageStartupMessages(library(knitr))
 suppressPackageStartupMessages(library(tools))
 ```
 
-## Data Summary
+# Data Summary
 
 ```{r echo=FALSE}
 kable(data.summary)
 ```
 
-## Quality Checks Summary
+# Quality Checks Summary
 
 ```{r echo=FALSE}
 spatialChecks <- 0
@@ -58,13 +58,13 @@ check.summary <- data.frame(Checks, Count)
 kable(check.summary)
 ```
 
-## Quality Checks
+# Quality Checks
 
 ```{r echo=FALSE, results='asis'}
 index <- 1
 checkCount <- 1
 for (question in checks.records) {
-    cat(paste('###', index, '. ', question$question, '\n',  sep = ''))
+    cat(paste('## ', index, '. ', question$question, '\n',  sep = ''))
     cat('\n')
     
     cat(paste('Received Response: ', question$answer, '\n', sep = ''))
@@ -73,13 +73,14 @@ for (question in checks.records) {
     checkIndex <- 1
     for (check in question$checks) {
         cat(paste(
-            '####',
+            '### ',
             'Quality Check ',
             checkCount,
             ': ',
             names(question$checks[checkIndex]),
             sep = ''
         ))
+        cat('\n')
         
         Type <-
             c('Description',
@@ -102,6 +103,7 @@ for (question in checks.records) {
         check.data.summary <- data.frame(Type, Value)
         print(kable(check.data.summary))
         cat('\n')
+          cat('\n')
         checkIndex <- checkIndex + 1
         checkCount <- checkCount + 1
     }
