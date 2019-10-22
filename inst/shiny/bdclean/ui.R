@@ -27,7 +27,7 @@ shinyUI(dashboardPage(
             ),
             menuItem("Flag & Clean", tabName = "flag", icon = icon("flag")),
             menuItem(
-                "Artifacts & Documentation",
+                "Data & Cleaning Reports",
                 tabName = "document",
                 icon = icon("file")
             ),
