@@ -121,23 +121,22 @@ create_default_questionnaire <- function() {
             ui.type = "single-checkbox"
         )
     
-    question_sub_03 <-
-        BdQuestion(
-            question = "Do you worry about elevation of occurrences?",
-            possible.responses = c("Yes", "No"),
-            router.condition = c("Yes",
-                                 "Y", "yes", 1, TRUE, "TRUE"),
-            question.type = "ChildRouter",
-            quality.checks = c("validation_type_empty"),
-            question.id = "elevationCoord",
-            ui.type = "single-checkbox"
-        )
+    # question_sub_03 <-
+    #     BdQuestion(
+    #         question = "Do you worry about elevation of occurrences?",
+    #         possible.responses = c("Yes", "No"),
+    #         router.condition = c("Yes",
+    #                              "Y", "yes", 1, TRUE, "TRUE"),
+    #         question.type = "ChildRouter",
+    #         quality.checks = c("validation_dctype_empty"),
+    #         question.id = "elevationCoord",
+    #         ui.type = "single-checkbox"
+    #     )
     
     question3$add_child_question(c(
         question4,
         question_sub_01,
-        question_sub_02,
-        question_sub_03
+        question_sub_02
     ))
     
     question5 <-
@@ -214,7 +213,7 @@ create_default_questionnaire <- function() {
                 "validation_basisofrecord_empty",
                 "validation_occurrencestatus_empty",
                 "validation_occurrenceid_empty",
-                "validation_type_empty"
+                "validation_dctype_empty"
             ),
             question.id = "smallerIssues",
             ui.type = "single-checkbox"
@@ -229,7 +228,6 @@ create_default_questionnaire <- function() {
                 question4,
                 question_sub_01,
                 question_sub_02,
-                question_sub_03,
                 question5,
                 question6,
                 question7,
