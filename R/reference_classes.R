@@ -98,10 +98,10 @@ BdQuestion <-
                 if (length(.self$quality.checks) > 0) {
                     for (i in 1:length(.self$quality.checks)) {
                         check_name <- .self$quality.checks[i]
-                        if (grepl("validation", check_name)) {
+                        if (grepl("dc_", check_name)) {
                             # bdchecks quality checks
                             
-                            check_name <- gsub("DC_", "", check_name, fixed = T)
+                            check_name <- gsub("dc_", "", check_name, fixed = T)
                             check_temp <-
                                 bdchecks::perform_dc(data = flagged_data,
                                                            wanted_dc = c(check_name))
