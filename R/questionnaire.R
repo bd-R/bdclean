@@ -28,17 +28,17 @@ create_default_questionnaire <- function() {
             possible.responses = c("Yes", "No"),
             question.type = "Router",
             router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
-            quality.checks = c("validation_taxonid_empty",
-                               "validation_class_notfound",
-                               "validation_phylum_notfound",
-                               "validation_order_notfound",
-                               "validation_taxonrank_empty",
-                               "validation_family_notfound",
-                               "validation_genus_notfound",
-                               "validation_kingdom_notfound",
-                               "validation_scientificname_empty",
-                               "validation_taxonrank_notstandard",
-                               "validation_taxon_empty"),
+            quality.checks = c("dc_validation_taxonid_empty",
+                               "dc_validation_class_notfound",
+                               "dc_validation_phylum_notfound",
+                               "dc_validation_order_notfound",
+                               "dc_validation_taxonrank_empty",
+                               "dc_validation_family_notfound",
+                               "dc_validation_genus_notfound",
+                               "dc_validation_kingdom_notfound",
+                               "dc_validation_scientificname_empty",
+                               "dc_validation_taxonrank_notstandard",
+                               "dc_validation_taxon_empty"),
             question.id = "taxonMain",
             ui.type = "single-checkbox"
         )
@@ -68,10 +68,10 @@ create_default_questionnaire <- function() {
             possible.responses = c("Yes", "No"),
             question.type = "Router",
             router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
-            quality.checks = c("validation_eventtemporal_empty",
-                               "validation_decimallongitude_empty",
-                               "validation_decimallatitude_empty",
-                               "validation_location_empty"),
+            quality.checks = c("dc_validation_eventtemporal_empty",
+                               "dc_validation_decimallongitude_empty",
+                               "dc_validation_decimallatitude_empty",
+                               "dc_validation_location_empty"),
             question.id = "spatialMain",
             ui.type = "single-checkbox"
         )
@@ -103,7 +103,7 @@ create_default_questionnaire <- function() {
             question.type = "ChildRouter",
             router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
             quality.checks = c(
-                "validation_geodeticdatum_empty"
+                "dc_validation_geodeticdatum_empty"
             ),
             question.id = "precisionCoord",
             ui.type = "single-checkbox"
@@ -115,8 +115,8 @@ create_default_questionnaire <- function() {
             possible.responses = c("Yes", "No"),
             question.type = "ChildRouter",
             router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
-            quality.checks = c("validation_country_empty",
-                               "validation_countrycode_empty"),
+            quality.checks = c("dc_validation_country_empty",
+                               "dc_validation_countrycode_empty"),
             question.id = "countryCoord",
             ui.type = "single-checkbox"
         )
@@ -146,7 +146,7 @@ create_default_questionnaire <- function() {
             question.type = "Router",
             router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
             quality.checks = c(
-                "validation_eventdate_empty"
+                "dc_validation_eventdate_empty"
             ),
             question.id = "temporalMain",
             ui.type = "single-checkbox"
@@ -194,7 +194,7 @@ create_default_questionnaire <- function() {
             question.type = "ChildRouter",
             router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
             quality.checks = c(
-                "validation_year_empty"
+                "dc_validation_year_empty"
             ),
             question.id = "smallerDates",
             ui.type = "single-checkbox"
@@ -209,11 +209,11 @@ create_default_questionnaire <- function() {
             question.type = "Router",
             router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
             quality.checks = c(
-                "validation_license_empty",
-                "validation_basisofrecord_empty",
-                "validation_occurrencestatus_empty",
-                "validation_occurrenceid_empty",
-                "validation_dctype_empty"
+                "dc_validation_license_empty",
+                "dc_validation_basisofrecord_empty",
+                "dc_validation_occurrencestatus_empty",
+                "dc_validation_occurrenceid_empty",
+                "dc_validation_dctype_empty"
             ),
             question.id = "smallerIssues",
             ui.type = "single-checkbox"
