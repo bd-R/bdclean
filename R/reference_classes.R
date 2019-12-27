@@ -136,7 +136,7 @@ BdQuestion <-
                 
                 for (i in 1:length(.self$quality.checks)) {
                     name_of_quality_check <- .self$quality.checks[i]
-                    name_of_quality_check <- gsub("DC_", "", name_of_quality_check, fixed = T)
+                    name_of_quality_check <- gsub("dc_", "", name_of_quality_check, fixed = T)
                     
                     if (!(paste("bdclean", name_of_quality_check, sep = ".") %in% names(flagged_data))) {
                         #both bdchecks and bdclean columns have bdclean prefix
