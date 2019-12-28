@@ -22,10 +22,10 @@
     "bdFileInput-mapTexture": "CartoDB.Positron",
     "bdFileInput-mapTexture-selectized": "",
     "bdFileInput-mymap_bounds": {
-      "north": 0,
-      "east": 0,
-      "south": 0,
-      "west": 0
+      "north": 76.6797849031069,
+      "east": 84.7265625,
+      "south": -76.6797849031069,
+      "west": -84.7265625
     },
     "bdFileInput-mymap_center": {
       "lng": 0,
@@ -37,30 +37,30 @@
     "bdFileInput-recordSize": 500,
     "bdFileInput-scientificName": "Puma concolor",
     "configureToFlag": 0,
-    "countryCoord": true,
+    "countryCoord": false,
     "darwinizerControl": true,
     "dataToConfigure": 1,
     "flaggingMod-flagButton": 0,
     "flaggingMod-missingCase": false,
     "launch_bddwc": 0,
-    "precisionCoord": true,
+    "precisionCoord": false,
     "questionnaireTab": "option1",
     "sideBar": "configure",
     "sidebarCollapsed": false,
     "sidebarItemExpanded": null,
-    "smallerDates": true,
-    "smallerIssues": true,
-    "spatialMain": true,
-    "spatialResolution": 1000,
+    "smallerDates": false,
+    "smallerIssues": false,
+    "spatialMain": false,
+    "spatialResolution": 1,
     "spatialResolution_ctrl": true,
-    "taxonLevel": "Class",
+    "taxonLevel": "Species",
     "taxonLevel-selectized": "",
     "taxonMain": true,
     "temporalEarliest": [
       "2000-01-01",
-      "2019-12-25"
+      "2020-01-01"
     ],
-    "temporalMain": true,
+    "temporalMain": false,
     "temporalResolution": "Day"
   },
   "output": {

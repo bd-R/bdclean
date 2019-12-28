@@ -98,10 +98,10 @@ BdQuestion <-
                 if (length(.self$quality.checks) > 0) {
                     for (i in 1:length(.self$quality.checks)) {
                         check_name <- .self$quality.checks[i]
-                        if (grepl("validation", check_name)) {
+                        if (grepl("dc_", check_name)) {
                             # bdchecks quality checks
                             
-                            check_name <- gsub("DC_", "", check_name, fixed = T)
+                            check_name <- gsub("dc_", "", check_name, fixed = T)
                             check_temp <-
                                 bdchecks::perform_dc(data = flagged_data,
                                                            wanted_dc = c(check_name))
@@ -136,7 +136,7 @@ BdQuestion <-
                 
                 for (i in 1:length(.self$quality.checks)) {
                     name_of_quality_check <- .self$quality.checks[i]
-                    name_of_quality_check <- gsub("DC_", "", name_of_quality_check, fixed = T)
+                    name_of_quality_check <- gsub("dc_", "", name_of_quality_check, fixed = T)
                     
                     if (!(paste("bdclean", name_of_quality_check, sep = ".") %in% names(flagged_data))) {
                         #both bdchecks and bdclean columns have bdclean prefix

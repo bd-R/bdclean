@@ -121,7 +121,7 @@ createQuestionsUI <- function(question, index, input) {
         
         "date-range" = tagList(
             h4(paste(index, question$question, sep = ") ")),
-            dateRangeInput(question$question.id,
+            dateRangeInput(question$question.id, start = "2000-01-01", end = "2020-01-01",
                            label = ""),
             br()
         )
