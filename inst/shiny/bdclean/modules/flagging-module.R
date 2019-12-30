@@ -51,6 +51,7 @@ FlaggingUI <- function(id) {
 }
 
 # Server Function
+#' @importFrom bdutilities summarizeDataframe
 Flagging <- function(input, output, session, data_store) {
     ns <- session$ns
     returnState <- data.frame()
