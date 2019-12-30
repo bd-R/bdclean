@@ -5,8 +5,6 @@ suppressPackageStartupMessages(library(shinydashboard))
 suppressPackageStartupMessages(library(bdchecks))
 suppressPackageStartupMessages(library(bdutilities.app))
 
-source("functions.R")
-
 shinyUI(dashboardPage(
     #Header Title
     dashboardHeader(title = "bdclean", dropdownMenuOutput("messageMenu")),
