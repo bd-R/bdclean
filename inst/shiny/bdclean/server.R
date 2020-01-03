@@ -6,6 +6,7 @@ shinyServer(function(input, output, session) {
     data_store <-
         list(
             inputData = data.frame(),
+            darwinizedData = data.frame(),
             configuredCleaning = FALSE,
             customizedChecks = c(),
             customizedCheck = FALSE,
@@ -61,9 +62,8 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$dataToConfigure, {
         # Converting reactive element to dataframe
-        data_store$inputData <<- data_store$inputData()
-        
-        
+        data_store$inputData <<- bdutilities::return_core(data_store$inputData())
+
         output$inputDataRows <-
             renderText(nrow(data_store$inputData))
         output$inputDataColumns <-
@@ -72,7 +72,9 @@ shinyServer(function(input, output, session) {
             renderText(length(unique(
                 data_store$inputData$scientificName
             )))
-        
+
+        print("meoe")
+
         if (nrow(data_store$inputData) > 0) {
             updateTabItems(session, "sideBar", "configure")
         } else {
@@ -215,37 +217,7 @@ shinyServer(function(input, output, session) {
     
     data_store$inputData <- callModule(bdutilities.app::mod_add_data_server, "bdFileInput", "dataToDictionaryDiv")
     
-    a <- function(){
-        if (input$darwinizerControl) {
-            showNotification("Cleaning Headers", duration = 2)
-            dictionaryPath <-
-                system.file("txts/customDwCdictionary.txt", package = "bdclean")
-            customDictionary <-
-                data.table::fread(file = dictionaryPath)
-            
-            darwinizer <-
-                bdDwC::darwinize_names(as.data.frame(returnData), as.data.frame(customDictionary))
-            
-            fixed <-
-                darwinizer[darwinizer$matchType == "Darwinized",]
-            
-            if (nrow(fixed) > 0) {
-                tidyData <- bdDwC::renameUserData(returnData, darwinizer)
-                
-                returnData <<- tidyData
-                
-                showNotification(paste(
-                    "Converted Columns:",
-                    paste(
-                        paste(fixed[, 1], collapse = ", "),
-                        paste(fixed[, 2], collapse = ", "),
-                        sep = " -> "
-                    )
-                ),
-                duration = 7)
-            }
-        }
-    } 
+    data_store$darwinizedData <- callModule(Darwinizing, "darwinize", dat = data_store$inputData)
     
     observeEvent(input$launch_bddwc, {
         path_app <- system.file("scripts", 'bddwc.R', package = "bdclean")
