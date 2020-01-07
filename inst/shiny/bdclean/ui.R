@@ -51,7 +51,7 @@ shinyUI(dashboardPage(
                         bdutilities.app::mod_add_data_ui("bdFileInput", "User data (.csv format)"),
                         
                         tagList(
-                            DarwinizingUI("darwinize")
+                            bdutilities.app::mod_darwinize_ui("darwinize")
                         ),
                         
                         

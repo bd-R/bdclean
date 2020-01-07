@@ -62,7 +62,15 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$dataToConfigure, {
         # Converting reactive element to dataframe
-        data_store$inputData <<- bdutilities::return_core(data_store$inputData())
+        idata <- bdutilities::return_core(data_store$inputData)
+        dData <- bdutilities::return_core(data_store$darwinizedData)
+        
+        if (length(dData) > 0) {
+            data_store$inputData <<- dData
+            data_store$darwinizedData <<- data.frame()
+        } else {
+            data_store$inputData <<- idata
+        }
 
         output$inputDataRows <-
             renderText(nrow(data_store$inputData))
@@ -72,8 +80,6 @@ shinyServer(function(input, output, session) {
             renderText(length(unique(
                 data_store$inputData$scientificName
             )))
-
-        print("meoe")
 
         if (nrow(data_store$inputData) > 0) {
             updateTabItems(session, "sideBar", "configure")
@@ -140,7 +146,7 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$flagToClean, {
-        data_store$flaggedData <<- data_store$flaggedData()
+        data_store$flaggedData <<- bdutilities::return_core(data_store$flaggedData)
         data_store$flaggingDone <<- TRUE
         
         if (!data_store$flaggingDone) {
@@ -217,7 +223,7 @@ shinyServer(function(input, output, session) {
     
     data_store$inputData <- callModule(bdutilities.app::mod_add_data_server, "bdFileInput", "dataToDictionaryDiv")
     
-    data_store$darwinizedData <- callModule(Darwinizing, "darwinize", dat = data_store$inputData)
+    data_store$darwinizedData <- callModule(bdutilities.app::mod_darwinize_server, "darwinize", dat = data_store$inputData)
     
     observeEvent(input$launch_bddwc, {
         path_app <- system.file("scripts", 'bddwc.R', package = "bdclean")
