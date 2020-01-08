@@ -1,10 +1,10 @@
 on:
   push:
     branches:
-      - master
+      - new_bdclean
   pull_request:
     branches:
-      - master
+      - new_bdclean
 
 name: R-CMD-check
 
