@@ -133,6 +133,9 @@ body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .main-header .logo {
     display: contents;
 }
 
-#darwinControl{
-    padding-left: 5%;
+.darwinControlDiv{
+    padding-left: 2%;
+}
+.darwinControlInner{
+    padding-left: 1%;
 }

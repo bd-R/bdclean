@@ -51,24 +51,7 @@ shinyUI(dashboardPage(
                         bdutilities.app::mod_add_data_ui("bdFileInput", "User data (.csv format)"),
                         
                         tagList(
-                            column(12, id = "darwinControl",
-                                   br(),
-                                   
-                                   checkboxInput("darwinizerControl",
-                                                 label = "Perform Header Cleaning",
-                                                 value = TRUE),
-                                   helpText(
-                                       "To manually edit or clean headers, use ",
-                                       a("bdDwC", href = "https://cran.r-project.org/web/packages/bdDwC/index.html"),
-                                       " package. Launch bdDwC shiny app with the command 'bdDwC::run_dwc()' in R console,  or "
-                                   ),
-                                   
-                                   actionButton("launch_bddwc", "Launch bddwc Shiny App Now"),
-                                   helpText(
-                                       "(Requires RStudio 1.2 and above.)"
-                                   ),
-                                   br()
-                                   )
+                            bdutilities.app::mod_darwinize_ui("darwinize")
                         ),
                         
                         
