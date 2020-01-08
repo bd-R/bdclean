@@ -14,6 +14,8 @@ matrix:
     r_github_packages:
       - bd-R/bdDwC
       - bd-R/bdchecks
+      - bd-R/bdutilities
+      - bd-R/bdutilities.app
     
   - name: "Release R github OSX"
     r: release
@@ -21,7 +23,12 @@ matrix:
     r_github_packages:
       - bd-R/bdDwC
       - bd-R/bdchecks
+      - bd-R/bdutilities
+      - bd-R/bdutilities.app
     os: osx
+  - r: devel
+  - r: oldrel
+  - r: 3.6
 
 addons:
   apt:
