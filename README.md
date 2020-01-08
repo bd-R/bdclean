@@ -54,4 +54,4 @@ Cleaning reports should be created in `Your-Working-Directory\CleaningReports`
 
 Please submit your feedback using this **[link](https://github.com/bd-R/Feedback-bdclean/issues/new)**
 
-   :deciduous_tree: :mushroom: :shell: :fish: :frog: :honeybee: :turtle: :rooster: :whale2: :monkey: :octocat: 
+   :deciduous_tree: :mushroom: :shell: :fish: :frog: :honeybee: :turtle: :rooster: :whale2: :monkey:
