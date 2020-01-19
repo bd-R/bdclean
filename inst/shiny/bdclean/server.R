@@ -1,7 +1,13 @@
 options(shiny.maxRequestSize = 50 * 1024 ^ 2)
 library(bdchecks)
+library(bdutilities)
 
 shinyServer(function(input, output, session) {
+    
+    session$onSessionEnded(function() {
+        stopApp()
+    })
+    
     # ------------- Local Data store ------------------------
     data_store <-
         list(
@@ -306,6 +312,16 @@ shinyServer(function(input, output, session) {
                             "Input Data",
                             value = "option1",
                             div(class = "secondaryHeaders", h3("Artifact 01: Input RAW Data")),
+                            br(),
+                            
+                            selectInput("dataformat_input",
+                                        "Data Type",
+                                        choices = if (!("list" %in% sapply(data_store$inputData, class))) {
+                                            c(list("CSV" = "csv", "TXT" = "txt"),
+                                              list("RDS" = "rds", "RDA" = "rda"))
+                                        } else {
+                                            list("RDS" = "rds", "RDA" = "rda")
+                                        }), 
                             downloadButton("downloadInput", "Download Input Data"),
                             br(),
                             br(),
@@ -317,6 +333,16 @@ shinyServer(function(input, output, session) {
                             div(class = "secondaryHeaders", h3(
                                 "Artifact 02: Complete Flagged Data"
                             )),
+                            br(),
+                            
+                            selectInput("dataformat_flag",
+                                        "Data Type",
+                                        choices = if (!("list" %in% sapply(data_store$flaggedData, class))) {
+                                            c(list("CSV" = "csv", "TXT" = "txt"),
+                                              list("RDS" = "rds", "RDA" = "rda"))
+                                        } else {
+                                            list("RDS" = "rds", "RDA" = "rda")
+                                        }),
                             downloadButton("downloadFlagged", "Download Flagged Data"),
                             br(),
                             br(),
@@ -326,6 +352,16 @@ shinyServer(function(input, output, session) {
                             "Cleaned Data",
                             value = "option3",
                             div(class = "secondaryHeaders", h3("Artifact 03: Cleaned Data")),
+                            br(),
+                            
+                            selectInput("dataformat_clean",
+                                        "Data Type",
+                                        choices = if (!("list" %in% sapply(data_store$cleanedData, class))) {
+                                            c(list("CSV" = "csv", "TXT" = "txt"),
+                                              list("RDS" = "rds", "RDA" = "rda"))
+                                        } else {
+                                            list("RDS" = "rds", "RDA" = "rda")
+                                        }),
                             downloadButton("downloadCleaned", "Download Cleaned Data"),
                             br(),
                             br(),
@@ -475,30 +511,69 @@ shinyServer(function(input, output, session) {
         }
     )
     
-    
     output$downloadInput <- downloadHandler(
         filename = function() {
-            paste("inputData-", Sys.Date(), ".csv", sep = "")
+            paste("inputData-", Sys.Date(), switch(
+                input$dataformat_input,
+                "csv" = ".csv",
+                "txt" = ".txt",
+                "rds" = ".RDS",
+                "rda" = ".RDA"
+            ), sep = "")
         },
         content = function(con) {
-            write.csv(data_store$inputData, con)
+            input_data <- data_store$inputData
+            switch(
+                input$dataformat_input,
+                "csv" = write.csv(data_store$inputData, con),
+                "txt" = write.table(data_store$inputData, con),
+                "rds" = saveRDS(data_store$inputData, con),
+                "rda" = save(input_data, file = con)
+            )
         }
     )
+    
     output$downloadFlagged <- downloadHandler(
         filename = function() {
-            paste("flaggedData-", Sys.Date(), ".csv", sep = "")
+            paste("flaggedData-", Sys.Date(), switch(
+                input$dataformat_flag,
+                "csv" = ".csv",
+                "txt" = ".txt",
+                "rds" = ".RDS",
+                "rda" = ".RDA"
+            ), sep = "")
         },
         content = function(con) {
-            write.csv(data_store$flaggedData, con)
+            flag_data <- data_store$flaggedData
+            switch(
+                input$dataformat_flag,
+                "csv" = write.csv(data_store$flaggedData, con),
+                "txt" = write.table(data_store$flaggedData, con),
+                "rds" = saveRDS(data_store$flaggedData, con),
+                "rda" = save(flag_data, file = con)
+            )
         }
     )
     
     output$downloadCleaned <- downloadHandler(
         filename = function() {
-            paste("cleanedData-", Sys.Date(), ".csv", sep = "")
+            paste("cleanedData-", Sys.Date(), switch(
+                input$dataformat_clean,
+                "csv" = ".csv",
+                "txt" = ".txt",
+                "rds" = ".RDS",
+                "rda" = ".RDA"
+            ), sep = "")
         },
         content = function(con) {
-            write.csv(data_store$cleanedData, con)
+            clean_data <- data_store$cleanedData
+            switch(
+                input$dataformat_clean,
+                "csv" = write.csv(data_store$cleanedData, con),
+                "txt" = write.table(data_store$cleanedData, con),
+                "rds" = saveRDS(data_store$cleanedData, con),
+                "rda" = save(clean_data, file = con)
+            )
         }
     )
     
