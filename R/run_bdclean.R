@@ -7,7 +7,7 @@
 #' 
 #' if(interactive()){
 #' 
-#' run_bdclean()
+#' bdclean_app()
 #' 
 #' } 
 #'

@@ -59,5 +59,6 @@ Suggests:
     testthat,
     roxygen2,
     covr,
-    shinytest
+    shinytest,
+    rgbif
 LazyData: true

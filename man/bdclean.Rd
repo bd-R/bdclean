@@ -17,7 +17,7 @@ analysis or modelling.
 \section{Data cleaning}{
 
 \itemize{
-\item \link{run_bdclean}
+\item \link{bdclean_app}
 \item \link{clean_data}
 }
 }
