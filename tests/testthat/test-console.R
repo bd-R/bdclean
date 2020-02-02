@@ -1,5 +1,12 @@
 context("bdclean checks")
 
+# Utils
+
+test_that("Quality checks are read correctly from bdchecks", {
+    expect_that(
+        length(get_checks_list()) > 15, equals(TRUE)
+    )
+})
 
 
 # Quality Checks
@@ -78,15 +85,15 @@ test_that("BdQuestionContainer nested question adds correctly", {
 })
 
 test_that("BdQuestionContainer quality checks adds correctly", {
-    expect_silent(question1$add_quality_checks("taxonomy_clean"))
+    expect_silent(question2$add_quality_checks("taxo_level"))
 })
 
 test_that("BdQuestionContainer flads data correctly", {
-    expect_error(question1$flag_data(mammals_data))
+    expect_message(question2$flag_data(mammals_data), "Removing records above : SPECIES")
 })
 
 test_that("BdQuestionContainer creates docs correctly", {
-    expect_warning(question1$add_to_report(mammals_data))
+    expect_silent(question2$add_to_report(mammals_flagged))
 })
 
 
@@ -100,8 +107,12 @@ test_that("Reports generates correctly", {
 })
 
 
-
 # cleaning
+
+test_that("Cleaning function without data fails", {
+    expect_error(clean_data())
+})
+
 
 #184  84
 
@@ -110,28 +121,10 @@ test_that("Reports generates correctly", {
 #     expect_type(clean_data(data = mammals_data, custom_questionnaire = responses), "data.frame")
 # })
 
-
-test_that("Cleaning function without data fails", {
-    expect_error(clean_data())
-})
-
-
-test_that("Cleaning function with missing values works", {
-    expect_message(clean_data(mammals_data, custom_questionnaire = responses, missing = T))
-})
-
-test_that("Cleaning function without report works", {
-    expect_message(clean_data(mammals_data, custom_questionnaire = responses, report = F))
-})
-
-
-
-# Utils
-
-test_that("Quality checks are read correctly from bdchecks", {
-    expect_that(
-        length(get_checks_list()) > 15, equals(TRUE)
-    )
-})
-
-
+# test_that("Cleaning function with missing values works", {
+#     expect_message(clean_data(mammals_data, custom_questionnaire = responses, missing = T))
+# })
+# 
+# test_that("Cleaning function without report works", {
+#     expect_message(clean_data(mammals_data, custom_questionnaire = responses, report = F))
+# })

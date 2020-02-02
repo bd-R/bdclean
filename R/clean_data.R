@@ -157,7 +157,7 @@ run_questionnaire <- function(custom_questionnaire = NULL) {
 #' 
 #' }
 get_user_response <- function(bd_question) {
-    assertive::assert_is_inherited_from(custom_questionnaire, "BdQuestionContainer")
+    assertive::assert_is_inherited_from(bd_question, "BdQuestion")
     
     # Child & ChildRouter already filtered in first loop above
     if (bd_question$question.type == "Atomic") {

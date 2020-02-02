@@ -13,7 +13,7 @@ Launch bdclean Shiny Application
 
 if(interactive()){
 
-run_bdclean()
+bdclean_app()
 
 } 
 

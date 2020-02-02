@@ -53,11 +53,12 @@ Remotes:
     bd-R/bdchecks,
     bd-R/bdutilities,
     bd-R/bdutilities.app
-Depends: R (>= 2.10)
+Depends: R (>= 3.5.0)
 RoxygenNote: 6.1.1
 Suggests: 
     testthat,
     roxygen2,
     covr,
-    shinytest
+    shinytest,
+    rgbif
 LazyData: true
