@@ -107,8 +107,12 @@ test_that("Reports generates correctly", {
 })
 
 
-
 # cleaning
+
+test_that("Cleaning function without data fails", {
+    expect_error(clean_data())
+})
+
 
 #184  84
 
@@ -117,12 +121,6 @@ test_that("Reports generates correctly", {
 #     expect_type(clean_data(data = mammals_data, custom_questionnaire = responses), "data.frame")
 # })
 
-
-test_that("Cleaning function without data fails", {
-    expect_error(clean_data())
-})
-
-
 # test_that("Cleaning function with missing values works", {
 #     expect_message(clean_data(mammals_data, custom_questionnaire = responses, missing = T))
 # })
@@ -130,9 +128,3 @@ test_that("Cleaning function without data fails", {
 # test_that("Cleaning function without report works", {
 #     expect_message(clean_data(mammals_data, custom_questionnaire = responses, report = F))
 # })
-
-
-
-
-
-
