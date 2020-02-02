@@ -1,4 +1,5 @@
 mammals_data <- read.csv(system.file("testdata/mammals.csv", package="bdclean"), fileEncoding="latin1")
+mammals_flagged <- read.csv(system.file("testdata/mammals-flag.csv", package="bdclean"), fileEncoding="latin1")
 
 question1 <- BdQuestion(
     question = "Do you worry about taxonomical aspect of the data?",
@@ -25,10 +26,10 @@ question2 <- BdQuestion(
     ui.type = "select"
 )
 
-question2$set_response("Species")
+question2$set_response("SPECIES")
 
 responses <- readRDS(system.file("testdata/questionnaire-response.rds", package="bdclean")) # Loaded as 'responses'
 
 input_data <- mammals_data
-flagged_data <- mammals_data
+flagged_data <- mammals_flagged
 cleaned_data <- mammals_data
