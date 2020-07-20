@@ -1,4 +1,4 @@
-name: R-CMD-check-L0
+name: L0
 on:
   push:
     branches:
@@ -115,3 +115,20 @@ jobs:
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
+# below lines will run after CI is OK
+# this sends trigger to repos mentioned below.
+# workflow to be triggered has to be in master branch.
+# currently REPO_ACCESS_TOKEN is in organization secret with only public repo access.
+  dispatch:
+    needs: R-CMD-check #this will ensure that we send trigger only after certain tests are passed.
+    strategy:
+      matrix:
+        repo: ['bd-R/bdutilities', 'bd-R/bdDwC', 'bd-R/bdchecks', 'bd-R/bdverse', 'bd-R/bdutilities.app' ,'bd-R/bdDwC.app', 'bd-R/bdchecks.app']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          repository: ${{ matrix.repo }}
+          event-type: bdverse-level-CI-trigger
