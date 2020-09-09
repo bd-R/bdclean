@@ -54,7 +54,7 @@ BdQuestion <-
                 }
             },
             
-           
+            
             
             get_response = function() {
                 ans <- readline()
@@ -98,32 +98,26 @@ BdQuestion <-
                 if (length(.self$quality.checks) > 0) {
                     for (i in 1:length(.self$quality.checks)) {
                         check_name <- .self$quality.checks[i]
-                        if (grepl("dc_", check_name)) {
-                            # bdchecks quality checks
+                        check_temp <-
+                            bdchecks::perform_dc(
+                                data = flagged_data,
+                                wanted_dc = c(check_name),
+                                .self$users.answer
+                            )
+                        
+                        if (!is.null(check_temp) &&
+                            length(check_temp@flags) > 0 &&
+                            length(check_temp@flags[[1]]@result) > 0) {
+                            check_temp <- check_temp@flags[[1]]@result
                             
-                            check_name <- gsub("dc_", "", check_name, fixed = T)
-                            check_temp <-
-                                bdchecks::perform_dc(data = flagged_data,
-                                                           wanted_dc = c(check_name))
-                            
-                            if (!is.null(check_temp) &&
-                                length(check_temp@flags) > 0 &&
-                                length(check_temp@flags[[1]]@result) > 0) {
-                                check_temp <- check_temp@flags[[1]]@result
-                                
-                                if (missing) {
-                                    check_temp[is.na(check_temp)] <-
-                                        FALSE  # Treating mising values as fails
-                                } else {
-                                    check_temp[is.na(check_temp)] <- TRUE
-                                }
-                                flagged_data[, paste("bdclean", check_name, sep = ".")] <-
-                                    check_temp
+                            if (missing) {
+                                check_temp[is.na(check_temp)] <-
+                                    FALSE  # Treating mising values as fails
+                            } else {
+                                check_temp[is.na(check_temp)] <- TRUE
                             }
-                        } else {
-                            # bdclean quality checks
-                            flagged_data <-
-                                get(check_name)(flagged_data, .self$users.answer)
+                            flagged_data[, paste("bdclean", check_name, sep = ".")] <-
+                                check_temp
                         }
                     }
                 }
@@ -136,10 +130,8 @@ BdQuestion <-
                 
                 for (i in 1:length(.self$quality.checks)) {
                     name_of_quality_check <- .self$quality.checks[i]
-                    name_of_quality_check <- gsub("dc_", "", name_of_quality_check, fixed = T)
                     
                     if (!(paste("bdclean", name_of_quality_check, sep = ".") %in% names(flagged_data))) {
-                        #both bdchecks and bdclean columns have bdclean prefix
                         warning(
                             "Required column ",
                             paste("bdclean", name_of_quality_check, sep = "."),
@@ -154,9 +146,8 @@ BdQuestion <-
                     count_of_flagged_data <- sum(!flag, na.rm = T)
                     
                     # ------ Parsing MetaData for check from .Rd file
-                    package_documentation_1 <- tools::Rd_db("bdchecks")
-                    package_documentation_2 <- tools::Rd_db("bdclean")
-                    package_documentation <- c(package_documentation_1, package_documentation_2)
+                    package_documentation <-
+                        tools::Rd_db("bdchecks")
                     
                     function_documentation <-
                         package_documentation[grep(name_of_quality_check, names(package_documentation))]
@@ -208,16 +199,18 @@ BdQuestion <-
                     # ------ End of Parsing MetaData for check from .Rd file
                     
                     temp <- list()
-                    temp$description <- paste(description, collapse = " ")
+                    temp$description <-
+                        paste(description, collapse = " ")
                     temp$sample_pass_data <- sample_pass_data
                     temp$sample_fail_data <- sample_fail_data
                     temp$check_category <- check_category
                     temp$target_dwc_field <- target_dwc_field
                     temp$affected_data <- count_of_flagged_data
                     
-                    .self$cleaning.details[name_of_quality_check] <- list(temp)
+                    .self$cleaning.details[name_of_quality_check] <-
+                        list(temp)
                 }
-                },
+            },
             notify = function() {
                 message("New Question object created.")
             },
@@ -250,7 +243,7 @@ BdQuestionContainer <-
                 .self$bdquestions <- bdquestions
                 .self$notify()
             },
-            reset_responses = function(){
+            reset_responses = function() {
                 for (question in .self$bdquestions) {
                     question$set_response(character())
                 }
