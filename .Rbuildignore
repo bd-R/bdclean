@@ -11,3 +11,4 @@
 ^\.Rhistory$
 ^\.RData$
 ^\.gitattributes$
+inst/shiny/bdclean/tests
