@@ -171,7 +171,7 @@ create_default_questionnaire <- function() {
     
     question6 <-
         BdQuestion(
-            question = "What is the earliest date of the observations in this data set? In format (YYYY-mm-dd YYYY-mm-dd)",
+            question = "What is the date range of the observations in this data set? In format (YYYY-mm-dd YYYY-mm-dd)",
             question.type = "Child",
             quality.checks = c("earliest_date"),
             question.id = "temporalEarliest",
@@ -193,31 +193,7 @@ create_default_questionnaire <- function() {
         return(TRUE)
     })
     
-    question7 <-
-        BdQuestion(
-            question = "What temporal resolution are you interested in?",
-            possible.responses = c("Day", "Month", "Year"),
-            question.type = "Child",
-            quality.checks = c("temporal_resolution"),
-            question.id = "temporalResolution",
-            ui.type = "radio"
-        )
-    
-    # question_sub_04 <-
-    #     BdQuestion(
-    #         question = "Do you worry about dates other than occured date (published date/identified date)?",
-    #         possible.responses = c("Yes",
-    #                                "No"),
-    #         question.type = "ChildRouter",
-    #         router.condition = c("Yes", "Y", "yes", 1, TRUE, "TRUE"),
-    #         quality.checks = c(
-    #             "dc_validation_year_empty"
-    #         ),
-    #         question.id = "smallerDates",
-    #         ui.type = "single-checkbox"
-    #     )
-    
-    question5$add_child_question(c(question6, question7))
+    question5$add_child_question(c(question6))
     
     question_sub_05 <-
         BdQuestion(
@@ -252,7 +228,6 @@ create_default_questionnaire <- function() {
                 question_sub_02,
                 question5,
                 question6,
-                question7,
                 question_sub_05
             )
         )
