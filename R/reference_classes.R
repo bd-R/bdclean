@@ -34,6 +34,7 @@ BdQuestion <-
                 .self$router.condition <- router.condition
                 .self$question.id <- question.id
                 .self$ui.type <- ui.type
+                # todo: add post validation function eg-date range appending
             },
             print_question = function() {
                 cat(.self$question, "\n")
@@ -49,6 +50,8 @@ BdQuestion <-
             set_response = function(response) {
                 if (class(response) == "logical") {
                     .self$users.answer <- ifelse(response, "yes", "no")
+                } else if (.self$ui.type == "date-range") {
+                    .self$users.answer <- paste(paste0(response, collapse = " "), "day")
                 } else {
                     .self$users.answer <- as.character(response)
                 }
