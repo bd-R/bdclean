@@ -2,18 +2,18 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - dev
+      - master
   pull_request:
     branches:
-      - dev
+      - master
 
   # for now, CRON jobs only run on the default branch of the repo (i.e. usually on master)
   schedule:
     # * is a special character in YAML so you have to quote this string
     # Here it will run after every 8 hours starting from 0th hour of the day
-    - cron: "0 0/12 * * *"
+    - cron: "0 0/18 * * *"
 
-name: Ubu-Dev-Dev
+name: Mac-Mas-Mas
 
 jobs:
   R-CMD-check:
@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-latest, r: 'release'}
+          - {os: macOS-latest, r: 'release'}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -63,23 +63,8 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
       - name: Install dependencies
-        env:
-          GITHUB_PAT: ${{ secrets.SYNCWORKFLOW }}
         run: |
           remotes::install_deps(dependencies = TRUE)
-          # Your "dev" dependencies go here
-          remotes::install_github(c('bd-R/bdutilities@dev',
-                                    'bd-R/bdDwC@dev',
-                                    'bd-R/bdutilities.app@dev',
-                                    'bd-R/bddwc.app@dev',
-                                    'bd-R/bdchecks@dev',
-                                    'bd-R/bdchecks.app@dev',
-                                    'bd-R/bdclean@dev',
-                                    'bd-R/bdverse@dev',
-                                    'bd-R/bdtests@dev'),
-                                    depenedencies = FALSE,
-                                    upgrade = 'never')
-          # End "dev" here
           remotes::install_cran("rcmdcheck")
           remotes::install_cran("testthat")
         shell: Rscript {0}

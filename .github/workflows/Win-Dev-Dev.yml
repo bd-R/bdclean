@@ -11,7 +11,7 @@ on:
   schedule:
     # * is a special character in YAML so you have to quote this string
     # Here it will run after every 8 hours starting from 0th hour of the day
-    - cron: "0 0/8 * * *"
+    - cron: "0 0/12 * * *"
 
 name: Win-Dev-Dev
 
@@ -63,6 +63,8 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
       - name: Install dependencies
+        env:
+          GITHUB_PAT: ${{ secrets.SYNCWORKFLOW }}
         run: |
           remotes::install_deps(dependencies = TRUE)
           # Your "dev" dependencies go here
