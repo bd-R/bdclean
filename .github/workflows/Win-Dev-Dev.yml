@@ -40,11 +40,20 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
-      - name: Query dependencies
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          Rscript -e 'install.packages("remotes")'
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
+
+      - name: Query R packages
         env:
           GITHUB_PAT: ${{ secrets.SYNCWORKFLOW }}
         run: |
-          install.packages('devtools')
+          install.packages('devtools', dependencies = c('Depends', 'Imports'))
           saveRDS(devtools::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
           install.packages('remotes')
@@ -58,14 +67,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
-      - name: Install dependencies
+      - name: Install R packages
         env:
           GITHUB_PAT: ${{ secrets.SYNCWORKFLOW }}
         run: |
