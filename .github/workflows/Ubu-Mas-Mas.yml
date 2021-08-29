@@ -41,10 +41,13 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Query dependencies
+        env:
+          GITHUB_PAT: ${{ secrets.SYNCWORKFLOW }}
         run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          install.packages('devtools')
+          saveRDS(devtools::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+          install.packages('remotes')
         shell: Rscript {0}
 
       - name: Cache R packages
@@ -63,6 +66,8 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'cat(remotes::system_requirements("ubuntu", "20.04"), sep = "\n")')
       - name: Install dependencies
+        env:
+          GITHUB_PAT: ${{ secrets.SYNCWORKFLOW }}
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
