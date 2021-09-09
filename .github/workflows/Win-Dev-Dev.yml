@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - dev
-  pull_request:
+  pull_request_target:
     branches:
       - dev
 
@@ -82,8 +82,7 @@ jobs:
                                     'bd-R/bdclean@dev',
                                     'bd-R/bdverse@dev',
                                     'bd-R/bdtests@dev'),
-                                    depenedencies = FALSE,
-                                    upgrade = 'never')
+                                    depenedencies = FALSE)
           # End "dev" here
           remotes::install_cran("rcmdcheck")
           remotes::install_cran("testthat")
