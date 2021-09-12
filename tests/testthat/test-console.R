@@ -95,36 +95,3 @@ test_that("BdQuestionContainer flads data correctly", {
 test_that("BdQuestionContainer creates docs correctly", {
     expect_silent(question2$add_to_report(mammals_flagged))
 })
-
-
-# Report Generation
-
-test_that("Reports generates correctly", {
-    expect_message(create_report_data(input_data,
-                                      flagged_data,
-                                      cleaned_data, responses, T, 'md_document'), 
-                   "generated simple")
-})
-
-
-# cleaning
-
-test_that("Cleaning function without data fails", {
-    expect_error(clean_data())
-})
-
-
-#184  84
-
-# test_that("Reports generates correctly", {
-#     responses <- readRDS(system.file("testdata/questionnaire-response.rds", package="bdclean"))
-#     expect_type(clean_data(data = mammals_data, custom_questionnaire = responses), "data.frame")
-# })
-
-# test_that("Cleaning function with missing values works", {
-#     expect_message(clean_data(mammals_data, custom_questionnaire = responses, missing = T))
-# })
-# 
-# test_that("Cleaning function without report works", {
-#     expect_message(clean_data(mammals_data, custom_questionnaire = responses, report = F))
-# })
