@@ -52,7 +52,7 @@ jobs:
 
       - name: Query R packages
         run: |
-          install.packages('devtools', dependencies = c('Depends', 'Imports'))
+          install.packages('devtools')
           saveRDS(devtools::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
           install.packages('remotes')
