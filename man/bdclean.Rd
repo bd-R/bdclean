@@ -3,7 +3,6 @@
 \docType{package}
 \name{bdclean}
 \alias{bdclean}
-\alias{bdclean-package}
 \title{bdclean: Biodiversity Data Cleaning Workflows.}
 \description{
 Biodiversity Data Cleaning Workflows using R would be helpful

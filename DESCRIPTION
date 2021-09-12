@@ -2,9 +2,9 @@ Package: bdclean
 Type: Package
 Title: A User-Friendly Biodiversity Data Cleaning App for the Inexperienced R User
 Description: Provides features to manage the complete workflow for biodiversity data cleaning. Uploading data, gathering input from users (in order to adjust cleaning procedures), cleaning data and finally, generating various reports and several versions of the data. Facilitates user-level data cleaning, designed for the inexperienced R user. T Gueta et al (2018) <doi:10.3897/biss.2.25564>. T Gueta et al (2017) <doi:10.3897/tdwgproceedings.1.20311>.
-Version: 0.1.27
-Date: 2021-7-11
-License: GPL-3
+Version: 0.1.28
+Date: 2021-09-12
+License: GPL-3 | file LICENSE
 URL: https://github.com/bd-R/bdclean, https://bd-r.github.io/The-bdverse/index.html
 BugReports: https://github.com/bd-R/bdclean/issues
 Authors@R: c(
@@ -54,7 +54,7 @@ Remotes:
     bd-R/bdutilities,
     bd-R/bdutilities.app
 Depends: R (>= 3.5.0)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Suggests: 
     testthat,
     roxygen2,

@@ -4,8 +4,14 @@
 \alias{create_report_data}
 \title{Generate data required to create report, function required in bdclean internal usage.}
 \usage{
-create_report_data(input_data, flagged_data, cleaned_data, responses,
-  cleaning_true, format)
+create_report_data(
+  input_data,
+  flagged_data,
+  cleaned_data,
+  responses,
+  cleaning_true,
+  format
+)
 }
 \arguments{
 \item{input_data}{The input dataframe before cleaning}
