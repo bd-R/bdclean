@@ -171,7 +171,7 @@ create_default_questionnaire <- function() {
     
     question6 <-
         BdQuestion(
-            question = "What is the date range of the observations in this data set? In format (YYYY-mm-dd YYYY-mm-dd)",
+            question = "What is the earliest date of the observations ? In format (YYYY-mm-dd)",
             question.type = "Child",
             quality.checks = c("earliest_date"),
             question.id = "temporalEarliest",
@@ -181,11 +181,6 @@ create_default_questionnaire <- function() {
     question6$add_validation_function(function(answer) {
         dates <- strsplit(answer, " ")[[1]]
         d <- try(as.Date(dates[1]))
-        if (class(d) == "try-error" || is.na(d)) {
-            message("Invalid Date! Please follow the date format (YYYY-mm-dd)")
-            return(FALSE)
-        }
-        d <- try(as.Date(dates[2]))
         if (class(d) == "try-error" || is.na(d)) {
             message("Invalid Date! Please follow the date format (YYYY-mm-dd)")
             return(FALSE)
