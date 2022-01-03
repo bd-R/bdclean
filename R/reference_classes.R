@@ -51,13 +51,15 @@ BdQuestion <-
                 if (class(response) == "logical") {
                     .self$users.answer <- ifelse(response, "yes", "no")
                 } else if (.self$ui.type == "date-range") {
-                    .self$users.answer <- paste(paste0(response, collapse = " "), "day")
+                    if (length(response)>0){
+                        .self$users.answer <- paste0(response, collapse = " ")
+                    } else {
+                        .self$users.answer <- response
+                    }
                 } else {
                     .self$users.answer <- as.character(response)
                 }
             },
-            
-            
             
             get_response = function() {
                 ans <- readline()
@@ -105,6 +107,7 @@ BdQuestion <-
                             bdchecks::perform_dc(
                                 data = flagged_data,
                                 wanted_dc = c(check_name),
+                                flags = T,
                                 .self$users.answer
                             )
                         
